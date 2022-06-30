@@ -17,7 +17,7 @@ interface Logger {
 
 enum class Level(val token: String) {
     DEBUG("D"),
-    ERROR("E")
+    ERROR("E"),
 }
 
 object AndroidLogger : Logger {

@@ -24,11 +24,11 @@ class AlbumListViewModel @Inject constructor(
         AndroidLogger.d(TAG, "Setting bandName=%s and getting albums", bandName)
 
         viewModelScope.launch {
-            _albumList.value = viewModelScope.async {
+            val fetchedList = async {
                 musicRepo.getAlbums(bandName)
-            }.await()
-            val fetchedAlbumList = _albumList.value!!
-            AndroidLogger.d(TAG, "Got album list=%s", fetchedAlbumList)
+            }
+            _albumList.value = fetchedList.await()
+            AndroidLogger.d(TAG, "Got album list=%s", _albumList.value)
         }
 
     }

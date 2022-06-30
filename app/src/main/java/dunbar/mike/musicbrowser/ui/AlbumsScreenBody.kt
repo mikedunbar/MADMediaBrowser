@@ -31,8 +31,8 @@ import dunbar.mike.musicbrowser.ui.theme.MusicBrowserTheme
 fun AlbumScreenBody(
     viewModel: AlbumListViewModel
 ) {
-
-    AlbumCardList(albumList = viewModel.albumList.value!!)
+    val stateList = viewModel.albumList.value ?: emptyList()
+    AlbumCardList(albumList = stateList)
 }
 
 @Composable
