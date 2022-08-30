@@ -2,14 +2,14 @@ package dunbar.mike.musicbrowser.api
 
 import dunbar.mike.musicbrowser.model.Album
 import dunbar.mike.musicbrowser.model.Band
-import dunbar.mike.musicbrowser.model.MusicApi
+import dunbar.mike.musicbrowser.model.MusicRemoteDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ArchiveMusicApiAdapter @Inject constructor(
     private val archiveApi: ArchiveApi
-) : MusicApi {
+) : MusicRemoteDataSource {
 
     override suspend fun getBands(): List<Band> {
         return listOf(Band("Grateful Dead", "Rock"))

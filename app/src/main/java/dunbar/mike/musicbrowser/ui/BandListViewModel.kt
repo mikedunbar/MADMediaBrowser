@@ -1,7 +1,5 @@
 package dunbar.mike.musicbrowser.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,13 +22,5 @@ class BandListViewModel @Inject constructor(
         viewModelScope.launch {
             _bandList.value = musicRepo.getBands()
         }
-    }
-
-    private var _scrollIndex = MutableLiveData(-1)
-
-    val scrollIndex: LiveData<Int> = _scrollIndex
-
-    fun setScrollIndex(index: Int) {
-        _scrollIndex.postValue(index)
     }
 }

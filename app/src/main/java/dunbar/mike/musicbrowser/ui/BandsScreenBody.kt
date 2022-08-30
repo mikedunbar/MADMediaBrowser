@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,8 +31,9 @@ fun BandsScreenBody(
     onClickBand: (String) -> Unit = {},
 ) {
     logger.d("BandsScreenBody", "Loading Bands Screen")
+    val state = viewModel.bandList.collectAsState()
     BandCardList(
-        bandList = viewModel.bandList.value!!,
+        bandList = state.value,
         onClickBand = onClickBand,
     )
 }
@@ -77,7 +79,7 @@ fun BandCard(
             .fillMaxWidth()
             .selectable(
                 selected = false, //TODO
-                onClick = {onClickBand(band.name)}
+                onClick = { onClickBand(band.name) }
             )
     )
     {

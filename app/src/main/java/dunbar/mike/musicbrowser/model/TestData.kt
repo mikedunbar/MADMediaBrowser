@@ -2,27 +2,27 @@ package dunbar.mike.musicbrowser.model
 
 import java.time.LocalDate
 
-fun createBandList(): List<Band> {
+fun createTestBandList(): List<Band> {
     val bandList = mutableListOf<Band>()
 
     (0..50).forEach {
         bandList.addAll(
             listOf(
-                getBandInfo("Widespread Panic $it"),
-                getBandInfo("Drive-By Truckers $it"),
-                getBandInfo("Metallica $it"),
-                getBandInfo("Iron Maiden $it"),
-                getBandInfo("Outkast $it"),
-                getBandInfo("MF Doom $it"),
-                getBandInfo("Grateful Dead $it"),
-                getBandInfo("Phish $it")
+                getTestBandInfo("Widespread Panic $it"),
+                getTestBandInfo("Drive-By Truckers $it"),
+                getTestBandInfo("Metallica $it"),
+                getTestBandInfo("Iron Maiden $it"),
+                getTestBandInfo("Outkast $it"),
+                getTestBandInfo("MF Doom $it"),
+                getTestBandInfo("Grateful Dead $it"),
+                getTestBandInfo("Phish $it")
             )
         )
     }
     return bandList
 }
 
-fun getBandInfo(bandName: String): Band {
+fun getTestBandInfo(bandName: String): Band {
     return when {
         bandName.startsWith("Widespread Panic") -> Band(bandName, "Rock")
         bandName.startsWith("Drive-By Truckers") -> Band(bandName, "Rock")
@@ -36,7 +36,7 @@ fun getBandInfo(bandName: String): Band {
     }
 }
 
-fun createAlbumInfo(
+fun createTestAlbumInfo(
     band: Band = Band("Grateful Dead", "Psychedelic Rock"),
     name: String = band.name,
     releaseDate: LocalDate = LocalDate.now(),
@@ -50,13 +50,13 @@ fun createAlbumInfo(
     songList,
 )
 
-fun createAlbumList(bandName: String): List<Album> {
+fun createTestAlbumList(bandName: String): List<Album> {
     val albums = mutableListOf<Album>()
     (0..5).forEach {
         val name = "$bandName Album $it"
         albums.add(
-            createAlbumInfo(
-                band = getBandInfo(bandName),
+            createTestAlbumInfo(
+                band = getTestBandInfo(bandName),
                 name = name,
                 songList = listOf(
                     Song("$name Song 1", 300.5),

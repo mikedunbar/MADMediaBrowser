@@ -2,7 +2,6 @@ package dunbar.mike.musicbrowser.model
 
 import java.time.LocalDate
 
-
 data class Album(
     val band: Band,
     val name: String,

@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,16 +24,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dunbar.mike.musicbrowser.R
 import dunbar.mike.musicbrowser.model.Album
-import dunbar.mike.musicbrowser.model.createAlbumInfo
-import dunbar.mike.musicbrowser.model.createAlbumList
+import dunbar.mike.musicbrowser.model.createTestAlbumInfo
+import dunbar.mike.musicbrowser.model.createTestAlbumList
 import dunbar.mike.musicbrowser.ui.theme.MusicBrowserTheme
 
 @Composable
 fun AlbumScreenBody(
     viewModel: AlbumListViewModel
 ) {
-    val stateList = viewModel.albumList.value ?: emptyList()
-    AlbumCardList(albumList = stateList)
+    val albumListState = viewModel.albumList.collectAsState()
+    AlbumCardList(albumList = albumListState.value)
 }
 
 @Composable
@@ -68,7 +69,7 @@ fun AlbumCard(
 fun AlbumCardPreview() {
     MusicBrowserTheme(darkTheme = false) {
         Surface {
-            AlbumCard(createAlbumInfo())
+            AlbumCard(createTestAlbumInfo())
         }
 
     }
@@ -79,7 +80,7 @@ fun AlbumCardPreview() {
 fun AlbumCardPreviewDark() {
     MusicBrowserTheme(darkTheme = true) {
         Surface {
-            AlbumCard(createAlbumInfo())
+            AlbumCard(createTestAlbumInfo())
         }
 
     }
@@ -103,7 +104,7 @@ fun AlbumCardListPreview() {
     MusicBrowserTheme(darkTheme = false) {
         Surface {
             AlbumCardList(
-                albumList = createAlbumList("Grateful Dead")
+                albumList = createTestAlbumList("Grateful Dead")
             )
         }
     }
@@ -115,7 +116,7 @@ fun AlbumCardListPreviewDark() {
     MusicBrowserTheme(darkTheme = true) {
         Surface {
             AlbumCardList(
-                albumList = createAlbumList("Grateful Dead")
+                albumList = createTestAlbumList("Grateful Dead")
             )
         }
     }

@@ -21,7 +21,7 @@ object HiltModule {
 
     @Provides
     fun provideMusicRepo(archiveApi: ArchiveApi): MusicRepo {
-        val forReal = true
+        val forReal = false
         return if (forReal) RealMusicRepo(ArchiveMusicApiAdapter(archiveApi)) else FakeMusicRepo()
     }
 

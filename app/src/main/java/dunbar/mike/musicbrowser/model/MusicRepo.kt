@@ -9,28 +9,28 @@ interface MusicRepo {
     suspend fun getAlbums(bandName: String): List<Album>
 }
 
-interface MusicApi {
+interface MusicRemoteDataSource {
     suspend fun getBands(): List<Band>
 
     suspend fun getAlbums(bandName: String): List<Album>
 }
 
-interface MusicDataStore {
+interface MusicLocalDataSource {
 
 }
 
 class FakeMusicRepo @Inject constructor() : MusicRepo {
     override suspend fun getBands(): List<Band> {
-        return createBandList()
+        return createTestBandList()
     }
 
     override suspend fun getAlbums(bandName: String): List<Album> {
-        return createAlbumList(bandName)
+        return createTestAlbumList(bandName)
     }
 }
 
 class RealMusicRepo @Inject constructor(
-    private val api: MusicApi
+    private val api: MusicRemoteDataSource
 ) : MusicRepo {
     override suspend fun getBands(): List<Band> {
         return api.getBands()
