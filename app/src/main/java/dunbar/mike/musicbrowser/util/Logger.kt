@@ -1,7 +1,6 @@
 package dunbar.mike.musicbrowser.util
 
 import android.util.Log
-import dunbar.mike.musicbrowser.util.Logger.Companion.DEBUG_TAG
 
 interface Logger {
 
@@ -53,11 +52,9 @@ class TestLogger : Logger {
 }
 
 private fun formatMsg(level: Level, tag: String, msg: String, vararg msgArgs: Any?): String {
-    val argsAsList = msgArgs.asList()
     val formatStr = "${level.token}: $tag $msg"
-    val formattedMsg = String.format(formatStr, *msgArgs)
 
-    return formattedMsg
+    return String.format(formatStr, *msgArgs)
 }
 
 fun main() {

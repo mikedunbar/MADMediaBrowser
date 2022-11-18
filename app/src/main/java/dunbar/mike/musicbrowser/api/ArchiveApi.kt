@@ -22,6 +22,7 @@ https://archive.org/metadata/{identifier}
 https://archive.org/metadata/gd1984-04-29.149679.beyerm201.holbrook.flac2448
 
  */
+@Suppress("KDocUnresolvedReference")
 interface ArchiveApi {
 
     @GET(

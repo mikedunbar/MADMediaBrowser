@@ -7,4 +7,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="dark">#FF1E1E1E</color>
+
+    <color name="animated_icon_color">#99dddddd</color>
+    <color name="branding_image_text_color">#1E1E1E</color>
 </resources>

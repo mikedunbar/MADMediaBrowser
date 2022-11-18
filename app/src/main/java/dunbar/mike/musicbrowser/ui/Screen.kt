@@ -1,8 +1,9 @@
 package dunbar.mike.musicbrowser.ui
 
 enum class Screen {
-    Albums,
     Bands,
+    Albums,
+    Songs
 
     ;
 
