@@ -11,6 +11,6 @@
         <item name="android:navigationBarColor">@color/white</item>
         <item name="android:windowLightStatusBar">true</item>
 
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_round</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/adaptive_launcher_round</item>
     </style>
 </resources>

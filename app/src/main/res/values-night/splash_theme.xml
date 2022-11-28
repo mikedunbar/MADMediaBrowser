@@ -11,7 +11,7 @@
         <item name="android:navigationBarColor">@color/dark</item>
         <item name="android:windowLightStatusBar">false</item>
 
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_round</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/adaptive_launcher_round</item>
 
     </style>
 </resources>
