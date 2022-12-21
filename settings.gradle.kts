@@ -6,4 +6,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Music Browser"
-include ':app'
+include (":app")
