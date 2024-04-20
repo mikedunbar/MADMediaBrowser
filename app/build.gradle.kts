@@ -1,57 +1,18 @@
 plugins {
     id("com.android.application")
+    id("com.google.devtools.ksp")
     id("kotlin-android")
-    id("kotlin-kapt")
-    id("dagger.hilt.android.plugin")
+    id("com.google.dagger.hilt.android")
 }
 
-val composeVersion by extra("1.3.2")
-val composeMaterialVersion by extra("1.3.1")
-val hiltVersion by extra("2.44.2")
 val retrofitVersion by extra("2.9.0")
 val moshiVersion by extra("1.13.0")
 val coroutinesVersion by extra("1.5.2")
-val ktxVersion by extra("2.5.1")
+val ktxVersion by extra("2.7.0")
 
 android {
-    compileSdk = rootProject.extra["compile_sdk_version"] as Int
-
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-
-    buildFeatures {
-        compose = true
-        viewBinding = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = composeVersion
-    }
-
-    packagingOptions {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-
     namespace = "dunbar.mike.musicbrowser"
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
+    compileSdk = rootProject.extra["compile_sdk_version"] as Int
 
     defaultConfig {
         applicationId = "dunbar.mike.musicbrowser"
@@ -64,6 +25,35 @@ android {
 
         vectorDrawables {
             useSupportLibrary = true
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.12"
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 
@@ -84,26 +74,30 @@ android {
 }
 
 dependencies {
-    // Upgrading this requires updating the android gradle plugin, so let's hold off
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.2")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
-    implementation("androidx.core:core-splashscreen:1.0.0")
+    implementation(platform("androidx.compose:compose-bom:2024.04.01"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.04.01"))
 
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.5.1")
-    implementation("com.google.android.material:material:1.7.0")
-    implementation("androidx.compose.ui:ui:$composeVersion")
-    implementation("androidx.compose.material:material:$composeMaterialVersion")
-    implementation("androidx.compose.material:material-icons-extended:$composeMaterialVersion")
-    implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
-    implementation("androidx.navigation:navigation-compose:2.6.0-alpha04")
-    implementation("androidx.activity:activity-compose:1.6.1")
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.11.0")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.material:material:material3")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.ui:ui-tooling")
+
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.activity:activity-compose:1.8.2")
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$ktxVersion")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$ktxVersion")
 
+    val hiltVersion by extra("2.51.1")
     implementation("com.google.dagger:hilt-android:$hiltVersion")
-    kapt("com.google.dagger:hilt-compiler:$hiltVersion")
+    ksp("com.google.dagger:hilt-android-compiler:$hiltVersion")
+    ksp("com.google.dagger:hilt-compiler:$hiltVersion")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
@@ -123,17 +117,12 @@ dependencies {
 
     // Moshi
     implementation("com.squareup.moshi:moshi:$moshiVersion")
-    kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.4")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 
-    debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
-}
-
-// Allow references to generated code
-kapt {
-    correctErrorTypes = true
+    debugImplementation("androidx.compose.ui:ui-tooling")
 }

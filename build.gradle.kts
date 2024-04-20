@@ -6,17 +6,18 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:8.3.2")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.42")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.23")
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.51.1")
     }
 }
 
-ext {
-    extra["compile_sdk_version"] = 33
-    extra["min_sdk_version"] = 23
-    extra["target_sdk_version"] = 33
+plugins {
+    id("com.google.devtools.ksp") version "1.9.23-1.0.20" apply false
+    id("com.google.dagger.hilt.android") version "2.44" apply false
 }
 
-tasks.register("clean").configure {
-    delete(rootProject.buildDir)
+ext {
+    extra["compile_sdk_version"] = 34
+    extra["min_sdk_version"] = 24
+    extra["target_sdk_version"] = 34
 }
