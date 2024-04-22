@@ -12,11 +12,9 @@ fun MusicBrowserTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-
     MaterialTheme(
         colors = if (darkTheme) DarkColorPalette else LightColorPalette,
         typography = Typography,
-        shapes = Shapes,
         content = content
     )
 }

@@ -8,21 +8,21 @@ fun createTestBandList(): List<Band> {
     (0..50).forEach {
         bandList.addAll(
             listOf(
-                getTestBandInfo("Widespread Panic $it"),
-                getTestBandInfo("Drive-By Truckers $it"),
-                getTestBandInfo("Metallica $it"),
-                getTestBandInfo("Iron Maiden $it"),
-                getTestBandInfo("Outkast $it"),
-                getTestBandInfo("MF Doom $it"),
-                getTestBandInfo("Grateful Dead $it"),
-                getTestBandInfo("Phish $it")
+                createTestBandInfo("Widespread Panic $it"),
+                createTestBandInfo("Drive-By Truckers $it"),
+                createTestBandInfo("Metallica $it"),
+                createTestBandInfo("Iron Maiden $it"),
+                createTestBandInfo("Outkast $it"),
+                createTestBandInfo("MF Doom $it"),
+                createTestBandInfo("Grateful Dead $it"),
+                createTestBandInfo("Phish $it")
             )
         )
     }
     return bandList
 }
 
-fun getTestBandInfo(bandName: String): Band {
+fun createTestBandInfo(bandName: String): Band {
     return when {
         bandName.startsWith("Widespread Panic") -> Band(bandName, "Rock")
         bandName.startsWith("Drive-By Truckers") -> Band(bandName, "Rock")
@@ -53,22 +53,22 @@ fun createTestAlbumInfo(
 fun createTestAlbumList(bandName: String): List<Album> {
     val albums = mutableListOf<Album>()
     (0..5).forEach {
-        val name = "$bandName Album $it"
+        val albumName = "$bandName Album $it"
         albums.add(
             createTestAlbumInfo(
-                band = getTestBandInfo(bandName),
-                name = name,
+                band = createTestBandInfo(bandName),
+                name = albumName,
                 songList = listOf(
-                    Song("$name Song 1", 300.5),
-                    Song("$name Song 2", 300.5),
-                    Song("$name Song 3", 300.5),
-                    Song("$name Song 4", 300.5),
-                    Song("$name Song 5", 300.5),
-                    Song("$name Song 6", 300.5),
-                    Song("$name Song 7", 300.5),
-                    Song("$name Song 8", 300.5),
-                    Song("$name Song 9", 300.5),
-                    Song("$name Song 10", 300.5),
+                    Song("$albumName Song 1", 300.5),
+                    Song("$albumName Song 2", 300.5),
+                    Song("$albumName Song 3", 300.5),
+                    Song("$albumName Song 4", 300.5),
+                    Song("$albumName Song 5", 300.5),
+                    Song("$albumName Song 6", 300.5),
+                    Song("$albumName Song 7", 300.5),
+                    Song("$albumName Song 8", 300.5),
+                    Song("$albumName Song 9", 300.5),
+                    Song("$albumName Song 10", 300.5),
                 ),
             )
         )
