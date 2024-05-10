@@ -46,7 +46,7 @@ fun MusicBrowserBottomNavBar(modifier: Modifier = Modifier) {
             icon = {
                 Icon(
                     imageVector = Icons.Default.LibraryMusic,
-                    contentDescription = null
+                    contentDescription = stringResource(R.string.music_library)
                 )
             },
             label = {
@@ -61,7 +61,7 @@ fun MusicBrowserBottomNavBar(modifier: Modifier = Modifier) {
             icon = {
                 Icon(
                     imageVector = Icons.Default.VideoLibrary,
-                    contentDescription = null
+                    contentDescription = stringResource(R.string.video_library)
                 )
             },
             label = {
