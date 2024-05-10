@@ -46,9 +46,9 @@ fun MusicBrowserApp(
     MusicBrowserTheme {
         val navController = rememberNavController()
         Scaffold(
-            topBar = { AppBar() }
+            topBar = { MusicBrowserTopAppBar() },
+            bottomBar = { MusicBrowserBottomNavBar()}
         ) { paddingValues ->
-
             Surface {
                 MusicBrowserNavHost(
                     navController = navController,

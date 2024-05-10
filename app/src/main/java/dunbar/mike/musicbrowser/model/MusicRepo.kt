@@ -2,6 +2,8 @@ package dunbar.mike.musicbrowser.model
 
 import javax.inject.Inject
 
+// todo convert to class/remove layer and just mock API layer
+// todo move to a data package...follow the Android layers
 interface MusicRepo {
 
     suspend fun getBands(): List<Band>

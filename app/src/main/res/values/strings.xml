@@ -2,4 +2,6 @@
     <string name="app_name">MAD Music Browser</string>
     <string name="musical_note">musical note</string>
     <string name="menu">menu</string>
+    <string name="music_library">Music Library</string>
+    <string name="video_library">Video Library</string>
 </resources>
