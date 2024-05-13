@@ -1,7 +1,5 @@
-package dunbar.mike.musicbrowser.ui
+package dunbar.mike.musicbrowser.ui.music
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel

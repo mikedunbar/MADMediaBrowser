@@ -1,4 +1,4 @@
-package dunbar.mike.musicbrowser.ui
+package dunbar.mike.musicbrowser.ui.music
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,28 +24,67 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dunbar.mike.musicbrowser.R
-import dunbar.mike.musicbrowser.model.Album
-import dunbar.mike.musicbrowser.model.createTestAlbumInfo
-import dunbar.mike.musicbrowser.model.createTestAlbumList
-import dunbar.mike.musicbrowser.ui.theme.MusicBrowserTheme
+import dunbar.mike.musicbrowser.model.Band
+import dunbar.mike.musicbrowser.ui.theme.MediaBrowserTheme
+import dunbar.mike.musicbrowser.util.Logger
 
 @Composable
-fun AlbumScreenBody(
-    viewModel: AlbumListViewModel
+fun BandListScreen(
+    logger: Logger,
+    viewModel: BandListViewModel,
+    onClickBand: (String) -> Unit = {},
 ) {
-    val albumListState = viewModel.albumList.collectAsState()
-    AlbumCardList(albumList = albumListState.value)
+    logger.d("BandsScreenBody", "Loading Bands Screen")
+    val state = viewModel.bandList.collectAsState()
+    BandCardList(
+        bandList = state.value,
+        onClickBand = onClickBand,
+    )
 }
 
 @Composable
-fun AlbumCard(
-    album: Album
+fun BandCardList(
+    bandList: List<Band>,
+    onClickBand: (String) -> Unit,
+) {
+    val scrollState = rememberLazyListState()
+
+    LazyColumn(state = scrollState) {
+        items(bandList.size) {
+            BandCard(bandList[it], onClickBand)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun BandCardListPreview() {
+    MediaBrowserTheme {
+        BandCardList(
+            bandList = listOf(
+                Band("Widespread Panic", "Rock"),
+                Band("Metallica", "Heavy Metal"),
+                Band("Outkast", "Hip Hop")
+            ),
+            onClickBand = {},
+        )
+    }
+}
+
+@Composable
+fun BandCard(
+    band: Band,
+    onClickBand: (String) -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(10.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .selectable(
+                selected = false, //TODO
+                onClick = { onClickBand(band.name) }
+            )
     )
     {
         Image(
@@ -57,42 +97,8 @@ fun AlbumCard(
         )
         Column(modifier = Modifier.padding(5.dp))
         {
-            Text(album.name, fontWeight = FontWeight.Bold)
-            Text(album.releaseDate.toString()) //todo date format
-            Text("${album.songs.size} Songs") // todo i18n
-        }
-    }
-}
-
-@Preview
-@Composable
-fun AlbumCardPreview() {
-    MusicBrowserTheme(darkTheme = false) {
-        Surface {
-            AlbumCard(createTestAlbumInfo())
-        }
-
-    }
-}
-
-@Preview
-@Composable
-fun AlbumCardPreviewDark() {
-    MusicBrowserTheme(darkTheme = true) {
-        Surface {
-            AlbumCard(createTestAlbumInfo())
-        }
-
-    }
-}
-
-@Composable
-fun AlbumCardList(albumList: List<Album>) {
-    val scrollState = rememberLazyListState()
-
-    LazyColumn(state = scrollState) {
-        items(albumList.size) {
-            AlbumCard(albumList[it])
+            Text(band.name, fontWeight = FontWeight.Bold)
+            Text(band.genre)
         }
     }
 
@@ -100,24 +106,22 @@ fun AlbumCardList(albumList: List<Album>) {
 
 @Preview
 @Composable
-fun AlbumCardListPreview() {
-    MusicBrowserTheme(darkTheme = false) {
+fun BandCardPreview() {
+    MediaBrowserTheme(darkTheme = false) {
         Surface {
-            AlbumCardList(
-                albumList = createTestAlbumList("Grateful Dead")
-            )
+            BandCard(Band("Outkast", "Hip Hop")) {}
         }
+
     }
 }
 
 @Preview
 @Composable
-fun AlbumCardListPreviewDark() {
-    MusicBrowserTheme(darkTheme = true) {
+fun BandCardPreviewDark() {
+    MediaBrowserTheme(darkTheme = true) {
         Surface {
-            AlbumCardList(
-                albumList = createTestAlbumList("Grateful Dead")
-            )
+            BandCard(Band("Outkast", "Hip Hop")) {}
         }
+
     }
 }

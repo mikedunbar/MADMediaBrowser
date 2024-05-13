@@ -2,6 +2,7 @@ package dunbar.mike.musicbrowser.ui
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material.icons.rounded.Menu
@@ -10,17 +11,59 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import dunbar.mike.musicbrowser.R
+import dunbar.mike.musicbrowser.ui.music.AlbumListViewModel
+import dunbar.mike.musicbrowser.ui.music.BandListViewModel
+import dunbar.mike.musicbrowser.ui.theme.MediaBrowserTheme
+
+@Composable
+fun MediaBrowserApp(
+    bandListViewModel: BandListViewModel,
+    albumListViewModel: AlbumListViewModel,
+) {
+    MediaBrowserTheme {
+        val navController = rememberNavController()
+
+        val onClickHome = {
+            navController.navigate(Screen.Home.name)
+        }
+
+        val onClickMusic = {
+            navController.navigate(Screen.MusicLibrary.name)
+        }
+
+        val onClickVideo = {
+            navController.navigate(Screen.VideoLibrary.name)
+        }
+
+        Scaffold(
+            topBar = { MediaBrowserTopAppBar() },
+            bottomBar = { MediaBrowserBottomNavBar(onClickHome, onClickMusic, onClickVideo) }
+        ) { paddingValues ->
+            Surface {
+                MusicBrowserNavHost(
+                    navController = navController,
+                    modifier = Modifier.padding(paddingValues),
+                    bandListViewModel = bandListViewModel,
+                    albumListViewModel = albumListViewModel
+                )
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MusicBrowserTopAppBar(modifier: Modifier = Modifier) {
+fun MediaBrowserTopAppBar(modifier: Modifier = Modifier) {
     TopAppBar(
         navigationIcon = {
             Icon(
@@ -37,7 +80,11 @@ fun MusicBrowserTopAppBar(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MusicBrowserBottomNavBar(modifier: Modifier = Modifier) {
+fun MediaBrowserBottomNavBar(
+    onClickHome: () -> Unit,
+    onClickMusic: () -> Unit,
+    onClickVideo: () -> Unit,
+    modifier: Modifier = Modifier) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
         modifier = modifier
@@ -55,7 +102,22 @@ fun MusicBrowserBottomNavBar(modifier: Modifier = Modifier) {
                 )
             },
             selected = true,
-            onClick = {}
+            onClick = onClickMusic
+        )
+        NavigationBarItem(
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Home,
+                    contentDescription = stringResource(R.string.home)
+                )
+            },
+            label = {
+                Text(
+                    text = stringResource(R.string.home)
+                )
+            },
+            selected = true,
+            onClick = onClickHome
         )
         NavigationBarItem(
             icon = {
@@ -70,7 +132,7 @@ fun MusicBrowserBottomNavBar(modifier: Modifier = Modifier) {
                 )
             },
             selected = true,
-            onClick = {}
+            onClick = onClickVideo
         )
     }
 }

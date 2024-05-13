@@ -1,4 +1,4 @@
-package dunbar.mike.musicbrowser.ui
+package dunbar.mike.musicbrowser.ui.music
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
