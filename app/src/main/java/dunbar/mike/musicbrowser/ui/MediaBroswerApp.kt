@@ -24,15 +24,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import dunbar.mike.musicbrowser.R
-import dunbar.mike.musicbrowser.ui.music.AlbumListViewModel
-import dunbar.mike.musicbrowser.ui.music.BandListViewModel
 import dunbar.mike.musicbrowser.ui.theme.MediaBrowserTheme
 
 @Composable
-fun MediaBrowserApp(
-    bandListViewModel: BandListViewModel,
-    albumListViewModel: AlbumListViewModel,
-) {
+fun MediaBrowserApp() {
     MediaBrowserTheme {
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
@@ -68,8 +63,6 @@ fun MediaBrowserApp(
                 MusicBrowserNavHost(
                     navController = navController,
                     modifier = Modifier.padding(paddingValues),
-                    bandListViewModel = bandListViewModel,
-                    albumListViewModel = albumListViewModel
                 )
             }
         }

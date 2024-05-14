@@ -94,9 +94,11 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$ktxVersion")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$ktxVersion")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
     val hiltVersion by extra("2.51.1")
     implementation("com.google.dagger:hilt-android:$hiltVersion")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     ksp("com.google.dagger:hilt-android-compiler:$hiltVersion")
     ksp("com.google.dagger:hilt-compiler:$hiltVersion")
 

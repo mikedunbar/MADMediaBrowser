@@ -23,15 +23,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import dunbar.mike.musicbrowser.R
 import dunbar.mike.musicbrowser.model.Band
 import dunbar.mike.musicbrowser.ui.theme.MediaBrowserTheme
 import dunbar.mike.musicbrowser.util.Logger
 
+
 @Composable
 fun BandListScreen(
     logger: Logger,
-    viewModel: BandListViewModel,
+    viewModel: BandListViewModel = hiltViewModel<BandListViewModel>(),
     onClickBand: (String) -> Unit = {},
 ) {
     logger.d("BandsScreenBody", "Loading Bands Screen")

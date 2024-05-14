@@ -11,9 +11,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BandListViewModel @Inject constructor(
-    musicRepo: MusicRepo
-) : ViewModel() {
+class BandListViewModel @Inject constructor(private val musicRepo: MusicRepo) : ViewModel() {
 
     private val _bandList = MutableStateFlow<List<Band>>(emptyList())
     val bandList: StateFlow<List<Band>> = _bandList

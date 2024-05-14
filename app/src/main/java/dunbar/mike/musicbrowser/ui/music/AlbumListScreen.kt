@@ -29,9 +29,7 @@ import dunbar.mike.musicbrowser.model.createTestAlbumList
 import dunbar.mike.musicbrowser.ui.theme.MediaBrowserTheme
 
 @Composable
-fun AlbumListScreen(
-    viewModel: AlbumListViewModel
-) {
+fun AlbumListScreen(viewModel: AlbumListViewModel) {
     val albumListState = viewModel.albumList.collectAsState()
     AlbumCardList(albumList = albumListState.value)
 }
