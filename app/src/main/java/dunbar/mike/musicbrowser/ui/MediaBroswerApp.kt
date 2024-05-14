@@ -6,15 +6,18 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,6 +34,18 @@ fun MediaBrowserApp(
     albumListViewModel: AlbumListViewModel,
 ) {
     MediaBrowserTheme {
+        val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+        // TODO get the nav drawer working: settings, about this app, etc.
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                // drawer items go here
+            }
+        ) {
+            // screen content goes here
+        }
+
         val navController = rememberNavController()
 
         val onClickHome = {
@@ -73,6 +88,7 @@ fun MediaBrowserTopAppBar(modifier: Modifier = Modifier) {
             )
         },
         title = {
+            // TODO Make this dynamic, based on current screen
             Text(text = stringResource(R.string.app_name))
         },
         modifier = modifier
@@ -84,7 +100,8 @@ fun MediaBrowserBottomNavBar(
     onClickHome: () -> Unit,
     onClickMusic: () -> Unit,
     onClickVideo: () -> Unit,
-    modifier: Modifier = Modifier) {
+    modifier: Modifier = Modifier
+) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
         modifier = modifier
