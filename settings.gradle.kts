@@ -5,5 +5,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Music Browser"
+rootProject.name = "Media Browser"
 include (":app")

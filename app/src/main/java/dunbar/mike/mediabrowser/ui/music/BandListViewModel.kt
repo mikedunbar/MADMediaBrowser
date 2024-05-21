@@ -1,0 +1,24 @@
+package dunbar.mike.mediabrowser.ui.music
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dunbar.mike.mediabrowser.data.Band
+import dunbar.mike.mediabrowser.data.MusicRepo
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class BandListViewModel @Inject constructor(private val musicRepo: MusicRepo) : ViewModel() {
+
+    private val _bandList = MutableStateFlow<List<Band>>(emptyList())
+    val bandList: StateFlow<List<Band>> = _bandList
+
+    init {
+        viewModelScope.launch {
+            _bandList.value = musicRepo.getBands()
+        }
+    }
+}

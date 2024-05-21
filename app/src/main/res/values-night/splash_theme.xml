@@ -4,7 +4,7 @@
     <style name="Theme.AppSplash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/dark</item>
         <item name="windowSplashScreenAnimationDuration">300</item>
-        <item name="postSplashScreenTheme">@style/Theme.MusicBrowser</item>
+        <item name="postSplashScreenTheme">@style/Theme.MediaBrowser</item>
 
         <!-- Status bar and Nav bar configs -->
         <item name="android:statusBarColor" >@color/dark</item>

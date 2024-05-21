@@ -11,11 +11,11 @@ val coroutinesVersion by extra("1.5.2")
 val ktxVersion by extra("2.7.0")
 
 android {
-    namespace = "dunbar.mike.musicbrowser"
+    namespace = "dunbar.mike.mediabrowser"
     compileSdk = rootProject.extra["compile_sdk_version"] as Int
 
     defaultConfig {
-        applicationId = "dunbar.mike.musicbrowser"
+        applicationId = "dunbar.mike.mediabrowser"
         minSdk = rootProject.extra["min_sdk_version"] as Int
         targetSdk = rootProject.extra["target_sdk_version"] as Int
         versionCode = 1
@@ -61,13 +61,13 @@ android {
     productFlavors {
         create("free") {
             dimension = "tier"
-            applicationId = "dunbar.mike.musicbrowser.free"
+            applicationId = "dunbar.mike.mediabrowser.free"
             versionNameSuffix = "-free"
         }
 
         create("paid") {
             dimension = "tier"
-            applicationId = "dunbar.mike.musicbrowser.paid"
+            applicationId = "dunbar.mike.mediabrowser.paid"
             versionNameSuffix = "-paid"
         }
     }

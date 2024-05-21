@@ -1,4 +1,4 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.MusicBrowser" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.MediaBrowser" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>
