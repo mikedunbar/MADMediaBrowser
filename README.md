@@ -2,7 +2,10 @@
 Showcase modern Android development skills with a sample app
 
 I was laid off as part of a 10% staff reduction on March 1st. After a 2 month sabbatical I'm rested and looking for my next Android adventure.
-This project aims to keep my busy until I land my next job, capturing and showcasing my knowledge of Android best practices and tooling.
+This project aims to keep me busy and my skills fresh until I land my next job. UI/UX polish is taking a backseat to engineering best practices to 
+begin with, but I look forward to improving that as well.
+
+I welcome any and all feedback.
 
 # What's Implemented So Far
 - Multiple product versions: Free vs Paid Versions
