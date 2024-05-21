@@ -1,4 +1,4 @@
-package dunbar.mike.musicbrowser.model
+package dunbar.mike.musicbrowser.data
 
 import java.time.LocalDate
 

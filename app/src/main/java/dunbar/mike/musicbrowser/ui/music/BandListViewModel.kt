@@ -3,8 +3,8 @@ package dunbar.mike.musicbrowser.ui.music
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dunbar.mike.musicbrowser.model.Band
-import dunbar.mike.musicbrowser.model.MusicRepo
+import dunbar.mike.musicbrowser.data.Band
+import dunbar.mike.musicbrowser.data.MusicRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

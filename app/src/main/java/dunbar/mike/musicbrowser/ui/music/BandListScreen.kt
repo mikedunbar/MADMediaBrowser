@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dunbar.mike.musicbrowser.R
-import dunbar.mike.musicbrowser.model.Band
+import dunbar.mike.musicbrowser.data.Band
 import dunbar.mike.musicbrowser.ui.theme.MediaBrowserTheme
 import dunbar.mike.musicbrowser.util.Logger
 

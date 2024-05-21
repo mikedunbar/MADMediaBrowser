@@ -1,7 +1,7 @@
 package dunbar.mike.musicbrowser
 
-import dunbar.mike.musicbrowser.api.ArchiveApi
-import dunbar.mike.musicbrowser.api.ArchiveMusicApiAdapter
+import dunbar.mike.musicbrowser.data.archiveapi.ArchiveApi
+import dunbar.mike.musicbrowser.data.archiveapi.ArchiveApiMusicRemoteDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
@@ -14,10 +14,10 @@ import java.lang.String.format
 import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
-class ArchiveMusicApiAdapterTest {
+class ArchiveApiMusicRemoteDataSourceTest {
 
     private val archiveApi = createArchiveApi()
-    private val objectUnderTest = ArchiveMusicApiAdapter(archiveApi)
+    private val objectUnderTest = ArchiveApiMusicRemoteDataSource(archiveApi)
 
     @Test
     fun `test searchDeadShows`() = runBlocking {

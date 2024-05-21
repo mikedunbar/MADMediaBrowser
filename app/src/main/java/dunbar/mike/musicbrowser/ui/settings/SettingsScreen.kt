@@ -1,10 +1,9 @@
-package dunbar.mike.musicbrowser.ui
+package dunbar.mike.musicbrowser.ui.settings
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
-
 @Composable
-fun VideoLibraryScreen() {
-    Text("Video Library")
+fun SettingsScreen() {
+    Text("Settings Screen")
 }

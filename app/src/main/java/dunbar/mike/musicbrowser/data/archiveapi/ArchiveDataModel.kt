@@ -1,10 +1,10 @@
-package dunbar.mike.musicbrowser.api
+package dunbar.mike.musicbrowser.data.archiveapi
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import dunbar.mike.musicbrowser.model.Album
-import dunbar.mike.musicbrowser.model.Band
-import dunbar.mike.musicbrowser.model.Song
+import dunbar.mike.musicbrowser.data.Album
+import dunbar.mike.musicbrowser.data.Band
+import dunbar.mike.musicbrowser.data.Song
 import dunbar.mike.musicbrowser.util.localDateFromIsoInstant
 
 sealed interface SearchResponse

@@ -1,6 +1,15 @@
-package dunbar.mike.musicbrowser.model
+package dunbar.mike.musicbrowser.data
 
 import java.time.LocalDate
+
+
+class FakeMusicRemoteDataSource: MusicRemoteDataSource {
+    // todo delay for a bit, to simulate network delay
+    override suspend fun getBands(): List<Band>  = createTestBandList()
+
+    override suspend fun getAlbums(bandName: String) = createTestAlbumList(bandName)
+
+}
 
 fun createTestBandList(): List<Band> {
     val bandList = mutableListOf<Band>()

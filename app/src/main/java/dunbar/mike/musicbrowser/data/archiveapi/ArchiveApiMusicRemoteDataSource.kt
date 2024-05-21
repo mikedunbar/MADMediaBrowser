@@ -1,13 +1,13 @@
-package dunbar.mike.musicbrowser.api
+package dunbar.mike.musicbrowser.data.archiveapi
 
-import dunbar.mike.musicbrowser.model.Album
-import dunbar.mike.musicbrowser.model.Band
-import dunbar.mike.musicbrowser.model.MusicRemoteDataSource
+import dunbar.mike.musicbrowser.data.Album
+import dunbar.mike.musicbrowser.data.Band
+import dunbar.mike.musicbrowser.data.MusicRemoteDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class ArchiveMusicApiAdapter @Inject constructor(
+class ArchiveApiMusicRemoteDataSource @Inject constructor(
     private val archiveApi: ArchiveApi
 ) : MusicRemoteDataSource {
 

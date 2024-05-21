@@ -3,8 +3,8 @@ package dunbar.mike.musicbrowser.ui.music
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dunbar.mike.musicbrowser.model.Album
-import dunbar.mike.musicbrowser.model.MusicRepo
+import dunbar.mike.musicbrowser.data.Album
+import dunbar.mike.musicbrowser.data.MusicRepo
 import dunbar.mike.musicbrowser.util.AndroidLogger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AlbumListViewModel @Inject constructor(private val musicRepo: MusicRepo) : ViewModel() {
-
+    // Add more UI state and have a loading state as default
     private val _albumList = MutableStateFlow<List<Album>>(emptyList())
     val albumList: StateFlow<List<Album>> = _albumList
 

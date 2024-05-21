@@ -9,6 +9,7 @@ import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
@@ -19,51 +20,62 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import dunbar.mike.musicbrowser.R
 import dunbar.mike.musicbrowser.ui.theme.MediaBrowserTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun MediaBrowserApp() {
     MediaBrowserTheme {
+        val navController = rememberNavController()
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+        val coroutineScope = rememberCoroutineScope()
 
-        // TODO get the nav drawer working: settings, about this app, etc.
+        val onNavDrawerItemClick = { item: NavDrawerItem ->
+            coroutineScope.launch { drawerState.close() }
+            navController.navigate(item.route)
+        }
+
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
-                // drawer items go here
+                NavDrawerBody(items = navDrawerItemList, onItemClick = onNavDrawerItemClick)
             }
         ) {
-            // screen content goes here
-        }
+            Scaffold(
+                topBar = {
+                    MediaBrowserTopAppBar(
+                        onNavigationIconClick = {
+                            coroutineScope.launch { drawerState.open() }
+                        })
+                },
+                bottomBar = {
+                    //TODO fold these bottom bar items into the dataclass used for nav drawer
+                    val onClickHome = {
+                        navController.navigate(Screen.Home.name)
+                    }
 
-        val navController = rememberNavController()
+                    val onClickMusic = {
+                        navController.navigate(Screen.MusicLibrary.name)
+                    }
 
-        val onClickHome = {
-            navController.navigate(Screen.Home.name)
-        }
-
-        val onClickMusic = {
-            navController.navigate(Screen.MusicLibrary.name)
-        }
-
-        val onClickVideo = {
-            navController.navigate(Screen.VideoLibrary.name)
-        }
-
-        Scaffold(
-            topBar = { MediaBrowserTopAppBar() },
-            bottomBar = { MediaBrowserBottomNavBar(onClickHome, onClickMusic, onClickVideo) }
-        ) { paddingValues ->
-            Surface {
-                MusicBrowserNavHost(
-                    navController = navController,
-                    modifier = Modifier.padding(paddingValues),
-                )
+                    val onClickVideo = {
+                        navController.navigate(Screen.VideoLibrary.name)
+                    }
+                    MediaBrowserBottomNavBar(onClickHome, onClickMusic, onClickVideo)
+                }
+            ) { paddingValues ->
+                Surface {
+                    MusicBrowserNavHost(
+                        navController = navController,
+                        modifier = Modifier.padding(paddingValues),
+                    )
+                }
             }
         }
     }
@@ -71,20 +83,26 @@ fun MediaBrowserApp() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MediaBrowserTopAppBar(modifier: Modifier = Modifier) {
+fun MediaBrowserTopAppBar(
+    onNavigationIconClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     TopAppBar(
         navigationIcon = {
-            Icon(
-                imageVector = Icons.Rounded.Menu,
-                contentDescription = "Menu",
-                modifier = Modifier.padding(horizontal = 12.dp)
-            )
+            IconButton(onClick = onNavigationIconClick) {
+                Icon(
+                    imageVector = Icons.Rounded.Menu,
+                    contentDescription = "Menu",
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+            }
+
         },
         title = {
             // TODO Make this dynamic, based on current screen
             Text(text = stringResource(R.string.app_name))
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }
 

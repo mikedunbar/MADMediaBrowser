@@ -23,9 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dunbar.mike.musicbrowser.R
-import dunbar.mike.musicbrowser.model.Album
-import dunbar.mike.musicbrowser.model.createTestAlbumInfo
-import dunbar.mike.musicbrowser.model.createTestAlbumList
+import dunbar.mike.musicbrowser.data.Album
+import dunbar.mike.musicbrowser.data.createTestAlbumInfo
+import dunbar.mike.musicbrowser.data.createTestAlbumList
 import dunbar.mike.musicbrowser.ui.theme.MediaBrowserTheme
 
 @Composable
@@ -93,7 +93,6 @@ fun AlbumCardList(albumList: List<Album>) {
             AlbumCard(albumList[it])
         }
     }
-
 }
 
 @Preview

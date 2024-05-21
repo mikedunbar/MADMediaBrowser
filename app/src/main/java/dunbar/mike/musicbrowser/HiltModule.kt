@@ -4,11 +4,12 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import dunbar.mike.musicbrowser.api.ArchiveApi
-import dunbar.mike.musicbrowser.api.ArchiveMusicApiAdapter
-import dunbar.mike.musicbrowser.model.FakeMusicRepo
-import dunbar.mike.musicbrowser.model.MusicRepo
-import dunbar.mike.musicbrowser.model.RealMusicRepo
+import dunbar.mike.musicbrowser.data.FakeMusicRemoteDataSource
+import dunbar.mike.musicbrowser.data.MusicRemoteDataSource
+import dunbar.mike.musicbrowser.data.MusicRepo
+import dunbar.mike.musicbrowser.data.archiveapi.ArchiveApi
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -20,10 +21,18 @@ import java.util.concurrent.TimeUnit
 object HiltModule {
 
     @Provides
-    fun provideMusicRepo(archiveApi: ArchiveApi): MusicRepo {
-        val forReal = false
-        return if (forReal) RealMusicRepo(ArchiveMusicApiAdapter(archiveApi)) else FakeMusicRepo()
+    fun provideMusicRepo(
+        remoteDataSource: MusicRemoteDataSource,
+        ioDispatcher: CoroutineDispatcher,
+    ): MusicRepo {
+        return MusicRepo(remoteDataSource, ioDispatcher)
     }
+
+    @Provides
+    fun provideMusicRemoteDataSource(): MusicRemoteDataSource = FakeMusicRemoteDataSource()
+
+    @Provides
+    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
     fun provideArchiveApi(): ArchiveApi {

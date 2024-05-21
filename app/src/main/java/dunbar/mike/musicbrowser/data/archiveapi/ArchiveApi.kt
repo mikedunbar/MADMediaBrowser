@@ -1,4 +1,4 @@
-package dunbar.mike.musicbrowser.api
+package dunbar.mike.musicbrowser.data.archiveapi
 
 import retrofit2.http.GET
 import retrofit2.http.Path
