@@ -27,8 +27,12 @@ too many prospective employers take a look and throw my application in the dust 
 - Dependency Injection with Jetpack Hilt
 - REST API calls with OkHttp, RetroFit, and Moshi
 
+## Inflight
+- slightly better UI on stub pages
+
 ## On Deck
 Too much to list, but I plan to make "at least" daily updates in building out this showcase, including
+- clean up nav code a bit
 - Infinite scrollable list
 - Reconnect real API
 - Play a song
