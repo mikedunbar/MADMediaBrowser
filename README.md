@@ -29,8 +29,8 @@ too many prospective employers take a look and throw my application in the dust 
 
 ## On Deck
 Too much to list, but I plan to make "at least" daily updates in building out this showcase, including
-- App Widget with Glance
 - Infinite scrollable list
+- Reconnect real API
 - Play a song
 - Play a video
 - Ship as app bundle
@@ -39,4 +39,5 @@ Too much to list, but I plan to make "at least" daily updates in building out th
 - UI tests with Espresso
 - Business logic tests with JUnit
 - Android integration with Instrumentation tests
+- App Widget with Glance
 - WearOS version
