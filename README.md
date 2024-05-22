@@ -6,14 +6,13 @@ This project aims to keep me busy and my skills fresh until I land my next job. 
 begin with, but I look forward to improving that as well.
 
 I welcome any and all feedback, and I'm intentionally publishing this with some glaring warts, to serve as motivation to clean them up before
-too many prospective employers take a look and need to hold there nose. :sunglasses: 
+too many prospective employers take a look and throw my application in the dust bin. :sunglasses: 
 
-# What's Implemented So Far
+# Features and Tech Stack
 - Multiple product versions: Free vs Paid
 - Custom splash screen with branding message 
 - Material 3 App Theming
 - Material 3 App Scaffolding, with top and bottom bars, plus navigation drawer
-- Kotlin
 - Coroutines
 - Jetpack Compose UI
 - Jetpack Navigation
@@ -21,5 +20,5 @@ too many prospective employers take a look and need to hold there nose. :sunglas
 - Jetpack ViewModel 
 - Layered Architecture
 - Unidirectional Data Flow
-- Dependency Injection with Hilt
+- Dependency Injection with Jetpack Hilt
 - REST API calls with OkHttp, RetroFit, and Moshi
