@@ -27,4 +27,4 @@ too many prospective employers take a look and throw my application in the dust 
 - REST API calls with OkHttp, RetroFit, and Moshi
 
 ## What Coming
-Too much to list, but I plan to make "at least" daily updates in building out this showcase.
+Too much to list, but I plan to make "at least" daily updates in building out this showcase so stay tuned.
