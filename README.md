@@ -11,7 +11,7 @@ begin with, but I look forward to improving that as well.
 I welcome any and all feedback, and I'm intentionally publishing this with some glaring warts, to serve as motivation to clean them up before
 too many prospective employers take a look and throw my application in the dust bin. :sunglasses: 
 
-## Features and Tech Stack
+## What's implemented so far
 - Multiple product versions: Free vs Paid
 - Custom splash screen with branding message 
 - Material 3 App Theming
@@ -25,3 +25,6 @@ too many prospective employers take a look and throw my application in the dust 
 - Unidirectional Data Flow
 - Dependency Injection with Jetpack Hilt
 - REST API calls with OkHttp, RetroFit, and Moshi
+
+## What Coming
+Too much to list, but I plan to make "at least" daily updates in building out this showcase.
