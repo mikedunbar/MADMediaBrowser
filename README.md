@@ -1,11 +1,12 @@
 # Purpose
-Showcase modern Android development skills with a sample app
+Showcase modern Android development skills with a sample app.
 
-I was laid off as part of a 10% staff reduction on March 1st. After a 2 month sabbatical I'm rested and looking for my next Android adventure.
+I was laid off as part of a 10% staff reduction in March. After a 2 month sabbatical I'm rested and looking for my next Android adventure.
 This project aims to keep me busy and my skills fresh until I land my next job. UI/UX polish is taking a backseat to engineering best practices to 
 begin with, but I look forward to improving that as well.
 
-I welcome any and all feedback.
+I welcome any and all feedback, and I'm intentionally publishing this with some initial warts, to server as motivation to clean them up before
+too many prospective employers take a look and need to hold there nose. :sunglasses:
 
 # What's Implemented So Far
 - Multiple product versions: Free vs Paid Versions
