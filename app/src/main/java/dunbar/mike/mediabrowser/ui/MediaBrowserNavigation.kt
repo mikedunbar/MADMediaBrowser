@@ -113,7 +113,7 @@ fun MediaBrowserNavHost(
         modifier = modifier,
     ) {
         composable(Screen.Home.name) {
-            PlaceholderScreen(stringResource(id = R.string.home_screen))
+            HomeScreen()
         }
         composable(Screen.MusicLibrary.name) {
             MusicLibraryScreen(onBandListClick = { navController.navigate(Screen.BandList.name) })

@@ -7,6 +7,10 @@
 
     <string name="home">Home</string>
     <string name="home_screen">Home Screen</string>
+    <string name="home_screen_disclaimer">
+        This is a work in progress sample app. For now, only part of the Music Library is
+        implemented. Click the icon in the bottom bar to check it out.
+    </string>
     <string name="placeholder_search">Search</string>
     <string name="lorem_ipsum">Lorem Ipsum</string>
     <string name="trending_videos">Trending Videos</string>

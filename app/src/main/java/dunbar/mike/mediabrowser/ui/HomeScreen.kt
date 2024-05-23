@@ -42,6 +42,32 @@ import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
 
 
 @Composable
+fun HomeScreen(modifier: Modifier = Modifier) {
+    PlaceholderScreen(screenName = stringResource(id = R.string.home_screen)) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier
+                .padding(20.dp)
+        ) {
+            Text(text = stringResource(id = R.string.home_screen_disclaimer))
+        }
+
+    }
+}
+
+@Composable
+@Preview
+fun HomeScreenPreview() {
+    MediaBrowserTheme {
+        Surface {
+            HomeScreen()
+        }
+    }
+}
+
+
+@Composable
 fun PlaceholderScreen(
     screenName: String,
     modifier: Modifier = Modifier,
