@@ -1,3 +1,8 @@
+![Music Library Screen](docs/images/Music%20Library%20Screen.png)
+![Band List Screen](docs/images/Band%20List%20Screen.png)
+
+
+
 # Modern Android Media Browser
 A contrived POC samples app
 
