@@ -2,6 +2,18 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="BandCardListPreview">
+        <State />
+      </entry>
+      <entry key="BandCardListPreviewDark">
+        <State />
+      </entry>
+      <entry key="BandListScreenPreview">
+        <State />
+      </entry>
+      <entry key="BandListScreenPreviewDark">
+        <State />
+      </entry>
       <entry key="app">
         <State>
           <targetSelectedWithDropDown>

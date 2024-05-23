@@ -4,5 +4,15 @@
     <string name="menu">menu</string>
     <string name="music_library">Music Library</string>
     <string name="video_library">Video Library</string>
+
     <string name="home">Home</string>
+    <string name="home_screen">Home Screen</string>
+    <string name="placeholder_search">Search</string>
+    <string name="lorem_ipsum">Lorem Ipsum</string>
+    <string name="trending_videos">Trending Videos</string>
+    <string name="trending_music">Trending Music</string>
+    <string name="songs_screen">Songs Screen</string>
+    <string name="settings_screen">Settings Screen</string>
+    <string name="about_screen">About Screen</string>
+    <string name="music_library_screen">Music Library Screen</string>
 </resources>

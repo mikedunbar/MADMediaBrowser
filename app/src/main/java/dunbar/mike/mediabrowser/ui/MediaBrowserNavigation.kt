@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,14 +29,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import dunbar.mike.mediabrowser.R
 import dunbar.mike.mediabrowser.ui.music.AlbumListScreen
 import dunbar.mike.mediabrowser.ui.music.AlbumListViewModel
-import dunbar.mike.mediabrowser.ui.music.BandListScreen
+import dunbar.mike.mediabrowser.ui.music.BandListScreenRoot
 import dunbar.mike.mediabrowser.ui.music.MusicLibraryScreen
-import dunbar.mike.mediabrowser.ui.music.SongListScreen
-import dunbar.mike.mediabrowser.ui.settings.AboutScreen
-import dunbar.mike.mediabrowser.ui.settings.SettingsScreen
-import dunbar.mike.mediabrowser.ui.video.VideoLibraryScreen
 
 @Composable
 // TODO Get this showing up, using new M3 style
@@ -115,13 +113,13 @@ fun MediaBrowserNavHost(
         modifier = modifier,
     ) {
         composable(Screen.Home.name) {
-            HomeScreen()
+            PlaceholderScreen(stringResource(id = R.string.home_screen))
         }
         composable(Screen.MusicLibrary.name) {
             MusicLibraryScreen(onBandListClick = { navController.navigate(Screen.BandList.name) })
         }
         composable(Screen.BandList.name) {
-            BandListScreen(
+            BandListScreenRoot(
                 logger,
                 onClickBand = { bandName ->
                     logger.d("MediaBrowserNavHost", "Band was clicked: $bandName")
@@ -136,16 +134,16 @@ fun MediaBrowserNavHost(
             AlbumListScreen(albumListViewModel)
         }
         composable(Screen.SongList.name) {
-            SongListScreen()
+            PlaceholderScreen(screenName = stringResource(id = R.string.songs_screen))
         }
         composable(Screen.VideoLibrary.name) {
-            VideoLibraryScreen()
+            PlaceholderScreen(screenName = stringResource(id = R.string.video_library))
         }
         composable(Screen.Settings.name) {
-            SettingsScreen()
+            PlaceholderScreen(screenName = stringResource(id = R.string.settings_screen))
         }
         composable(Screen.About.name) {
-            AboutScreen()
+            PlaceholderScreen(screenName = stringResource(id = R.string.about_screen))
         }
     }
 }

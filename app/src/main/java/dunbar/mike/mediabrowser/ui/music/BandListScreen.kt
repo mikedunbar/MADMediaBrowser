@@ -29,19 +29,57 @@ import dunbar.mike.mediabrowser.data.Band
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
 import dunbar.mike.mediabrowser.util.Logger
 
+@Composable
+fun BandListScreenRoot(
+    logger: Logger,
+    viewModel: BandListViewModel = hiltViewModel<BandListViewModel>(),
+    onClickBand: (String) -> Unit = {}
+) {
+    logger.d("BandListScreen", "Loading Band List Screen")
+    BandListScreen(state = viewModel.bandList.collectAsState().value, onClickBand)
+}
 
 @Composable
 fun BandListScreen(
-    logger: Logger,
-    viewModel: BandListViewModel = hiltViewModel<BandListViewModel>(),
+    state: List<Band>,
     onClickBand: (String) -> Unit = {},
 ) {
-    logger.d("BandsScreenBody", "Loading Bands Screen")
-    val state = viewModel.bandList.collectAsState()
     BandCardList(
-        bandList = state.value,
+        bandList = state,
         onClickBand = onClickBand,
     )
+}
+
+@Preview
+@Composable
+fun BandListScreenPreview() {
+    MediaBrowserTheme {
+        Surface {
+            BandListScreen(
+                state = listOf(
+                    Band("Widespread Panic", "Rock"),
+                    Band("Metallica", "Heavy Metal"),
+                    Band("Outkast", "Hip Hop")
+                )
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun BandListScreenPreviewDark() {
+    MediaBrowserTheme(darkTheme = true) {
+        Surface {
+            BandListScreen(
+                state = listOf(
+                    Band("Widespread Panic", "Rock"),
+                    Band("Metallica", "Heavy Metal"),
+                    Band("Outkast", "Hip Hop")
+                )
+            )
+        }
+    }
 }
 
 @Composable
@@ -61,15 +99,34 @@ fun BandCardList(
 @Preview
 @Composable
 fun BandCardListPreview() {
-    MediaBrowserTheme {
-        BandCardList(
-            bandList = listOf(
-                Band("Widespread Panic", "Rock"),
-                Band("Metallica", "Heavy Metal"),
-                Band("Outkast", "Hip Hop")
-            ),
-            onClickBand = {},
-        )
+    MediaBrowserTheme(darkTheme = false) {
+        Surface {
+            BandCardList(
+                bandList = listOf(
+                    Band("Widespread Panic", "Rock"),
+                    Band("Metallica", "Heavy Metal"),
+                    Band("Outkast", "Hip Hop")
+                ),
+                onClickBand = {},
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun BandCardListPreviewDark() {
+    MediaBrowserTheme(darkTheme = true) {
+        Surface {
+            BandCardList(
+                bandList = listOf(
+                    Band("Widespread Panic", "Rock"),
+                    Band("Metallica", "Heavy Metal"),
+                    Band("Outkast", "Hip Hop")
+                ),
+                onClickBand = {},
+            )
+        }
     }
 }
 
@@ -103,17 +160,15 @@ fun BandCard(
             Text(band.genre)
         }
     }
-
 }
 
 @Preview
 @Composable
 fun BandCardPreview() {
-    MediaBrowserTheme(darkTheme = false) {
+    MediaBrowserTheme {
         Surface {
             BandCard(Band("Outkast", "Hip Hop")) {}
         }
-
     }
 }
 
@@ -124,6 +179,5 @@ fun BandCardPreviewDark() {
         Surface {
             BandCard(Band("Outkast", "Hip Hop")) {}
         }
-
     }
 }
