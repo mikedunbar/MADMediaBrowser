@@ -49,21 +49,21 @@ fun PlaceholderScreen(
 
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = modifier.size(20.dp))
         Text(
             text = screenName,
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(16.dp)
+            modifier = modifier.padding(16.dp)
         )
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = modifier.size(20.dp))
         Text(
             text = "Content coming soon!",
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(16.dp)
+            modifier = modifier.padding(16.dp)
         )
         content()
     }
