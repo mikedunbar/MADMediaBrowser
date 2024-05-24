@@ -36,6 +36,9 @@ too many prospective employers take a look and throw my application in the dust 
 ## On Deck
 Too much to list, but I plan to make "at least" daily updates in building out this showcase, including
 - clean up nav code a bit
+- cool splash effect
+- cool animations
+- timber for logging
 - Infinite scrollable list
 - Reconnect real API
 - Play a song
