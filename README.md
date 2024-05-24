@@ -16,7 +16,7 @@ too many prospective employers take a look and throw my application in the dust 
 
 ## What's implemented so far
 - Multiple product versions: Free vs Paid
-- Custom splash screen with branding message 
+- Custom splash screen with branding message
 - Material 3 App Theming
 - Material 3 App Scaffolding, with top and bottom bars, plus navigation drawer
 - Coroutines
@@ -30,7 +30,7 @@ too many prospective employers take a look and throw my application in the dust 
 - Dependency Injection with Jetpack Hilt
 - REST API calls with OkHttp, RetroFit, and Moshi
 
-## Inflight
+## In flight
 - slightly better UI on stub pages
 
 ## On Deck
