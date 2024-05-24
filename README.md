@@ -11,7 +11,7 @@ I was laid off as part of a 10% staff reduction in March. After a 2 month sabbat
 This project aims to keep me busy and my skills fresh until I land my next job. UI/UX polish is taking a backseat to engineering best practices to 
 begin with, but I look forward to improving that as well.
 
-I welcome any and all feedback, and I'm intentionally publishing this with some glaring warts, to serve as motivation to clean them up before
+I welcome any and all feedback! I'm intentionally publishing this with some glaring warts, to serve as motivation to clean them up, before
 too many prospective employers take a look and throw my application in the dust bin. :sunglasses: 
 
 ## What's implemented so far
