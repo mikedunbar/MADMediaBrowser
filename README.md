@@ -36,6 +36,8 @@ too many prospective employers take a look and throw my application in the dust 
 
 ## On Deck
 Too much to list, but I plan to make "at least" daily updates in building out this showcase, including
+- Optimize layout in landscape mode
+- Data survives configuration change (settings input field, e.g.)
 - Reconnect real API
 - Infinite scrollable list
 - Play a song
