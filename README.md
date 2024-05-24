@@ -31,19 +31,19 @@ too many prospective employers take a look and throw my application in the dust 
 - REST API calls with OkHttp, RetroFit, and Moshi
 
 ## In flight
-- slightly better UI on stub pages
+- clean up nav code a bit
+- indicate selected screen on nav icons, with differnt background or something
 
 ## On Deck
 Too much to list, but I plan to make "at least" daily updates in building out this showcase, including
-- clean up nav code a bit
-- cool splash effect
-- cool animations
-- timber for logging
-- Infinite scrollable list
 - Reconnect real API
+- Infinite scrollable list
 - Play a song
 - Play a video
 - Ship as app bundle
+- cool splash effect
+- cool animations
+- timber for logging
 - Baseline profiles
 - Biometric authentication
 - UI tests with Espresso
