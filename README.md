@@ -9,10 +9,10 @@ Showcase my modern Android development skills with a POC samples app, to aid in 
 
 I was laid off as part of a 10% staff reduction in March. After a 2 month sabbatical I'm now rested and looking for my next Android adventure.
 This project aims to keep me busy and my skills fresh until I land my next job. UI/UX polish is taking a backseat to engineering best practices to 
-begin with, but I look forward to improving that as well.
+begin with, but I look forward to improving that as well. It will be a perpetual 
 
 I welcome any and all feedback! I'm intentionally publishing this with some glaring warts, to serve as motivation to clean them up, before
-too many prospective employers take a look and throw my application in the dust bin. :sunglasses: 
+too many prospective employers take a look. 
 
 ## What's implemented so far
 - Multiple product versions: Free vs Paid
