@@ -40,6 +40,9 @@ Too much to list, but I plan to make "at least" daily updates in building out th
 - Data survives configuration change (settings input field, e.g.)
 - Reconnect real API
 - Infinite scrollable list
+- version catalogue for dependencies
+- WorkManager (for syncing)
+- Offline first
 - Play a song
 - Play a video
 - Ship as app bundle
