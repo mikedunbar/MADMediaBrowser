@@ -1,4 +1,4 @@
-![Band List Screen](docs/images/Band%20List%20Screen.png)
+![Band List Screen](docs/images/BandListScreenNew.png)
 
 
 # Modern Android Media Browser
