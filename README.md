@@ -33,12 +33,12 @@ too many prospective employers take a look.
 ## In flight
 - clean up nav code a bit
 - indicate selected screen on nav icons, with differnt background or something
+- Reconnect real API
 
 ## On Deck
 Too much to list, but I plan to make "at least" daily updates in building out this showcase, including
 - Optimize layout in landscape mode
 - Data survives configuration change (settings input field, e.g.)
-- Reconnect real API
 - Infinite scrollable list
 - version catalogue for dependencies
 - WorkManager (for syncing)
