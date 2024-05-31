@@ -3,12 +3,25 @@ plugins {
     id("com.google.devtools.ksp")
     id("kotlin-android")
     id("com.google.dagger.hilt.android")
+    id("de.mannodermaus.android-junit5") version "1.10.0.0" // TODO try to move to top-level build file
 }
 
 val retrofitVersion by extra("2.9.0")
 val moshiVersion by extra("1.13.0")
 val coroutinesVersion by extra("1.5.2")
 val ktxVersion by extra("2.7.0")
+
+/**
+ * This get picked up and used for
+ *      android/compileOptions/sourceCompatibility,
+ *      android/compileOptions/targetCompatibility,
+ *      android/kotlinOptions/jvmTarget
+ */
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
 
 android {
     namespace = "dunbar.mike.mediabrowser"
@@ -39,11 +52,6 @@ android {
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
     buildFeatures {
         compose = true
@@ -121,9 +129,14 @@ dependencies {
     implementation("com.squareup.moshi:moshi:$moshiVersion")
     ksp("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
-    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1")
+
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation(composeBom)
 

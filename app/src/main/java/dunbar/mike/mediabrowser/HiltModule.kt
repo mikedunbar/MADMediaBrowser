@@ -8,6 +8,8 @@ import dunbar.mike.mediabrowser.data.FakeMusicRemoteDataSource
 import dunbar.mike.mediabrowser.data.MusicRemoteDataSource
 import dunbar.mike.mediabrowser.data.MusicRepo
 import dunbar.mike.mediabrowser.data.archiveapi.ArchiveApi
+import dunbar.mike.mediabrowser.util.AndroidLogger
+import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
@@ -29,7 +31,13 @@ object HiltModule {
     }
 
     @Provides
-    fun provideMusicRemoteDataSource(): MusicRemoteDataSource = FakeMusicRemoteDataSource()
+    fun provideMusicRemoteDataSource(api: ArchiveApi, logger: Logger): MusicRemoteDataSource {
+        return FakeMusicRemoteDataSource()
+//        return ArchiveApiMusicRemoteDataSource(api, logger)
+    }
+
+    @Provides
+    fun provideLogger(): Logger = AndroidLogger
 
     @Provides
     fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO

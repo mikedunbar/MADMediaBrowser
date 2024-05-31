@@ -3,9 +3,9 @@ package dunbar.mike.mediabrowser.data
 import java.time.LocalDate
 
 
-class FakeMusicRemoteDataSource: MusicRemoteDataSource {
+class FakeMusicRemoteDataSource : MusicRemoteDataSource {
     // todo delay for a bit, to simulate network delay
-    override suspend fun getBands(): List<Band>  = createTestBandList()
+    override suspend fun getBands(): List<Band> = createTestBandList()
 
     override suspend fun getAlbums(bandName: String) = createTestAlbumList(bandName)
 
@@ -33,20 +33,20 @@ fun createTestBandList(): List<Band> {
 
 fun createTestBandInfo(bandName: String): Band {
     return when {
-        bandName.startsWith("Widespread Panic") -> Band(bandName, "Rock")
-        bandName.startsWith("Drive-By Truckers") -> Band(bandName, "Rock")
-        bandName.startsWith("Metallica") -> Band(bandName, "Heavy Metal")
-        bandName.startsWith("Iron Maiden") -> Band(bandName, "Heavy Metal")
-        bandName.startsWith("Outkast") -> Band(bandName, "Hip Hop")
-        bandName.startsWith("MF Doom") -> Band(bandName, "Hip Hop")
-        bandName.startsWith("Grateful Dead") -> Band(bandName, "Psychedelic Rock")
-        bandName.startsWith("Phish") -> Band(bandName, "Psychedelic Rock")
-        else -> Band("Unknown Band", "Unknown Genre")
+        bandName.startsWith("Widespread Panic") -> Band(bandName, "Rock", id = bandName)
+        bandName.startsWith("Drive-By Truckers") -> Band(bandName, "Rock", id = bandName)
+        bandName.startsWith("Metallica") -> Band(bandName, "Heavy Metal", id = bandName)
+        bandName.startsWith("Iron Maiden") -> Band(bandName, "Heavy Metal", id = bandName)
+        bandName.startsWith("Outkast") -> Band(bandName, "Hip Hop", id = bandName)
+        bandName.startsWith("MF Doom") -> Band(bandName, "Hip Hop", id = bandName)
+        bandName.startsWith("Grateful Dead") -> Band(bandName, "Psychedelic Rock", id = bandName)
+        bandName.startsWith("Phish") -> Band(bandName, "Psychedelic Rock", id = bandName)
+        else -> Band("Unknown Band", "Unknown Genre", id = bandName)
     }
 }
 
 fun createTestAlbumInfo(
-    band: Band = Band("Grateful Dead", "Psychedelic Rock"),
+    band: Band = Band("Grateful Dead", "Psychedelic Rock", id = "SomeId"),
     name: String = band.name,
     releaseDate: LocalDate = LocalDate.now(),
     songList: List<Song> = listOf(

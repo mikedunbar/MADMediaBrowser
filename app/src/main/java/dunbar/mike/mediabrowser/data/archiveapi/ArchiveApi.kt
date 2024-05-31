@@ -1,5 +1,6 @@
 package dunbar.mike.mediabrowser.data.archiveapi
 
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -31,9 +32,18 @@ interface ArchiveApi {
                 "&fl[]=identifier&fl[]=downloads&fl[]=creator" +
                 "&q=collection:(GratefulDead)"
     )
-    suspend fun searchDeadShows(): SuccessSearchResponse
+    suspend fun searchDeadShows(): ShowSearchSuccessResponse
+
+    @GET(
+        "advancedsearch.php?output=json&rows=10" +
+                "&fl[]=creator,identifier,publicdate" +
+                "&q=collection:etree AND mediatype:collection"
+    )
+    suspend fun searchBands(): Response<BandSearchSuccessResponse>
 
     @GET("metadata/{archiveId}")
     suspend fun getMetaData(@Path("archiveId") archiveId: String): SuccessfulMetadataResponse
+
+    class Exception(message: String, cause: Throwable? = null) : kotlin.Exception(message, cause)
 
 }

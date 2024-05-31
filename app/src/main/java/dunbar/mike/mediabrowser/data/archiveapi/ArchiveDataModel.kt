@@ -5,25 +5,50 @@ import com.squareup.moshi.JsonClass
 import dunbar.mike.mediabrowser.data.Album
 import dunbar.mike.mediabrowser.data.Band
 import dunbar.mike.mediabrowser.data.Song
-import dunbar.mike.mediabrowser.util.localDateFromIsoInstant
+import dunbar.mike.mediabrowser.util.localDateTimeFromIsoInstant
 
 sealed interface SearchResponse
 
+//region Search  Bands
 @JsonClass(generateAdapter = true)
-data class SuccessSearchResponse(
+data class BandSearchSuccessResponse(
     @Json(name = "response")
-    val searchResponsePayload: SearchResponsePayload
+    val bandSearchResponsePayload: BandSearchResponsePayload
 ) : SearchResponse
 
 @JsonClass(generateAdapter = true)
-data class SearchResponsePayload(
+data class BandSearchResponsePayload(
     val numFound: Int,
     val start: Int,
-    val docs: List<SearchResponseDoc>
+    val docs: List<BandSearchResponseDoc>
 )
 
 @JsonClass(generateAdapter = true)
-data class SearchResponseDoc(
+data class BandSearchResponseDoc(
+    val creator: String,
+    val identifier: String,
+    val publicdate: String,
+)
+
+
+//endregion
+
+//region Search Shows
+@JsonClass(generateAdapter = true)
+data class ShowSearchSuccessResponse(
+    @Json(name = "response")
+    val showSearchResponsePayload: ShowSearchResponsePayload
+) : SearchResponse
+
+@JsonClass(generateAdapter = true)
+data class ShowSearchResponsePayload(
+    val numFound: Int,
+    val start: Int,
+    val docs: List<ShowSearchResponseDoc>
+)
+
+@JsonClass(generateAdapter = true)
+data class ShowSearchResponseDoc(
     val creator: String,
     val title: String,
     val date: String,
@@ -33,7 +58,7 @@ data class SearchResponseDoc(
 )
 
 data class Show(
-    val responseDoc: SearchResponseDoc,
+    val responseDoc: ShowSearchResponseDoc,
     val metadataResponse: MetadataResponse,
 ) {
     fun asAlbum(): Album {
@@ -48,6 +73,7 @@ data class Show(
                     )
                 }
             }
+
             is ErrorMetadataResponse -> {
                 listOf()
             }
@@ -55,22 +81,27 @@ data class Show(
 
         return Album(
             Band(
-                responseDoc.creator,
-                "Rock",
+                name = responseDoc.creator,
+                genre = "Rock",
+                id = responseDoc.identifier,
             ),
             responseDoc.title,
-            localDateFromIsoInstant(responseDoc.date),
+            localDateTimeFromIsoInstant(responseDoc.date).toLocalDate(),
             songList,
         )
     }
 }
+
+//endregion
+
+//region Metadata
 
 sealed interface MetadataResponse
 
 class ErrorMetadataResponse(val error: Throwable) : MetadataResponse
 
 @JsonClass(generateAdapter = true)
-class SuccessfulMetadataResponse(
+data class SuccessfulMetadataResponse(
     val dir: String,
     val files: List<MetadataFile>
 ) : MetadataResponse

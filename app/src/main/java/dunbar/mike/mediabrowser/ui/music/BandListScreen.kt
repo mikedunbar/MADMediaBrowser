@@ -57,9 +57,9 @@ fun BandListScreenPreview() {
         Surface {
             BandListScreen(
                 state = listOf(
-                    Band("Widespread Panic", "Rock"),
-                    Band("Metallica", "Heavy Metal"),
-                    Band("Outkast", "Hip Hop")
+                    Band("Widespread Panic", "Rock", "Widespread Panic"),
+                    Band("Metallica", "Heavy Metal", "Metallica"),
+                    Band("Outkast", "Hip Hop", "Outkast")
                 )
             )
         }
@@ -73,9 +73,9 @@ fun BandListScreenPreviewDark() {
         Surface {
             BandListScreen(
                 state = listOf(
-                    Band("Widespread Panic", "Rock"),
-                    Band("Metallica", "Heavy Metal"),
-                    Band("Outkast", "Hip Hop")
+                    Band("Widespread Panic", "Rock", "Widespread Panic"),
+                    Band("Metallica", "Heavy Metal", "Metallica"),
+                    Band("Outkast", "Hip Hop", "Outkast")
                 )
             )
         }
@@ -103,9 +103,9 @@ fun BandCardListPreview() {
         Surface {
             BandCardList(
                 bandList = listOf(
-                    Band("Widespread Panic", "Rock"),
-                    Band("Metallica", "Heavy Metal"),
-                    Band("Outkast", "Hip Hop")
+                    Band("Widespread Panic", "Rock", "Widespread Panic"),
+                    Band("Metallica", "Heavy Metal", "Metallica"),
+                    Band("Outkast", "Hip Hop", "Outkast")
                 ),
                 onClickBand = {},
             )
@@ -120,9 +120,9 @@ fun BandCardListPreviewDark() {
         Surface {
             BandCardList(
                 bandList = listOf(
-                    Band("Widespread Panic", "Rock"),
-                    Band("Metallica", "Heavy Metal"),
-                    Band("Outkast", "Hip Hop")
+                    Band("Widespread Panic", "Rock", "Widespread Panic"),
+                    Band("Metallica", "Heavy Metal", "Metallica"),
+                    Band("Outkast", "Hip Hop", "Outkast")
                 ),
                 onClickBand = {},
             )
@@ -167,7 +167,7 @@ fun BandCard(
 fun BandCardPreview() {
     MediaBrowserTheme {
         Surface {
-            BandCard(Band("Outkast", "Hip Hop")) {}
+            BandCard(Band("Outkast", "Hip Hop", "Outkast")) {}
         }
     }
 }
@@ -177,7 +177,7 @@ fun BandCardPreview() {
 fun BandCardPreviewDark() {
     MediaBrowserTheme(darkTheme = true) {
         Surface {
-            BandCard(Band("Outkast", "Hip Hop")) {}
+            BandCard(Band("Outkast", "Hip Hop", "Outkast")) {}
         }
     }
 }
