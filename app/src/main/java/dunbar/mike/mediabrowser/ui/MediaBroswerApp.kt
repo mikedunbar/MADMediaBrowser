@@ -5,6 +5,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.VideoLibrary
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.LibraryMusic
+import androidx.compose.material.icons.outlined.VideoLibrary
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +27,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dunbar.mike.mediabrowser.R
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
@@ -36,7 +41,7 @@ fun MediaBrowserApp() {
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val coroutineScope = rememberCoroutineScope()
 
-        val onNavDrawerItemClick = { item: NavDrawerItem ->
+        val onNavDrawerItemClick = { item: NavigationItem ->
             coroutineScope.launch { drawerState.close() }
             navController.navigate(item.route)
         }
@@ -44,7 +49,11 @@ fun MediaBrowserApp() {
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
-                NavDrawerBody(items = navDrawerItemList, onItemClick = onNavDrawerItemClick)
+                NavDrawerBody(
+                    currentNavDestination = navController.currentBackStackEntryAsState().value?.destination,
+                    items = navigationDrawerItemLists,
+                    onItemClick = onNavDrawerItemClick
+                )
             }
         ) {
             Scaffold(
@@ -55,19 +64,29 @@ fun MediaBrowserApp() {
                         })
                 },
                 bottomBar = {
-                    //TODO fold these bottom bar items into the dataclass used for nav drawer
-                    val onClickHome = {
-                        navController.navigate(Screen.Home.name)
-                    }
-
-                    val onClickMusic = {
-                        navController.navigate(Screen.MusicLibrary.name)
-                    }
-
-                    val onClickVideo = {
-                        navController.navigate(Screen.VideoLibrary.name)
-                    }
-                    MediaBrowserBottomNavBar(onClickHome, onClickMusic, onClickVideo)
+                    MediaBrowserBottomNavBar(
+                        navController = navController,
+                        items = listOf(
+                            NavigationItem(
+                                route = Screen.MusicLibrary.name,
+                                title = stringResource(R.string.music_library),
+                                selectedIcon = Icons.Filled.LibraryMusic,
+                                unselectedIcon = Icons.Outlined.LibraryMusic,
+                            ),
+                            NavigationItem(
+                                route = Screen.Home.name,
+                                title = stringResource(R.string.home),
+                                selectedIcon = Icons.Filled.Home,
+                                unselectedIcon = Icons.Outlined.Home,
+                            ),
+                            NavigationItem(
+                                route = Screen.VideoLibrary.name,
+                                title = stringResource(R.string.video_library),
+                                selectedIcon = Icons.Filled.VideoLibrary,
+                                unselectedIcon = Icons.Outlined.VideoLibrary,
+                            ),
+                        ),
+                    )
                 }
             ) { paddingValues ->
                 Surface {
@@ -108,59 +127,32 @@ fun MediaBrowserTopAppBar(
 
 @Composable
 fun MediaBrowserBottomNavBar(
-    onClickHome: () -> Unit,
-    onClickMusic: () -> Unit,
-    onClickVideo: () -> Unit,
-    modifier: Modifier = Modifier
+    navController: NavController,
+    items: List<NavigationItem>,
+    modifier: Modifier = Modifier,
 ) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
         modifier = modifier
     ) {
-        NavigationBarItem(
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.LibraryMusic,
-                    contentDescription = stringResource(R.string.music_library)
-                )
-            },
-            label = {
-                Text(
-                    text = stringResource(R.string.music_library)
-                )
-            },
-            selected = true,
-            onClick = onClickMusic
-        )
-        NavigationBarItem(
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = stringResource(R.string.home)
-                )
-            },
-            label = {
-                Text(
-                    text = stringResource(R.string.home)
-                )
-            },
-            selected = true,
-            onClick = onClickHome
-        )
-        NavigationBarItem(
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.VideoLibrary,
-                    contentDescription = stringResource(R.string.video_library)
-                )
-            },
-            label = {
-                Text(
-                    text = stringResource(R.string.video_library)
-                )
-            },
-            selected = true,
-            onClick = onClickVideo
-        )
+        items.forEach {
+            val selected = it.route == navController.currentBackStackEntryAsState().value?.destination?.route
+            val imageVector = if (selected) it.selectedIcon else it.unselectedIcon
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        imageVector = imageVector,
+                        contentDescription = it.title
+                    )
+                },
+                label = {
+                    Text(
+                        text = it.title
+                    )
+                },
+                selected = selected,
+                onClick = { navController.navigate(it.route) }
+            )
+        }
     }
 }

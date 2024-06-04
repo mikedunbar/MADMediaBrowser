@@ -26,6 +26,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -50,15 +51,18 @@ fun NavDrawerHeader() {
 
 @Composable
 fun NavDrawerBody(
-    items: List<NavDrawerItem>,
+    currentNavDestination: NavDestination?,
+    items: List<NavigationItem>,
     modifier: Modifier = Modifier,
     itemTextStyle: TextStyle = TextStyle(fontSize = 18.sp),
-    onItemClick: (NavDrawerItem) -> Unit,
+    onItemClick: (NavigationItem) -> Unit,
 ) {
     // TODO use standard nav drawer, when in landscape phone or larger screen
     ModalDrawerSheet {
         LazyColumn(modifier) {
             items(items) { item ->
+                val selected = item.route == currentNavDestination?.route
+                val icon = if (selected) item.selectedIcon else item.unselectedIcon
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -67,7 +71,7 @@ fun NavDrawerBody(
                         }
                         .padding(16.dp)
                 ) {
-                    Icon(imageVector = item.selectedIcon, contentDescription = item.contentDescription)
+                    Icon(imageVector = icon, contentDescription = item.title)
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(text = item.title, modifier = Modifier.weight(1f), style = itemTextStyle)
                 }
@@ -76,28 +80,25 @@ fun NavDrawerBody(
     }
 }
 
-data class NavDrawerItem(
+data class NavigationItem(
     val route: String,
     val title: String,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
-    val contentDescription: String,
 )
 
-val navDrawerItemList = listOf(
-    NavDrawerItem(
+val navigationDrawerItemLists = listOf(
+    NavigationItem(
         route = Screen.Settings.name,
         title = "Settings",
         selectedIcon = Icons.Filled.Settings,
         unselectedIcon = Icons.Outlined.Settings,
-        contentDescription = "Settings"
     ),
-    NavDrawerItem(
+    NavigationItem(
         route = Screen.About.name,
         title = "About This App",
         selectedIcon = Icons.Filled.Info,
         unselectedIcon = Icons.Outlined.Info,
-        contentDescription = "Settings"
     )
 
 )
