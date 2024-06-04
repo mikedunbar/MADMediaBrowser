@@ -31,9 +31,7 @@ too many prospective employers take a look.
 - REST API calls with OkHttp, RetroFit, and Moshi
 
 ## In flight
-- clean up nav code a bit
-- indicate selected screen on nav icons, with differnt background or something
-- Reconnect real API
+- Reconnect real API / Scrollable list of bands / Click to album list
 
 ## On Deck
 Too much to list, but I plan to make "at least" daily updates in building out this showcase, including
