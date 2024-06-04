@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dunbar.mike.mediabrowser.R
 import dunbar.mike.mediabrowser.data.Band
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
@@ -36,7 +36,7 @@ fun BandListScreenRoot(
     onClickBand: (String) -> Unit = {}
 ) {
     logger.d("BandListScreen", "Loading Band List Screen")
-    BandListScreen(state = viewModel.bandList.collectAsState().value, onClickBand)
+    BandListScreen(state = viewModel.bandList.collectAsStateWithLifecycle().value, onClickBand)
 }
 
 @Composable

@@ -100,9 +100,11 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.activity:activity-compose:1.9.0")
 
+    // keep these at 2.7.x, and not 2.8, to be compatible with compose version 1.6 from the above BOM
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$ktxVersion")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$ktxVersion")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
     val hiltVersion by extra("2.51.1")
     implementation("com.google.dagger:hilt-android:$hiltVersion")
