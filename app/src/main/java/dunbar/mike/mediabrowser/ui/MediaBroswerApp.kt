@@ -35,8 +35,8 @@ import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun MediaBrowserApp() {
-    MediaBrowserTheme {
+fun MediaBrowserApp(darkTheme: Boolean = false) {
+    MediaBrowserTheme(darkTheme = darkTheme) {
         val navController = rememberNavController()
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val coroutineScope = rememberCoroutineScope()
