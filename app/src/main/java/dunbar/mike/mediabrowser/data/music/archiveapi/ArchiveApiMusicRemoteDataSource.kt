@@ -1,8 +1,8 @@
-package dunbar.mike.mediabrowser.data.archiveapi
+package dunbar.mike.mediabrowser.data.music.archiveapi
 
-import dunbar.mike.mediabrowser.data.Album
-import dunbar.mike.mediabrowser.data.Band
-import dunbar.mike.mediabrowser.data.MusicRemoteDataSource
+import dunbar.mike.mediabrowser.data.music.Album
+import dunbar.mike.mediabrowser.data.music.Band
+import dunbar.mike.mediabrowser.data.music.MusicRemoteDataSource
 import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

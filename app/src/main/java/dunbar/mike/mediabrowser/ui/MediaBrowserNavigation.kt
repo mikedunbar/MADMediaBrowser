@@ -35,6 +35,7 @@ import dunbar.mike.mediabrowser.ui.music.AlbumListScreen
 import dunbar.mike.mediabrowser.ui.music.AlbumListViewModel
 import dunbar.mike.mediabrowser.ui.music.BandListScreenRoot
 import dunbar.mike.mediabrowser.ui.music.MusicLibraryScreen
+import dunbar.mike.mediabrowser.ui.settings.SettingsScreenRoot
 
 @Composable
 // TODO Get this showing up, using new M3 style
@@ -141,7 +142,7 @@ fun MediaBrowserNavHost(
             PlaceholderScreen(screenName = stringResource(id = R.string.video_library))
         }
         composable(Screen.Settings.name) {
-            PlaceholderScreen(screenName = stringResource(id = R.string.settings_screen))
+            SettingsScreenRoot()
         }
         composable(Screen.About.name) {
             PlaceholderScreen(screenName = stringResource(id = R.string.about_screen))

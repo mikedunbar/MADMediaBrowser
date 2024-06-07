@@ -24,9 +24,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dunbar.mike.mediabrowser.R
-import dunbar.mike.mediabrowser.data.Album
-import dunbar.mike.mediabrowser.data.createTestAlbumInfo
-import dunbar.mike.mediabrowser.data.createTestAlbumList
+import dunbar.mike.mediabrowser.data.music.Album
+import dunbar.mike.mediabrowser.data.music.createTestAlbumInfo
+import dunbar.mike.mediabrowser.data.music.createTestAlbumList
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
 
 @Composable

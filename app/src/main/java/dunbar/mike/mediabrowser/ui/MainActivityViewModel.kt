@@ -2,8 +2,8 @@ package dunbar.mike.mediabrowser.ui
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dunbar.mike.mediabrowser.data.UserData
-import dunbar.mike.mediabrowser.data.UserDataRepo
+import dunbar.mike.mediabrowser.data.user.UserData
+import dunbar.mike.mediabrowser.data.user.UserDataRepo
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 

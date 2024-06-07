@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dunbar.mike.mediabrowser.R
-import dunbar.mike.mediabrowser.data.Band
+import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
 import dunbar.mike.mediabrowser.util.Logger
 

@@ -1,17 +1,6 @@
-package dunbar.mike.mediabrowser.data
+package dunbar.mike.mediabrowser.data.music
 
 import java.time.LocalDate
-
-data class UserData(
-    val shouldHideOnboarding: Boolean,
-    val darkThemeConfig: DarkThemeConfig,
-)
-
-enum class DarkThemeConfig {
-    LIGHT,
-    DARK,
-    SYSTEM_SETTING,
-}
 
 data class Album(
     val band: Band,

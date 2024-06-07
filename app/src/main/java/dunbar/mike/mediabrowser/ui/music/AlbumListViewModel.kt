@@ -3,8 +3,8 @@ package dunbar.mike.mediabrowser.ui.music
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dunbar.mike.mediabrowser.data.Album
-import dunbar.mike.mediabrowser.data.MusicRepo
+import dunbar.mike.mediabrowser.data.music.Album
+import dunbar.mike.mediabrowser.data.music.MusicRepo
 import dunbar.mike.mediabrowser.util.AndroidLogger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

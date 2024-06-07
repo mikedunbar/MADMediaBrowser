@@ -1,7 +1,7 @@
 package dunbar.mike.mediabrowser
 
-import dunbar.mike.mediabrowser.data.archiveapi.ArchiveApi
-import dunbar.mike.mediabrowser.data.archiveapi.ArchiveApiMusicRemoteDataSource
+import dunbar.mike.mediabrowser.data.music.archiveapi.ArchiveApi
+import dunbar.mike.mediabrowser.data.music.archiveapi.ArchiveApiMusicRemoteDataSource
 import dunbar.mike.mediabrowser.util.ConsoleLogger
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking

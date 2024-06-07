@@ -1,16 +1,18 @@
 package dunbar.mike.mediabrowser
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import dunbar.mike.mediabrowser.data.FakeMusicRemoteDataSource
-import dunbar.mike.mediabrowser.data.FakeUserDataSource
-import dunbar.mike.mediabrowser.data.MusicRemoteDataSource
-import dunbar.mike.mediabrowser.data.MusicRepo
-import dunbar.mike.mediabrowser.data.UserDataDataSource
-import dunbar.mike.mediabrowser.data.UserDataRepo
-import dunbar.mike.mediabrowser.data.archiveapi.ArchiveApi
+import dunbar.mike.mediabrowser.data.music.FakeMusicRemoteDataSource
+import dunbar.mike.mediabrowser.data.music.MusicRemoteDataSource
+import dunbar.mike.mediabrowser.data.music.MusicRepo
+import dunbar.mike.mediabrowser.data.music.archiveapi.ArchiveApi
+import dunbar.mike.mediabrowser.data.user.RealUserDataSource
+import dunbar.mike.mediabrowser.data.user.UserDataRepo
+import dunbar.mike.mediabrowser.data.user.UserDataSource
 import dunbar.mike.mediabrowser.util.AndroidLogger
 import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.CoroutineDispatcher
@@ -66,9 +68,9 @@ object HiltModule {
     }
 
     @Provides
-    fun provideUserDataRepo(userDataDataSource: UserDataDataSource): UserDataRepo = UserDataRepo(userDataDataSource)
+    fun provideUserDataRepo(userDataSource: UserDataSource): UserDataRepo = UserDataRepo(userDataSource)
 
     @Provides
-    fun provideUserDataDataSource(): UserDataDataSource = FakeUserDataSource()
+    fun provideUserDataDataSource(@ApplicationContext context: Context): UserDataSource = RealUserDataSource(context)
 
 }

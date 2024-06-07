@@ -14,9 +14,9 @@ import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
-import dunbar.mike.mediabrowser.data.DarkThemeConfig.DARK
-import dunbar.mike.mediabrowser.data.DarkThemeConfig.LIGHT
-import dunbar.mike.mediabrowser.data.DarkThemeConfig.SYSTEM_SETTING
+import dunbar.mike.mediabrowser.data.user.DarkThemeConfig.DARK
+import dunbar.mike.mediabrowser.data.user.DarkThemeConfig.LIGHT
+import dunbar.mike.mediabrowser.data.user.DarkThemeConfig.SYSTEM_SETTING
 import dunbar.mike.mediabrowser.ui.MainActivityUiState.Loading
 import dunbar.mike.mediabrowser.ui.MainActivityUiState.Success
 import dunbar.mike.mediabrowser.util.AndroidLogger

@@ -1,4 +1,4 @@
-package dunbar.mike.mediabrowser.data
+package dunbar.mike.mediabrowser.data.music
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -9,9 +9,9 @@ class MusicRepo @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher,
 ) {
     // todo Let's get an infinite scroll working here
-    suspend fun getBands() = withContext(ioDispatcher) {remoteDataSource.getBands()}
+    suspend fun getBands() = withContext(ioDispatcher) { remoteDataSource.getBands() }
 
-    suspend fun getAlbums(bandName: String) = withContext(ioDispatcher) {remoteDataSource.getAlbums(bandName)}
+    suspend fun getAlbums(bandName: String) = withContext(ioDispatcher) { remoteDataSource.getAlbums(bandName) }
 
 }
 
