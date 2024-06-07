@@ -29,11 +29,11 @@ too many prospective employers take a look.
 - Jetpack Lifecycle Components
 - Jetpack ViewModel
 - Jetpack Datastore, for local settings prefs storage
+- Jetpack Hilt, for Dependency Injection
 - Layered Architecture
 - MVVM in the UI layer
 - Unidirectional Data Flow
-- Dependency Injection with Jetpack Hilt
-- REST API calls with OkHttp, RetroFit, and Moshi
+- REST API integration with OkHttp, RetroFit, and Moshi
 - Behavior testing with JUnit 5
 
 ## In flight
