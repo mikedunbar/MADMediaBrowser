@@ -136,7 +136,9 @@ fun MediaBrowserBottomNavBar(
         modifier = modifier
     ) {
         items.forEach {
-            val selected = it.route == navController.currentBackStackEntryAsState().value?.destination?.route
+            val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route ?: Screen.Home.name
+            val itemScreen = Screen.valueOf(it.route)
+            val selected = itemScreen.contains(currentRoute)
             val imageVector = if (selected) it.selectedIcon else it.unselectedIcon
             NavigationBarItem(
                 icon = {

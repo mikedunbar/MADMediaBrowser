@@ -62,7 +62,9 @@ fun NavDrawerBody(
     ModalDrawerSheet {
         LazyColumn(modifier) {
             items(items) { item ->
-                val selected = item.route == currentNavDestination?.route
+                val currentRoute = currentNavDestination?.route ?: Screen.Home.name
+                val itemScreen = Screen.valueOf(item.route)
+                val selected = itemScreen.contains(currentRoute)
                 val icon = if (selected) item.selectedIcon else item.unselectedIcon
                 Row(
                     modifier = Modifier
@@ -150,6 +152,7 @@ fun MediaBrowserNavHost(
     }
 }
 
+
 enum class Screen {
     Home,
     Settings,
@@ -159,6 +162,16 @@ enum class Screen {
     AlbumList,
     SongList,
     VideoLibrary,
-
     ;
+
+    fun contains(route: String): Boolean {
+        val doesContain = when (this) {
+            MusicLibrary -> route.startsWith(MusicLibrary.name) || route.startsWith(BandList.name) || route.startsWith(AlbumList.name) || route.startsWith(
+                SongList.name
+            )
+
+            else -> route.startsWith(this.name)
+        }
+        return doesContain
+    }
 }
