@@ -15,12 +15,16 @@ I welcome any and all feedback! I'm intentionally publishing this with some glar
 too many prospective employers take a look. 
 
 ## What's implemented so far
+### Features
 - Multiple product versions: Free vs Paid
 - Custom splash screen with branding message
 - Material 3 App Theming
 - Material 3 App Scaffolding, with top and bottom bars, plus navigation drawer
-- Coroutines
-- Jetpack Compose UI
+- Dark Theme Support, including option to override system setting
+
+### Tech
+- Kotlin, Coroutines and Flows 
+- Jetpack Compose
 - Jetpack Navigation
 - Jetpack Lifecycle Components
 - Jetpack ViewModel
@@ -34,7 +38,7 @@ too many prospective employers take a look.
 
 ## In flight
 - Bug: Music Library bottom nav not showing as selected from Band List Screen or Song List Screen
--- update logic to consider navigation sub graphs
+  - update logic to consider navigation sub graphs
 - Reconnect real API / Scrollable list of bands / Click to album list
 
 ## On Deck
