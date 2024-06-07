@@ -37,15 +37,12 @@ too many prospective employers take a look.
 - Behavior testing with JUnit 5
 
 ## In flight
-- Bug: Music Library bottom nav not showing as selected from Band List Screen or Song List Screen
-  - update logic to consider navigation sub graphs
 - Reconnect real API / Scrollable list of bands / Click to album list
 
 ## On Deck
 Too much to list, but I plan to make "at least" daily updates in building out this showcase, including
 - Optimize layout in landscape mode
 - Data survives configuration change (settings input field, e.g.)
-- Splash screen branding message not showing up in Dark Theme
 - Infinite scrollable list
 - version catalogue for dependencies
 - WorkManager (for syncing)
