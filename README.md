@@ -30,8 +30,11 @@ too many prospective employers take a look.
 - Unidirectional Data Flow
 - Dependency Injection with Jetpack Hilt
 - REST API calls with OkHttp, RetroFit, and Moshi
+- Behavior testing with JUnit 5
 
 ## In flight
+- Bug: Music Library bottom nav not showing as selected from Band List Screen or Song List Screen
+-- update logic to consider navigation sub graphs
 - Reconnect real API / Scrollable list of bands / Click to album list
 
 ## On Deck
@@ -52,7 +55,6 @@ Too much to list, but I plan to make "at least" daily updates in building out th
 - Baseline profiles
 - Biometric authentication
 - UI tests with Espresso
-- Business logic tests with JUnit
 - Android integration with Instrumentation tests
 - App Widget with Glance
 - WearOS version
