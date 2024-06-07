@@ -23,7 +23,8 @@ too many prospective employers take a look.
 - Jetpack Compose UI
 - Jetpack Navigation
 - Jetpack Lifecycle Components
-- Jetpack ViewModel 
+- Jetpack ViewModel
+- Jetpack Datastore, for local settings prefs storage
 - Layered Architecture
 - MVVM in the UI layer
 - Unidirectional Data Flow
