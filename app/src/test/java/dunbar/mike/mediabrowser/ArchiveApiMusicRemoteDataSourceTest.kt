@@ -18,19 +18,19 @@ import java.util.concurrent.TimeUnit
 class ArchiveApiMusicRemoteDataSourceTest {
     private val logger = ConsoleLogger()
     private val archiveApi = createArchiveApi()
-    private val objectUnderTest = ArchiveApiMusicRemoteDataSource(archiveApi, logger)
+    private val archiveDataSource = ArchiveApiMusicRemoteDataSource(archiveApi, logger)
 
     // Bogus test...to get API working
     @Test
     fun `test searchDeadShows`() = runBlocking {
-        val albums = objectUnderTest.getAlbums("Grateful Dead")
+        val albums = archiveDataSource.getAlbums("Grateful Dead")
         print(format("In test, got albums %s", albums))
         assertEquals(10, albums.size)
     }
 
     @Test
     fun `test searchBands`() = runBlocking {
-        val bands = objectUnderTest.getBands()
+        val bands = archiveDataSource.getBands()
         print(format("In test, got bands %s", bands))
     }
 

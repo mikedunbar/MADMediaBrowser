@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dunbar.mike.mediabrowser.data.music.Album
 import dunbar.mike.mediabrowser.data.music.MusicRepo
-import dunbar.mike.mediabrowser.util.AndroidLogger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -13,17 +12,25 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AlbumListViewModel @Inject constructor(private val musicRepo: MusicRepo) : ViewModel() {
-    // Add more UI state and have a loading state as default
-    private val _albumList = MutableStateFlow<List<Album>>(emptyList())
-    val albumList: StateFlow<List<Album>> = _albumList
+    private val _uiState = MutableStateFlow<AlbumListUiState>(AlbumListUiState.Loading)
+    val uiState: StateFlow<AlbumListUiState> = _uiState
 
     fun setBand(bandName: String) = viewModelScope.launch {
-        AndroidLogger.d(TAG, "Setting bandName=%s and getting albums", bandName)
-        _albumList.value = musicRepo.getAlbums(bandName)
-        AndroidLogger.d(TAG, "Got album list=%s", _albumList.value)
+        musicRepo.getAlbums(bandName)
+            .onSuccess { _uiState.value = AlbumListUiState.Success(it) }
+            .onFailure { _uiState.value = AlbumListUiState.Error(it.message ?: "Unknown error") }
     }
 
     companion object {
         private const val TAG = "AlbumListViewModel"
     }
+}
+
+sealed interface AlbumListUiState {
+    data object Loading : AlbumListUiState
+
+    data class Success(val albums: List<Album>) : AlbumListUiState
+
+    data class Error(val message: String) : AlbumListUiState
+
 }

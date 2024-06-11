@@ -6,10 +6,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import dunbar.mike.mediabrowser.data.music.FakeMusicRemoteDataSource
 import dunbar.mike.mediabrowser.data.music.MusicRemoteDataSource
 import dunbar.mike.mediabrowser.data.music.MusicRepo
 import dunbar.mike.mediabrowser.data.music.archiveapi.ArchiveApi
+import dunbar.mike.mediabrowser.data.music.archiveapi.ArchiveApiMusicRemoteDataSource
 import dunbar.mike.mediabrowser.data.user.RealUserDataSource
 import dunbar.mike.mediabrowser.data.user.UserDataRepo
 import dunbar.mike.mediabrowser.data.user.UserDataSource
@@ -37,8 +37,8 @@ object HiltModule {
 
     @Provides
     fun provideMusicRemoteDataSource(api: ArchiveApi, logger: Logger): MusicRemoteDataSource {
-        return FakeMusicRemoteDataSource()
-//        return ArchiveApiMusicRemoteDataSource(api, logger)
+//        return FakeMusicRemoteDataSource()
+        return ArchiveApiMusicRemoteDataSource(api, logger)
     }
 
     @Provides

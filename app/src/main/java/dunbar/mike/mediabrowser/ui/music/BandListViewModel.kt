@@ -12,13 +12,23 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BandListViewModel @Inject constructor(private val musicRepo: MusicRepo) : ViewModel() {
-
-    private val _bandList = MutableStateFlow<List<Band>>(emptyList())
-    val bandList: StateFlow<List<Band>> = _bandList
+    private val _uiState = MutableStateFlow<BandListUiState>(BandListUiState.Loading)
+    val uiState: StateFlow<BandListUiState> = _uiState
 
     init {
         viewModelScope.launch {
-            _bandList.value = musicRepo.getBands()
+            musicRepo.getBands()
+                .onSuccess { _uiState.value = BandListUiState.Success(it) }
+                .onFailure { _uiState.value = BandListUiState.Error(it.message ?: "Unknown error") }
         }
     }
+}
+
+sealed interface BandListUiState {
+    data object Loading : BandListUiState
+
+    data class Success(val bands: List<Band>) : BandListUiState
+
+    data class Error(val message: String) : BandListUiState
+
 }

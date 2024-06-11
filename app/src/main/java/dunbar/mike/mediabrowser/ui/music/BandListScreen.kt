@@ -2,8 +2,10 @@ package dunbar.mike.mediabrowser.ui.music
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -11,6 +13,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,19 +40,57 @@ fun BandListScreenRoot(
     onClickBand: (String) -> Unit = {}
 ) {
     logger.d("BandListScreen", "Loading Band List Screen")
-    BandListScreen(state = viewModel.bandList.collectAsStateWithLifecycle().value, onClickBand)
+    BandListScreen(uiState = viewModel.uiState.collectAsStateWithLifecycle().value, onClickBand)
 }
 
 @Composable
 fun BandListScreen(
-    state: List<Band>,
+    uiState: BandListUiState,
     onClickBand: (String) -> Unit = {},
 ) {
-    BandCardList(
-        bandList = state,
-        onClickBand = onClickBand,
-    )
+    when (uiState) {
+        is BandListUiState.Success -> {
+            BandList(
+                bandList = uiState.bands,
+                onClickBand = onClickBand,
+            )
+        }
+
+        is BandListUiState.Error -> {
+            Text(uiState.message)
+        }
+
+        is BandListUiState.Loading -> {
+            LoadingScreen()
+        }
+    }
 }
+
+@Composable
+fun LoadingScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = "Loading...")
+        CircularProgressIndicator(
+            color = MaterialTheme.colorScheme.secondary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+        )
+    }
+}
+
+@Preview(heightDp = 100, widthDp = 100)
+@Composable
+private fun LoadingScreenPreview() {
+    MediaBrowserTheme {
+        Surface {
+            LoadingScreen()
+        }
+    }
+}
+
 
 @Preview
 @Composable
@@ -56,10 +98,12 @@ fun BandListScreenPreview() {
     MediaBrowserTheme {
         Surface {
             BandListScreen(
-                state = listOf(
-                    Band("Widespread Panic", "Rock", "Widespread Panic"),
-                    Band("Metallica", "Heavy Metal", "Metallica"),
-                    Band("Outkast", "Hip Hop", "Outkast")
+                uiState = BandListUiState.Success(
+                    listOf(
+                        Band("Widespread Panic", "Rock", "Widespread Panic"),
+                        Band("Metallica", "Heavy Metal", "Metallica"),
+                        Band("Outkast", "Hip Hop", "Outkast")
+                    )
                 )
             )
         }
@@ -72,10 +116,12 @@ fun BandListScreenPreviewDark() {
     MediaBrowserTheme(darkTheme = true) {
         Surface {
             BandListScreen(
-                state = listOf(
-                    Band("Widespread Panic", "Rock", "Widespread Panic"),
-                    Band("Metallica", "Heavy Metal", "Metallica"),
-                    Band("Outkast", "Hip Hop", "Outkast")
+                uiState = BandListUiState.Success(
+                    listOf(
+                        Band("Widespread Panic", "Rock", "Widespread Panic"),
+                        Band("Metallica", "Heavy Metal", "Metallica"),
+                        Band("Outkast", "Hip Hop", "Outkast")
+                    )
                 )
             )
         }
@@ -83,7 +129,7 @@ fun BandListScreenPreviewDark() {
 }
 
 @Composable
-fun BandCardList(
+fun BandList(
     bandList: List<Band>,
     onClickBand: (String) -> Unit,
 ) {
@@ -98,10 +144,10 @@ fun BandCardList(
 
 @Preview
 @Composable
-fun BandCardListPreview() {
+fun BandListPreview() {
     MediaBrowserTheme(darkTheme = false) {
         Surface {
-            BandCardList(
+            BandList(
                 bandList = listOf(
                     Band("Widespread Panic", "Rock", "Widespread Panic"),
                     Band("Metallica", "Heavy Metal", "Metallica"),
@@ -115,10 +161,10 @@ fun BandCardListPreview() {
 
 @Preview
 @Composable
-fun BandCardListPreviewDark() {
+fun BandListPreviewDark() {
     MediaBrowserTheme(darkTheme = true) {
         Surface {
-            BandCardList(
+            BandList(
                 bandList = listOf(
                     Band("Widespread Panic", "Rock", "Widespread Panic"),
                     Band("Metallica", "Heavy Metal", "Metallica"),

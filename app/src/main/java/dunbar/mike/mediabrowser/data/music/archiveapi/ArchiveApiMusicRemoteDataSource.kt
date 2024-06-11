@@ -14,7 +14,7 @@ class ArchiveApiMusicRemoteDataSource @Inject constructor(
     private val logger: Logger,
 ) : MusicRemoteDataSource {
 
-    override suspend fun getBands(): List<Band> = withContext(Dispatchers.IO) {
+    override suspend fun getBands() = withContext(Dispatchers.IO) {
         val bandSearchResponse = archiveApi.searchBands()
         val responseBody = bandSearchResponse.body()
 
@@ -40,7 +40,7 @@ class ArchiveApiMusicRemoteDataSource @Inject constructor(
             )
         }
         logger.d(TAG, "Done processing payload")
-        bands
+        Result.success(bands)
     }
 
     private suspend fun getMetaData(creator: String, identifier: String): SuccessfulMetadataResponse {
@@ -50,13 +50,12 @@ class ArchiveApiMusicRemoteDataSource @Inject constructor(
         return bandMetadata
     }
 
-    override suspend fun getAlbums(bandName: String): List<Album> {
+    override suspend fun getAlbums(bandName: String): Result<List<Album>> {
         if (bandName != "Grateful Dead") {
-            return listOf()
+            return Result.success(listOf())
         }
 
-        val showsSearchResponse =
-            ShowSearchSuccessResponse(archiveApi.searchDeadShows().showSearchResponsePayload)
+        val showsSearchResponse = ShowSearchSuccessResponse(archiveApi.searchDeadShows().showSearchResponsePayload)
         val shows = mutableListOf<Show>()
         showsSearchResponse.showSearchResponsePayload.docs.forEach { doc ->
             try {
@@ -69,11 +68,11 @@ class ArchiveApiMusicRemoteDataSource @Inject constructor(
                 shows.add(
                     Show(
                         doc,
-                        SuccessfulMetadataResponse(showMetadata.dir, flacFiles)
+                        SuccessfulMetadataResponse(server = showMetadata.server, dir = showMetadata.dir, files = flacFiles)
                     )
                 )
             } catch (t: Throwable) {
-                shows.add(Show(doc, ErrorMetadataResponse(t)))
+                logger.e(TAG, "Error getting metadata for show ${doc.identifier}", t)
             }
         }
         println("got shows (${shows.size}):")
@@ -85,22 +84,17 @@ class ArchiveApiMusicRemoteDataSource @Inject constructor(
             println("Avg Rating: ${show.responseDoc.avg_rating}")
             println("Web page URL: http://archive.org/details/${show.responseDoc.identifier}")
             println("Metadata URL:  https://archive.org/metadata/${show.responseDoc.identifier}")
-            when (val metadataResponse = show.metadataResponse) {
+            when (show.metadataResponse) {
                 is SuccessfulMetadataResponse -> {
-                    println("Files (${metadataResponse.files.size})")
-                    val files = metadataResponse.files
+                    println("Files (${show.metadataResponse.files.size})")
+                    val files = show.metadataResponse.files
                     files.forEach { file ->
                         println("\t\tTitle: ${file.title}, Name: http://archive.org/download/${show.responseDoc.identifier}/${file.name}, Length: ${file.length}")
                     }
                 }
-
-                is ErrorMetadataResponse -> {
-                    println("Error retrieving files: ${metadataResponse.error.message}")
-                    metadataResponse.error.printStackTrace()
-                }
             }
         }
-        return albums
+        return Result.success(albums)
 
     }
 

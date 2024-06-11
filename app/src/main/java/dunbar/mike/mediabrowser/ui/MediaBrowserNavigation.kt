@@ -31,7 +31,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import dunbar.mike.mediabrowser.R
-import dunbar.mike.mediabrowser.ui.music.AlbumListScreen
+import dunbar.mike.mediabrowser.ui.music.AlbumListScreenRoot
 import dunbar.mike.mediabrowser.ui.music.AlbumListViewModel
 import dunbar.mike.mediabrowser.ui.music.BandListScreenRoot
 import dunbar.mike.mediabrowser.ui.music.MusicLibraryScreen
@@ -135,7 +135,7 @@ fun MediaBrowserNavHost(
             val bandName = it.arguments?.getString("bandName") ?: "Grateful Dead"
             val albumListViewModel = hiltViewModel<AlbumListViewModel>()
             albumListViewModel.setBand(bandName)
-            AlbumListScreen(albumListViewModel)
+            AlbumListScreenRoot(albumListViewModel)
         }
         composable(Screen.SongList.name) {
             PlaceholderScreen(screenName = stringResource(id = R.string.songs_screen))

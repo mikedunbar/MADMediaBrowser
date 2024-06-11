@@ -39,7 +39,7 @@ interface ArchiveApi {
                 "&fl[]=creator,identifier,publicdate" +
                 "&q=collection:etree AND mediatype:collection"
     )
-    suspend fun searchBands(): Response<BandSearchSuccessResponse>
+    suspend fun searchBands(): Response<BandSearchResponse>
 
     @GET("metadata/{archiveId}")
     suspend fun getMetaData(@Path("archiveId") archiveId: String): SuccessfulMetadataResponse

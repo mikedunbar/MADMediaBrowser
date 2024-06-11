@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,9 +31,24 @@ import dunbar.mike.mediabrowser.data.music.createTestAlbumList
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
 
 @Composable
-fun AlbumListScreen(viewModel: AlbumListViewModel) {
-    val albumListState by viewModel.albumList.collectAsStateWithLifecycle()
-    AlbumCardList(albumList = albumListState)
+fun AlbumListScreenRoot(viewModel: AlbumListViewModel) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    AlbumListScreen(uiState)
+}
+
+@Composable
+fun AlbumListScreen(uiState: AlbumListUiState) {
+    when(uiState) {
+        is AlbumListUiState.Loading -> {
+            CircularProgressIndicator()
+        }
+        is AlbumListUiState.Success -> {
+            AlbumCardList(uiState.albums)
+        }
+        is AlbumListUiState.Error -> {
+            Text("Error")
+        }
+    }
 }
 
 @Composable

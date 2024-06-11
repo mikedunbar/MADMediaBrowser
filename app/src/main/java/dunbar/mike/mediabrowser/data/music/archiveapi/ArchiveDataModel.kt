@@ -11,7 +11,7 @@ sealed interface SearchResponse
 
 //region Search  Bands
 @JsonClass(generateAdapter = true)
-data class BandSearchSuccessResponse(
+data class BandSearchResponse(
     @Json(name = "response")
     val bandSearchResponsePayload: BandSearchResponsePayload
 ) : SearchResponse
@@ -73,10 +73,6 @@ data class Show(
                     )
                 }
             }
-
-            is ErrorMetadataResponse -> {
-                listOf()
-            }
         }
 
         return Album(
@@ -98,10 +94,9 @@ data class Show(
 
 sealed interface MetadataResponse
 
-class ErrorMetadataResponse(val error: Throwable) : MetadataResponse
-
 @JsonClass(generateAdapter = true)
 data class SuccessfulMetadataResponse(
+    val server: String,
     val dir: String,
     val files: List<MetadataFile>
 ) : MetadataResponse
@@ -109,6 +104,7 @@ data class SuccessfulMetadataResponse(
 @JsonClass(generateAdapter = true)
 data class MetadataFile(
     val name: String,
+    val source: String,
     val format: String,
     val length: String?,
     val title: String?
