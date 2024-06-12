@@ -1,8 +1,7 @@
-![Band List Screen](docs/images/BandListScreenNew.png)
-
-
 # Modern Android Media Browser
 A POC sample app
+
+![Band List Screen](docs/images/BandListScreenNew.png)
 
 ## Purpose
 Showcase competancy in modern Android development best practices, to aid in landing my next job and keeping my head in the game.
