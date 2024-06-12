@@ -124,7 +124,6 @@ fun MediaBrowserNavHost(
         }
         composable(Screen.BandList.name) {
             BandListScreenRoot(
-                logger,
                 onClickBand = { bandName ->
                     logger.d("MediaBrowserNavHost", "Band was clicked: $bandName")
                     navController.navigate("${Screen.AlbumList.name}/$bandName")

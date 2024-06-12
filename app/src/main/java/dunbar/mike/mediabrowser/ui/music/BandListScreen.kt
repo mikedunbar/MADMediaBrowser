@@ -2,10 +2,8 @@ package dunbar.mike.mediabrowser.ui.music
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,8 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -34,16 +29,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dunbar.mike.mediabrowser.R
 import dunbar.mike.mediabrowser.data.music.Band
+import dunbar.mike.mediabrowser.ui.shared.ErrorView
+import dunbar.mike.mediabrowser.ui.shared.LoadingView
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
-import dunbar.mike.mediabrowser.util.Logger
 
 @Composable
 fun BandListScreenRoot(
-    logger: Logger,
     viewModel: BandListViewModel = hiltViewModel<BandListViewModel>(),
     onClickBand: (String) -> Unit = {}
 ) {
-    logger.d("BandListScreen", "Loading Band List Screen")
     BandListScreen(uiState = viewModel.uiState.collectAsStateWithLifecycle().value, onClickBand)
 }
 
@@ -68,31 +62,6 @@ fun BandListScreen(
             LoadingView()
         }
     }
-}
-
-@Composable
-fun LoadingView() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(text = "Loading...")
-        CircularProgressIndicator(
-            color = MaterialTheme.colorScheme.secondary,
-            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-        )
-    }
-}
-
-@Composable
-fun ErrorView(message: String) {
-    Column()
-    {
-        Text(text = "Unable to load bands list", fontSize = MaterialTheme.typography.titleLarge.fontSize)
-        Text(text = message, fontStyle = FontStyle.Italic)
-    }
-
 }
 
 @Composable
@@ -166,31 +135,10 @@ class BandListUiStateProvider : PreviewParameterProvider<BandListUiState> {
 @PreviewLightDark
 @PreviewScreenSizes
 @Composable
-fun BandListScreenDataPreview(@PreviewParameter(BandListUiStateProvider::class) uiState: BandListUiState) {
+fun BandListScreenPreview(@PreviewParameter(BandListUiStateProvider::class) uiState: BandListUiState) {
     MediaBrowserTheme {
         Surface {
             BandListScreen(uiState = uiState)
-        }
-    }
-}
-
-@PreviewLightDark
-@Composable
-private fun LoadingPreview() {
-    MediaBrowserTheme {
-        Surface {
-            LoadingView()
-        }
-    }
-}
-
-@PreviewLightDark
-@PreviewScreenSizes
-@Composable
-private fun ErrorPreview() {
-    MediaBrowserTheme {
-        Surface {
-            ErrorView("You appear to be offline")
         }
     }
 }
@@ -202,7 +150,7 @@ fun BandListPreview() {
         Surface {
             BandListView(
                 bandList = listOf(
-                    Band("Widespread Panic", "Rock", "Widespread Panic"),
+                    Band("Widespread Panic", "Rock", "WidespreadPanic"),
                     Band("Metallica", "Heavy Metal", "Metallica"),
                     Band("Outkast", "Hip Hop", "Outkast")
                 ),

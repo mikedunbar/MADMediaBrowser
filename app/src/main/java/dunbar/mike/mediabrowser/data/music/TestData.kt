@@ -4,34 +4,17 @@ import java.time.LocalDate
 
 
 class FakeMusicRemoteDataSource : MusicRemoteDataSource {
-    // todo delay for a bit, to simulate network delay
+
     override suspend fun getBands() = Result.success(createTestBandList())
 
     override suspend fun getAlbums(bandName: String) = Result.success(createTestAlbumList(bandName))
 
 }
 
-fun createTestBandList(): List<Band> {
-    val bandList = mutableListOf<Band>()
+val widespreadPanic = createTestBand("Widespread Panic")
+val spaceWrangler = createTestAlbum(band = widespreadPanic, name = "Space Wrangler")
 
-    (0..50).forEach {
-        bandList.addAll(
-            listOf(
-                createTestBandInfo("Widespread Panic $it"),
-                createTestBandInfo("Drive-By Truckers $it"),
-                createTestBandInfo("Metallica $it"),
-                createTestBandInfo("Iron Maiden $it"),
-                createTestBandInfo("Outkast $it"),
-                createTestBandInfo("MF Doom $it"),
-                createTestBandInfo("Grateful Dead $it"),
-                createTestBandInfo("Phish $it")
-            )
-        )
-    }
-    return bandList
-}
-
-fun createTestBandInfo(bandName: String): Band {
+fun createTestBand(bandName: String): Band {
     return when {
         bandName.startsWith("Widespread Panic") -> Band(bandName, "Rock", id = bandName)
         bandName.startsWith("Drive-By Truckers") -> Band(bandName, "Rock", id = bandName)
@@ -45,27 +28,51 @@ fun createTestBandInfo(bandName: String): Band {
     }
 }
 
-fun createTestAlbumInfo(
-    band: Band = Band("Grateful Dead", "Psychedelic Rock", id = "SomeId"),
+fun createTestBandList(): List<Band> {
+    val bandList = mutableListOf<Band>()
+
+    (0..50).forEach {
+        bandList.addAll(
+            listOf(
+                createTestBand("Widespread Panic $it"),
+                createTestBand("Drive-By Truckers $it"),
+                createTestBand("Metallica $it"),
+                createTestBand("Iron Maiden $it"),
+                createTestBand("Outkast $it"),
+                createTestBand("MF Doom $it"),
+                createTestBand("Grateful Dead $it"),
+                createTestBand("Phish $it")
+            )
+        )
+    }
+    return bandList
+}
+
+fun createTestAlbum(
+    band: Band = Band("Grateful Dead", "Psychedelic Rock", id = "GratefulDead"),
     name: String = band.name,
     releaseDate: LocalDate = LocalDate.now(),
     songList: List<Song> = listOf(
-        Song("Friend of the Devil", 201.5)
+        Song("$name Song 1", 300.5),
+        Song("$name Song 2", 300.5),
+        Song("$name Song 3", 300.5),
+        Song("$name Song 4", 300.5),
+        Song("$name Song 5", 300.5),
+        Song("$name Song 6", 300.5),
+        Song("$name Song 7", 300.5),
+        Song("$name Song 8", 300.5),
+        Song("$name Song 9", 300.5),
+        Song("$name Song 10", 300.5),
     )
-) = Album(
-    band,
-    name,
-    releaseDate,
-    songList,
-)
+) = Album(band, name, releaseDate, songList)
 
 fun createTestAlbumList(bandName: String): List<Album> {
     val albums = mutableListOf<Album>()
     (0..5).forEach {
         val albumName = "$bandName Album $it"
         albums.add(
-            createTestAlbumInfo(
-                band = createTestBandInfo(bandName),
+            createTestAlbum(
+                band = createTestBand(bandName),
                 name = albumName,
                 songList = listOf(
                     Song("$albumName Song 1", 300.5),
