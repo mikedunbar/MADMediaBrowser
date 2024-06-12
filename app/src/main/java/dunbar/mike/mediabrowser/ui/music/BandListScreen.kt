@@ -23,8 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -50,24 +54,24 @@ fun BandListScreen(
 ) {
     when (uiState) {
         is BandListUiState.Success -> {
-            BandList(
+            BandListView(
                 bandList = uiState.bands,
                 onClickBand = onClickBand,
             )
         }
 
         is BandListUiState.Error -> {
-            Text(uiState.message)
+            ErrorView(uiState.message)
         }
 
         is BandListUiState.Loading -> {
-            LoadingScreen()
+            LoadingView()
         }
     }
 }
 
 @Composable
-fun LoadingScreen() {
+fun LoadingView() {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -81,55 +85,18 @@ fun LoadingScreen() {
     }
 }
 
-@Preview(heightDp = 100, widthDp = 100)
 @Composable
-private fun LoadingScreenPreview() {
-    MediaBrowserTheme {
-        Surface {
-            LoadingScreen()
-        }
+fun ErrorView(message: String) {
+    Column()
+    {
+        Text(text = "Unable to load bands list", fontSize = MaterialTheme.typography.titleLarge.fontSize)
+        Text(text = message, fontStyle = FontStyle.Italic)
     }
-}
 
-
-@Preview
-@Composable
-fun BandListScreenPreview() {
-    MediaBrowserTheme {
-        Surface {
-            BandListScreen(
-                uiState = BandListUiState.Success(
-                    listOf(
-                        Band("Widespread Panic", "Rock", "Widespread Panic"),
-                        Band("Metallica", "Heavy Metal", "Metallica"),
-                        Band("Outkast", "Hip Hop", "Outkast")
-                    )
-                )
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-fun BandListScreenPreviewDark() {
-    MediaBrowserTheme(darkTheme = true) {
-        Surface {
-            BandListScreen(
-                uiState = BandListUiState.Success(
-                    listOf(
-                        Band("Widespread Panic", "Rock", "Widespread Panic"),
-                        Band("Metallica", "Heavy Metal", "Metallica"),
-                        Band("Outkast", "Hip Hop", "Outkast")
-                    )
-                )
-            )
-        }
-    }
 }
 
 @Composable
-fun BandList(
+fun BandListView(
     bandList: List<Band>,
     onClickBand: (String) -> Unit,
 ) {
@@ -138,40 +105,6 @@ fun BandList(
     LazyColumn(state = scrollState) {
         items(bandList.size) {
             BandCard(bandList[it], onClickBand)
-        }
-    }
-}
-
-@Preview
-@Composable
-fun BandListPreview() {
-    MediaBrowserTheme(darkTheme = false) {
-        Surface {
-            BandList(
-                bandList = listOf(
-                    Band("Widespread Panic", "Rock", "Widespread Panic"),
-                    Band("Metallica", "Heavy Metal", "Metallica"),
-                    Band("Outkast", "Hip Hop", "Outkast")
-                ),
-                onClickBand = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-fun BandListPreviewDark() {
-    MediaBrowserTheme(darkTheme = true) {
-        Surface {
-            BandList(
-                bandList = listOf(
-                    Band("Widespread Panic", "Rock", "Widespread Panic"),
-                    Band("Metallica", "Heavy Metal", "Metallica"),
-                    Band("Outkast", "Hip Hop", "Outkast")
-                ),
-                onClickBand = {},
-            )
         }
     }
 }
@@ -208,7 +141,78 @@ fun BandCard(
     }
 }
 
-@Preview
+//region Preview
+
+class BandListUiStateProvider : PreviewParameterProvider<BandListUiState> {
+    override val values = sequenceOf(
+        BandListUiState.Loading,
+        BandListUiState.Error("You appear to be offline"),
+        BandListUiState.Success(
+            listOf(
+                Band("Widespread Panic", "Rock", "Widespread Panic"),
+                Band("Metallica", "Heavy Metal", "Metallica"),
+                Band("Outkast", "Hip Hop", "Outkast"),
+                Band("Nirvana", "Grunge", "Nirvana"),
+                Band("Widespread Panic", "Rock", "Widespread Panic"),
+                Band("Metallica", "Heavy Metal", "Metallica"),
+                Band("Outkast", "Hip Hop", "Outkast"),
+                Band("Nirvana", "Grunge", "Nirvana"),
+            )
+        )
+    )
+
+}
+
+@PreviewLightDark
+@PreviewScreenSizes
+@Composable
+fun BandListScreenDataPreview(@PreviewParameter(BandListUiStateProvider::class) uiState: BandListUiState) {
+    MediaBrowserTheme {
+        Surface {
+            BandListScreen(uiState = uiState)
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun LoadingPreview() {
+    MediaBrowserTheme {
+        Surface {
+            LoadingView()
+        }
+    }
+}
+
+@PreviewLightDark
+@PreviewScreenSizes
+@Composable
+private fun ErrorPreview() {
+    MediaBrowserTheme {
+        Surface {
+            ErrorView("You appear to be offline")
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun BandListPreview() {
+    MediaBrowserTheme {
+        Surface {
+            BandListView(
+                bandList = listOf(
+                    Band("Widespread Panic", "Rock", "Widespread Panic"),
+                    Band("Metallica", "Heavy Metal", "Metallica"),
+                    Band("Outkast", "Hip Hop", "Outkast")
+                ),
+                onClickBand = {},
+            )
+        }
+    }
+}
+
+@PreviewLightDark
 @Composable
 fun BandCardPreview() {
     MediaBrowserTheme {
@@ -218,12 +222,4 @@ fun BandCardPreview() {
     }
 }
 
-@Preview
-@Composable
-fun BandCardPreviewDark() {
-    MediaBrowserTheme(darkTheme = true) {
-        Surface {
-            BandCard(Band("Outkast", "Hip Hop", "Outkast")) {}
-        }
-    }
-}
+//endregion
