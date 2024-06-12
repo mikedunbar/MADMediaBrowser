@@ -2,11 +2,12 @@
 
 
 # Modern Android Media Browser
-A contrived POC samples app
+A POC sample app
 
 ## Purpose
-Showcase modern Android development skills, to aid in landing my next job and keeping my head in the game.
+Showcase competancy in modern Android development best practices, to aid in landing my next job and keeping my head in the game.
 
+## Backstory
 I was laid off as part of a 10% staff reduction in March. After a much needed sabbatical, I'm eagerly looking for my next Android adventure.
 This project aims to keep me busy and my skills fresh until I land my next job. UI/UX polish is taking a backseat to engineering best practices to 
 begin with, but I look forward to improving that as well. It will be a perpetual work in progress.
