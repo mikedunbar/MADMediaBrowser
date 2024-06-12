@@ -5,7 +5,7 @@
 A contrived POC samples app
 
 ## Purpose
-Showcase my modern Android development skills with a POC samples app, to aid in landing my next job.
+Showcase modern Android development skills, to aid in landing my next job and keeping my head in the game.
 
 I was laid off as part of a 10% staff reduction in March. After a 2 month sabbatical I'm now rested and looking for my next Android adventure.
 This project aims to keep me busy and my skills fresh until I land my next job. UI/UX polish is taking a backseat to engineering best practices to 
@@ -37,17 +37,23 @@ too many prospective employers take a look.
 - Behavior testing with JUnit 5
 
 ## In flight
-- Reconnect real API / Scrollable list of bands / Click to album list
+### Training for interview coding challenges
+- Gotta, gotta eat. Whatever it takes
+
+### MVP Functionality
+- Real API: Scrollable, paged Band List Screen. Click to Album List Screen, Click to Song List Screen.
+- Play songs
 
 ## On Deck
-Too much to list, but I plan to make "at least" daily updates in building out this showcase, including
+- UI tests with Espresso
+- ViewModel tests
+- Domain and Data Layer tests
 - Optimize layout in landscape mode
+- Play a song
 - Data survives configuration change (settings input field, e.g.)
-- Infinite scrollable list
-- version catalogue for dependencies
+- TOML version catalogue for dependencies
 - WorkManager (for syncing)
 - Offline first
-- Play a song
 - Play a video
 - Ship as app bundle
 - cool splash effect
@@ -55,7 +61,6 @@ Too much to list, but I plan to make "at least" daily updates in building out th
 - timber for logging
 - Baseline profiles
 - Biometric authentication
-- UI tests with Espresso
 - Android integration with Instrumentation tests
 - App Widget with Glance
 - WearOS version
