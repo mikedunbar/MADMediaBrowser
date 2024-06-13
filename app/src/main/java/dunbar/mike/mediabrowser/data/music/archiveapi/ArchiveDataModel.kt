@@ -27,7 +27,7 @@ data class BandSearchResponsePayload(
 data class BandSearchResponseDoc(
     val creator: String,
     val identifier: String,
-    val publicdate: String,
+    val publicdate: String?,
 )
 
 
@@ -78,7 +78,7 @@ data class Show(
         return Album(
             Band(
                 name = responseDoc.creator,
-                genre = "Rock",
+                description = "Rock",
                 id = responseDoc.identifier,
             ),
             responseDoc.title,
@@ -98,6 +98,7 @@ sealed interface MetadataResponse
 data class SuccessfulMetadataResponse(
     val server: String,
     val dir: String,
+    val subject: String?,
     val files: List<MetadataFile>
 ) : MetadataResponse
 

@@ -6,56 +6,50 @@ import dunbar.mike.mediabrowser.data.music.MusicRemoteDataSource
 import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class ArchiveApiMusicRemoteDataSource @Inject constructor(
+class ArchiveRemoteDataSource @Inject constructor(
     private val archiveApi: ArchiveApi,
     private val logger: Logger,
 ) : MusicRemoteDataSource {
 
-    override suspend fun getBands() = withContext(Dispatchers.IO) {
-        val bandSearchResponse = archiveApi.searchBands()
-        val responseBody = bandSearchResponse.body()
+    override suspend fun getBands(startPage: Int): Result<List<Band>> = withContext(Dispatchers.IO) {
+        logger.d(TAG, "Getting bands from page $startPage")
+        val bandSearchResponse = archiveApi.searchBands(rows = PAGE_SIZE, page = startPage)
+        val bandSearchResponseBody = bandSearchResponse.body()
 
-        if (!bandSearchResponse.isSuccessful || responseBody == null) {
+        if (!bandSearchResponse.isSuccessful || bandSearchResponseBody == null) {
             throw ArchiveApi.Exception(
                 "Unable to getBands, response code: ${bandSearchResponse.code()}, response body: ${bandSearchResponse.errorBody()?.string()}"
             )
         }
-
         val bands = mutableListOf<Band>()
-        responseBody.bandSearchResponsePayload.docs.forEach { doc ->
-
-            val bandMetadata = async {
-                getMetaData(doc.creator, doc.identifier)
+        val bandSearchResponseList = bandSearchResponseBody.bandSearchResponsePayload.docs
+        bandSearchResponseList.map {
+            async {
+                val bandMetadata = getMetaData(it.identifier)
+                bands.add(Band(name = it.creator, description = bandMetadata.subject ?: "unknown", id = it.identifier))
             }
-
-            bands.add(
-                Band(
-                    name = doc.creator,
-                    genre = "Unknown",
-                    id = doc.identifier
-                )
-            )
-        }
-        logger.d(TAG, "Done processing payload")
+        }.awaitAll()
+        logger.d(TAG, "Returning bands from page=%d: %s", startPage, bands)
         Result.success(bands)
     }
 
-    private suspend fun getMetaData(creator: String, identifier: String): SuccessfulMetadataResponse {
-        logger.d(TAG, "Getting metadata for band $creator with ID $identifier: $identifier")
-        val bandMetadata = archiveApi.getMetaData(identifier)
-        logger.d(TAG, "Got metadata for band $creator: $bandMetadata")
-        return bandMetadata
+    private suspend fun getMetaData(identifier: String): SuccessfulMetadataResponse {
+//        logger.d(TAG, "Getting metadata for $identifier")
+        val metadata = archiveApi.getMetaData(identifier)
+//        logger.d(TAG, "Got metadata $identifier: $metadata")
+        return metadata
     }
 
-    override suspend fun getAlbums(bandName: String): Result<List<Album>> {
-        if (bandName != "Grateful Dead") {
-            return Result.success(listOf())
-        }
-
-        val showsSearchResponse = ShowSearchSuccessResponse(archiveApi.searchDeadShows().showSearchResponsePayload)
+    override suspend fun getAlbums(bandId: String, startPage: Int): Result<List<Album>> {
+        val showsSearchResponse = ShowSearchSuccessResponse(archiveApi.searchAlbums(
+            rows = PAGE_SIZE,
+            page = startPage,
+            query = "collection:($bandId)"
+        ).showSearchResponsePayload)
         val shows = mutableListOf<Show>()
         showsSearchResponse.showSearchResponsePayload.docs.forEach { doc ->
             try {
@@ -68,7 +62,7 @@ class ArchiveApiMusicRemoteDataSource @Inject constructor(
                 shows.add(
                     Show(
                         doc,
-                        SuccessfulMetadataResponse(server = showMetadata.server, dir = showMetadata.dir, files = flacFiles)
+                        SuccessfulMetadataResponse(server = showMetadata.server, dir = showMetadata.dir, showMetadata.subject, files = flacFiles)
                     )
                 )
             } catch (t: Throwable) {
@@ -99,6 +93,7 @@ class ArchiveApiMusicRemoteDataSource @Inject constructor(
     }
 
     companion object {
-        const val TAG = "ArchiveApiMusicRemoteDataSource"
+        const val TAG = "ArchiveRemoteDataSource"
+        const val PAGE_SIZE = 20
     }
 }

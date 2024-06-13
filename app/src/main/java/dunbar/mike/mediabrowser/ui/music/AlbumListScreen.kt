@@ -33,6 +33,7 @@ import dunbar.mike.mediabrowser.data.music.createTestAlbum
 import dunbar.mike.mediabrowser.ui.shared.ErrorView
 import dunbar.mike.mediabrowser.ui.shared.LoadingView
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
+import dunbar.mike.mediabrowser.util.formatDateLocalMedium
 
 @Composable
 fun AlbumListScreenRoot(
@@ -100,8 +101,8 @@ fun AlbumCard(
         Column(modifier = Modifier.padding(5.dp))
         {
             Text(album.name, fontWeight = FontWeight.Bold)
-            Text(album.releaseDate.toString()) //todo date format
-            Text("${album.songs.size} Songs") // todo i18n
+            Text(formatDateLocalMedium(album.releaseDate))
+            Text("${album.songs.size} Songs")
         }
     }
 }
@@ -135,25 +136,5 @@ fun AlbumListScreenPreview(@PreviewParameter(UiStateProvider::class) uiState: Al
         }
     }
 }
-
-//@PreviewLightDark
-//@Composable
-//fun AlbumListPreview() {
-//    MediaBrowserTheme {
-//        Surface {
-//            AlbumListView(albumList = createTestAlbumList("Widespread Panic"))
-//        }
-//    }
-//}
-//
-//@PreviewLightDark
-//@Composable
-//fun AlbumCardPreview() {
-//    MediaBrowserTheme {
-//        Surface {
-//            AlbumCard(createTestAlbum())
-//        }
-//    }
-//}
 
 //endregion

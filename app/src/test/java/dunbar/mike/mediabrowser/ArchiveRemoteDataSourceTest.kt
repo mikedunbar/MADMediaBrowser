@@ -1,7 +1,7 @@
 package dunbar.mike.mediabrowser
 
 import dunbar.mike.mediabrowser.data.music.archiveapi.ArchiveApi
-import dunbar.mike.mediabrowser.data.music.archiveapi.ArchiveApiMusicRemoteDataSource
+import dunbar.mike.mediabrowser.data.music.archiveapi.ArchiveRemoteDataSource
 import dunbar.mike.mediabrowser.util.ConsoleLogger
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -15,15 +15,15 @@ import java.lang.String.format
 import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
-class ArchiveApiMusicRemoteDataSourceTest {
+class ArchiveRemoteDataSourceTest {
     private val logger = ConsoleLogger()
     private val archiveApi = createArchiveApi()
-    private val archiveDataSource = ArchiveApiMusicRemoteDataSource(archiveApi, logger)
+    private val archiveDataSource = ArchiveRemoteDataSource(archiveApi, logger)
 
     // Bogus test...to get API working
     @Test
     fun `test searchDeadShows`() = runBlocking {
-        val albums = archiveDataSource.getAlbums("Grateful Dead")
+        val albums = archiveDataSource.getAlbums("Grateful Dead").getOrThrow()
         print(format("In test, got albums %s", albums))
         assertEquals(10, albums.size)
     }

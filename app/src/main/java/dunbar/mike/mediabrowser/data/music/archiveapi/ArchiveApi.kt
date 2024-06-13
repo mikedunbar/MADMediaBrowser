@@ -3,6 +3,7 @@ package dunbar.mike.mediabrowser.data.music.archiveapi
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 
 /**
@@ -26,20 +27,11 @@ https://archive.org/metadata/gd1984-04-29.149679.beyerm201.holbrook.flac2448
 @Suppress("KDocUnresolvedReference")
 interface ArchiveApi {
 
-    @GET(
-        "advancedsearch.php?output=json&rows=10" +
-                "&fl[]=date&fl[]=title&fl[]=avg_rating" +
-                "&fl[]=identifier&fl[]=downloads&fl[]=creator" +
-                "&q=collection:(GratefulDead)"
-    )
-    suspend fun searchDeadShows(): ShowSearchSuccessResponse
+    @GET("advancedsearch.php?output=json&fl[]=date,title,avg_rating,identifier,downloads,creator&q=collection:(GratefulDead)")
+    suspend fun searchAlbums(@Query("rows") rows: Int, @Query("page") page: Int, @Query("q")query: String): ShowSearchSuccessResponse
 
-    @GET(
-        "advancedsearch.php?output=json&rows=10" +
-                "&fl[]=creator,identifier,publicdate" +
-                "&q=collection:etree AND mediatype:collection"
-    )
-    suspend fun searchBands(): Response<BandSearchResponse>
+    @GET("advancedsearch.php?output=json&fl[]=creator,identifier,publicdate&sort[]=creator asc&q=collection:etree AND mediatype:collection")
+    suspend fun searchBands(@Query("rows") rows: Int, @Query("page") page: Int): Response<BandSearchResponse>
 
     @GET("metadata/{archiveId}")
     suspend fun getMetaData(@Path("archiveId") archiveId: String): SuccessfulMetadataResponse

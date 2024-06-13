@@ -16,6 +16,6 @@ data class Song(
 
 data class Band(
     val name: String,
-    val genre: String,
+    val description: String,
     val id: String,
 )

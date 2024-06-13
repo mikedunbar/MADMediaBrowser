@@ -8,12 +8,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,25 +37,36 @@ import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.ui.shared.ErrorView
 import dunbar.mike.mediabrowser.ui.shared.LoadingView
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
+import dunbar.mike.mediabrowser.util.AndroidLogger
+
+val myLogger = AndroidLogger
+val TAG = "DEBUG:BandListScreen"
 
 @Composable
 fun BandListScreenRoot(
     viewModel: BandListViewModel = hiltViewModel<BandListViewModel>(),
-    onClickBand: (String) -> Unit = {}
+    onClickBand: (String) -> Unit, // TODO - fold into ViewModel?
 ) {
-    BandListScreen(uiState = viewModel.uiState.collectAsStateWithLifecycle().value, onClickBand)
+    BandListScreen(
+        uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        onClickBand = onClickBand,
+        onLoadMore = viewModel::nextPage
+    )
 }
 
 @Composable
 fun BandListScreen(
     uiState: BandListUiState,
     onClickBand: (String) -> Unit = {},
+    onLoadMore: () -> Unit = {}
 ) {
+    myLogger.d(TAG, "rendering with uiState=$uiState")
     when (uiState) {
         is BandListUiState.Success -> {
             BandListView(
                 bandList = uiState.bands,
                 onClickBand = onClickBand,
+                onLoadMore = onLoadMore
             )
         }
 
@@ -68,12 +84,40 @@ fun BandListScreen(
 fun BandListView(
     bandList: List<Band>,
     onClickBand: (String) -> Unit,
+    onLoadMore: () -> Unit = {},
 ) {
-    val scrollState = rememberLazyListState()
+    val listState = rememberLazyListState()
 
-    LazyColumn(state = scrollState) {
-        items(bandList.size) {
-            BandCard(bandList[it], onClickBand)
+    val reachedBottom by remember {
+        derivedStateOf {
+            val totalItemsCount = listState.layoutInfo.totalItemsCount
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+            val lastVisibleItemIndex = lastVisibleItem?.index ?: 0
+            val hasReachedBottom = lastVisibleItemIndex != 0 && lastVisibleItemIndex == totalItemsCount - 1
+            myLogger.d(
+                TAG,
+                "deriving reachedBottom. totalItems=%s, lastVisibleIndex=%s, hasReachedBottom=%s",
+                totalItemsCount,
+                lastVisibleItemIndex,
+                hasReachedBottom
+            )
+            hasReachedBottom
+        }
+    }
+
+    LaunchedEffect(reachedBottom) {
+        if (reachedBottom) {
+            myLogger.d(TAG, "reachedBottom, loading more")
+            onLoadMore()
+        }
+    }
+
+    LazyColumn(state = listState) {
+        items(
+            items=bandList,
+            key = { it.id }
+        ) {
+            BandCard(it, onClickBand)
         }
     }
 }
@@ -105,7 +149,7 @@ fun BandCard(
         Column(modifier = Modifier.padding(5.dp))
         {
             Text(band.name, fontWeight = FontWeight.Bold)
-            Text(band.genre)
+            Text(band.description)
         }
     }
 }
@@ -117,7 +161,8 @@ class BandListUiStateProvider : PreviewParameterProvider<BandListUiState> {
         BandListUiState.Loading,
         BandListUiState.Error("You appear to be offline"),
         BandListUiState.Success(
-            listOf(
+            page = 1,
+            bands = listOf(
                 Band("Widespread Panic", "Rock", "Widespread Panic"),
                 Band("Metallica", "Heavy Metal", "Metallica"),
                 Band("Outkast", "Hip Hop", "Outkast"),

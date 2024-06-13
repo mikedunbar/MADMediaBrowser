@@ -5,9 +5,9 @@ import java.time.LocalDate
 
 class FakeMusicRemoteDataSource : MusicRemoteDataSource {
 
-    override suspend fun getBands() = Result.success(createTestBandList())
+    override suspend fun getBands(startPage: Int) = Result.success(createTestBandList())
 
-    override suspend fun getAlbums(bandName: String) = Result.success(createTestAlbumList(bandName))
+    override suspend fun getAlbums(bandId: String, startPage: Int) = Result.success(createTestAlbumList(bandId))
 
 }
 
