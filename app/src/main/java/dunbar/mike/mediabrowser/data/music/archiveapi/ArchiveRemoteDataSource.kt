@@ -45,13 +45,15 @@ class ArchiveRemoteDataSource @Inject constructor(
     }
 
     override suspend fun getAlbums(bandId: String, startPage: Int): Result<List<Album>> {
-        val showsSearchResponse = ShowSearchSuccessResponse(archiveApi.searchAlbums(
-            rows = PAGE_SIZE,
-            page = startPage,
-            query = "collection:($bandId)"
-        ).showSearchResponsePayload)
-        val shows = mutableListOf<Show>()
-        showsSearchResponse.showSearchResponsePayload.docs.forEach { doc ->
+        val albumSearchResponse = AlbumSearchSuccessResponse(
+            archiveApi.searchAlbums(
+                rows = PAGE_SIZE,
+                page = startPage,
+                query = "collection:($bandId)"
+            ).albumSearchResponsePayload
+        )
+        val archiveAlbums = mutableListOf<ArchiveAlbum>()
+        albumSearchResponse.albumSearchResponsePayload.docs.forEach { doc ->
             try {
                 val showMetadata = withContext(Dispatchers.IO) {
                     archiveApi.getMetaData(doc.identifier)
@@ -59,37 +61,36 @@ class ArchiveRemoteDataSource @Inject constructor(
                 val flacFiles = showMetadata.files.filter {
                     SupportedAudioFile.FLAC.ids.contains(it.format)
                 }
-                shows.add(
-                    Show(
+                archiveAlbums.add(
+                    ArchiveAlbum(
                         doc,
                         SuccessfulMetadataResponse(server = showMetadata.server, dir = showMetadata.dir, showMetadata.subject, files = flacFiles)
                     )
                 )
             } catch (t: Throwable) {
-                logger.e(TAG, "Error getting metadata for show ${doc.identifier}", t)
+                logger.e(TAG, "Error getting metadata for album ${doc.identifier}", t)
             }
         }
-        println("got shows (${shows.size}):")
+        println("got albums (${archiveAlbums.size}):")
         val albums = mutableListOf<Album>()
-        shows.forEach { show ->
-            albums.add(show.asAlbum())
-            println("Title: ${show.responseDoc.title}")
-            println("Date: ${show.responseDoc.date}")
-            println("Avg Rating: ${show.responseDoc.avg_rating}")
-            println("Web page URL: http://archive.org/details/${show.responseDoc.identifier}")
-            println("Metadata URL:  https://archive.org/metadata/${show.responseDoc.identifier}")
-            when (show.metadataResponse) {
+        archiveAlbums.forEach {
+            albums.add(it.asAlbum())
+            println("Title: ${it.responseDoc.title}")
+            println("Date: ${it.responseDoc.date}")
+            println("Avg Rating: ${it.responseDoc.avg_rating}")
+            println("Web page URL: http://archive.org/details/${it.responseDoc.identifier}")
+            println("Metadata URL:  https://archive.org/metadata/${it.responseDoc.identifier}")
+            when (it.metadataResponse) {
                 is SuccessfulMetadataResponse -> {
-                    println("Files (${show.metadataResponse.files.size})")
-                    val files = show.metadataResponse.files
+                    logger.d(TAG, "Files (${it.metadataResponse.files.size})")
+                    val files = it.metadataResponse.files
                     files.forEach { file ->
-                        println("\t\tTitle: ${file.title}, Name: http://archive.org/download/${show.responseDoc.identifier}/${file.name}, Length: ${file.length}")
+                        logger.d(TAG, "\t\tTitle: ${file.title}, Name: http://archive.org/download/${it.responseDoc.identifier}/${file.name}, Length: ${file.length}")
                     }
                 }
             }
         }
         return Result.success(albums)
-
     }
 
     companion object {

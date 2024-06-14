@@ -12,7 +12,7 @@ class MusicRepository @Inject constructor(
         remoteDataSource.getBands(startPage)
     }
 
-    suspend fun getAlbums(bandName: String) = withContext(ioDispatcher) { remoteDataSource.getAlbums(bandName) }
+    suspend fun getAlbums(bandId: String) = withContext(ioDispatcher) { remoteDataSource.getAlbums(bandId) }
 
 }
 

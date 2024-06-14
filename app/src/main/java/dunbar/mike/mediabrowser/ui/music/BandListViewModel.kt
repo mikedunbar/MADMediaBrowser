@@ -46,7 +46,7 @@ class BandListViewModel @Inject constructor(
     }
 
     companion object {
-        const val TAG = "DEBUG:BandListViewModel"
+        const val TAG = "BandListViewModel"
     }
 
 }

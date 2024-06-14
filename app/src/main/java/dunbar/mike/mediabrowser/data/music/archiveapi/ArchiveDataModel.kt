@@ -35,20 +35,20 @@ data class BandSearchResponseDoc(
 
 //region Search Shows
 @JsonClass(generateAdapter = true)
-data class ShowSearchSuccessResponse(
+data class AlbumSearchSuccessResponse(
     @Json(name = "response")
-    val showSearchResponsePayload: ShowSearchResponsePayload
+    val albumSearchResponsePayload: AlbumSearchResponsePayload
 ) : SearchResponse
 
 @JsonClass(generateAdapter = true)
-data class ShowSearchResponsePayload(
+data class AlbumSearchResponsePayload(
     val numFound: Int,
     val start: Int,
-    val docs: List<ShowSearchResponseDoc>
+    val docs: List<AlbumSearchResponseDoc>
 )
 
 @JsonClass(generateAdapter = true)
-data class ShowSearchResponseDoc(
+data class AlbumSearchResponseDoc(
     val creator: String,
     val title: String,
     val date: String,
@@ -57,8 +57,8 @@ data class ShowSearchResponseDoc(
     val downloads: Int,
 )
 
-data class Show(
-    val responseDoc: ShowSearchResponseDoc,
+data class ArchiveAlbum(
+    val responseDoc: AlbumSearchResponseDoc,
     val metadataResponse: MetadataResponse,
 ) {
     fun asAlbum(): Album {

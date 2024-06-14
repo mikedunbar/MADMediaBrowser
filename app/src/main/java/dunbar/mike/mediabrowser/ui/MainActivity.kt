@@ -22,8 +22,6 @@ import dunbar.mike.mediabrowser.ui.MainActivityUiState.Success
 import dunbar.mike.mediabrowser.util.AndroidLogger
 import kotlinx.coroutines.launch
 
-val logger = AndroidLogger
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: MainActivityViewModel by viewModels()

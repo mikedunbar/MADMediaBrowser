@@ -27,8 +27,8 @@ https://archive.org/metadata/gd1984-04-29.149679.beyerm201.holbrook.flac2448
 @Suppress("KDocUnresolvedReference")
 interface ArchiveApi {
 
-    @GET("advancedsearch.php?output=json&fl[]=date,title,avg_rating,identifier,downloads,creator&q=collection:(GratefulDead)")
-    suspend fun searchAlbums(@Query("rows") rows: Int, @Query("page") page: Int, @Query("q")query: String): ShowSearchSuccessResponse
+    @GET("advancedsearch.php?output=json&fl[]=date,title,avg_rating,identifier,downloads,creator")
+    suspend fun searchAlbums(@Query("rows") rows: Int, @Query("page") page: Int, @Query("q")query: String): AlbumSearchSuccessResponse
 
     @GET("advancedsearch.php?output=json&fl[]=creator,identifier,publicdate&sort[]=creator asc&q=collection:etree AND mediatype:collection")
     suspend fun searchBands(@Query("rows") rows: Int, @Query("page") page: Int): Response<BandSearchResponse>

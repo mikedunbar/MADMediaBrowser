@@ -15,8 +15,8 @@ class AlbumListViewModel @Inject constructor(private val musicRepository: MusicR
     private val _uiState = MutableStateFlow<AlbumListUiState>(AlbumListUiState.Loading)
     val uiState: StateFlow<AlbumListUiState> = _uiState
 
-    fun setBand(bandName: String) = viewModelScope.launch {
-        musicRepository.getAlbums(bandName)
+    fun setBand(bandId: String) = viewModelScope.launch {
+        musicRepository.getAlbums(bandId)
             .onSuccess { _uiState.value = AlbumListUiState.Success(it) }
             .onFailure { _uiState.value = AlbumListUiState.Error(it.message ?: "Unknown error") }
     }

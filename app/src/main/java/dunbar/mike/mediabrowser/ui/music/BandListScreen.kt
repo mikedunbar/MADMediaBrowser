@@ -37,10 +37,6 @@ import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.ui.shared.ErrorView
 import dunbar.mike.mediabrowser.ui.shared.LoadingView
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
-import dunbar.mike.mediabrowser.util.AndroidLogger
-
-val myLogger = AndroidLogger
-val TAG = "DEBUG:BandListScreen"
 
 @Composable
 fun BandListScreenRoot(
@@ -60,7 +56,6 @@ fun BandListScreen(
     onClickBand: (String) -> Unit = {},
     onLoadMore: () -> Unit = {}
 ) {
-    myLogger.d(TAG, "rendering with uiState=$uiState")
     when (uiState) {
         is BandListUiState.Success -> {
             BandListView(
@@ -94,27 +89,19 @@ fun BandListView(
             val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
             val lastVisibleItemIndex = lastVisibleItem?.index ?: 0
             val hasReachedBottom = lastVisibleItemIndex != 0 && lastVisibleItemIndex == totalItemsCount - 1
-            myLogger.d(
-                TAG,
-                "deriving reachedBottom. totalItems=%s, lastVisibleIndex=%s, hasReachedBottom=%s",
-                totalItemsCount,
-                lastVisibleItemIndex,
-                hasReachedBottom
-            )
             hasReachedBottom
         }
     }
 
     LaunchedEffect(reachedBottom) {
         if (reachedBottom) {
-            myLogger.d(TAG, "reachedBottom, loading more")
             onLoadMore()
         }
     }
 
     LazyColumn(state = listState) {
         items(
-            items=bandList,
+            items = bandList,
             key = { it.id }
         ) {
             BandCard(it, onClickBand)
@@ -133,8 +120,8 @@ fun BandCard(
             .padding(10.dp)
             .fillMaxWidth()
             .selectable(
-                selected = false, //TODO
-                onClick = { onClickBand(band.name) }
+                selected = false,
+                onClick = { onClickBand(band.id) }
             )
     )
     {

@@ -1,7 +1,6 @@
 package dunbar.mike.mediabrowser.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +17,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -38,19 +36,6 @@ import dunbar.mike.mediabrowser.ui.music.MusicLibraryScreen
 import dunbar.mike.mediabrowser.ui.settings.SettingsScreenRoot
 
 @Composable
-// TODO Get this showing up, using new M3 style
-fun NavDrawerHeader() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 64.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Header", fontSize = 60.sp)
-    }
-}
-
-@Composable
 fun NavDrawerBody(
     currentNavDestination: NavDestination?,
     items: List<NavigationItem>,
@@ -58,7 +43,6 @@ fun NavDrawerBody(
     itemTextStyle: TextStyle = TextStyle(fontSize = 18.sp),
     onItemClick: (NavigationItem) -> Unit,
 ) {
-    // TODO use standard nav drawer, when in landscape phone or larger screen
     ModalDrawerSheet {
         LazyColumn(modifier) {
             items(items) { item ->
@@ -124,16 +108,15 @@ fun MediaBrowserNavHost(
         }
         composable(Screen.BandList.name) {
             BandListScreenRoot(
-                onClickBand = { bandName ->
-                    logger.d("MediaBrowserNavHost", "Band was clicked: $bandName")
-                    navController.navigate("${Screen.AlbumList.name}/$bandName")
+                onClickBand = { bandId ->
+                    navController.navigate("${Screen.AlbumList.name}/$bandId")
                 },
             )
         }
-        composable("${Screen.AlbumList.name}/{bandName}") {
-            val bandName = it.arguments?.getString("bandName") ?: "Grateful Dead"
+        composable("${Screen.AlbumList.name}/{bandId}") {
+            val bandId = it.arguments?.getString("bandId") ?: "GratefulDead"
             val albumListViewModel = hiltViewModel<AlbumListViewModel>()
-            albumListViewModel.setBand(bandName)
+            albumListViewModel.setBand(bandId)
             AlbumListScreenRoot(albumListViewModel)
         }
         composable(Screen.SongList.name) {
