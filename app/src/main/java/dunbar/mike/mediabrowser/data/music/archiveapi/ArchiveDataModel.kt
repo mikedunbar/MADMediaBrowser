@@ -76,14 +76,15 @@ data class ArchiveAlbum(
         }
 
         return Album(
-            Band(
+            band = Band(
                 name = responseDoc.creator,
                 description = "Rock",
                 id = responseDoc.identifier,
             ),
-            responseDoc.title,
-            localDateTimeFromIsoInstant(responseDoc.date).toLocalDate(),
-            songList,
+            name = responseDoc.title,
+            id = responseDoc.identifier,
+            releaseDate = localDateTimeFromIsoInstant(responseDoc.date).toLocalDate(),
+            songs = songList,
         )
     }
 }

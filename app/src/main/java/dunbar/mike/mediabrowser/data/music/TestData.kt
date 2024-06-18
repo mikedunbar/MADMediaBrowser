@@ -51,6 +51,7 @@ fun createTestBandList(): List<Band> {
 fun createTestAlbum(
     band: Band = Band("Grateful Dead", "Psychedelic Rock", id = "GratefulDead"),
     name: String = band.name,
+    id: String = "abc",
     releaseDate: LocalDate = LocalDate.now(),
     songList: List<Song> = listOf(
         Song("$name Song 1", 300.5),
@@ -64,7 +65,7 @@ fun createTestAlbum(
         Song("$name Song 9", 300.5),
         Song("$name Song 10", 300.5),
     )
-) = Album(band, name, releaseDate, songList)
+) = Album(band, name, id, releaseDate, songList)
 
 fun createTestAlbumList(bandName: String): List<Album> {
     val albums = mutableListOf<Album>()

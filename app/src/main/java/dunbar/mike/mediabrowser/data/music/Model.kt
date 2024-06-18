@@ -5,6 +5,7 @@ import java.time.LocalDate
 data class Album(
     val band: Band,
     val name: String,
+    val id: String,
     val releaseDate: LocalDate,
     val songs: List<Song>
 )

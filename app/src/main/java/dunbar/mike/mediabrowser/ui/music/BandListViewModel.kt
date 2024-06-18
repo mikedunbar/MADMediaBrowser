@@ -5,56 +5,52 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.data.music.MusicRepository
-import dunbar.mike.mediabrowser.util.Logger
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onSubscription
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class BandListViewModel @Inject constructor(
     private val musicRepository: MusicRepository,
-    private val logger: Logger,
-
-    ) : ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow<BandListUiState>(BandListUiState.Loading)
     val uiState: StateFlow<BandListUiState> = _uiState
+        .onSubscription { getBands() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), BandListUiState.Loading)
 
-    //TODO survive a configuration change
-    private var currentPage = 1
-    private val bands = mutableListOf<Band>() // TODO thread safety?
-
-    init {
-        viewModelScope.launch {
-            getBands()
-        }
-    }
+    private val bands = mutableListOf<Band>()
+    private var bandsJob: Job? = null
 
     fun nextPage() {
-        currentPage++
         getBands()
     }
 
-    private fun getBands() = viewModelScope.launch {
-        logger.d(TAG, "getBands: $currentPage")
-        musicRepository.getBands(currentPage)
-            .onSuccess {
-                bands.addAll(it)
-                _uiState.value = BandListUiState.Success(bands = bands, page = currentPage)
-            }
-            .onFailure { _uiState.value = BandListUiState.Error(it.message ?: "Unknown error") }
+    private fun getBands() {
+        bandsJob?.cancel()
+        bandsJob = viewModelScope.launch {
+            val page = (_uiState.value as? BandListUiState.Success)?.let { it.page + 1 } ?: 1
+            musicRepository.getBands(page)
+                .onSuccess {
+                    bands.addAll(it)
+                    _uiState.update { BandListUiState.Success(bands = bands, page = page) }
+                }
+                .onFailure { error ->
+                    _uiState.update { BandListUiState.Error(error.message ?: "Unknown error") }
+                }
+        }
     }
-
-    companion object {
-        const val TAG = "BandListViewModel"
-    }
-
 }
 
 sealed interface BandListUiState {
     data object Loading : BandListUiState
 
-    data class Success(val page: Int,val bands: List<Band>) : BandListUiState
+    data class Success(val page: Int, val bands: List<Band>) : BandListUiState
 
     data class Error(val message: String) : BandListUiState
 

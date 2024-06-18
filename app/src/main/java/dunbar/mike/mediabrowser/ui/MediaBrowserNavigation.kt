@@ -114,13 +114,21 @@ fun MediaBrowserNavHost(
             )
         }
         composable("${Screen.AlbumList.name}/{bandId}") {
-            val bandId = it.arguments?.getString("bandId") ?: "GratefulDead"
+            val bandId = it.arguments?.getString("bandId") ?: ""
             val albumListViewModel = hiltViewModel<AlbumListViewModel>()
-            albumListViewModel.setBand(bandId)
-            AlbumListScreenRoot(albumListViewModel)
+            albumListViewModel.setBandId(bandId)
+            AlbumListScreenRoot(
+                viewModel = albumListViewModel,
+                onClickAlbum = { albumId ->
+                    navController.navigate("${Screen.SongList.name}/$albumId")
+                }
+            )
         }
-        composable(Screen.SongList.name) {
-            PlaceholderScreen(screenName = stringResource(id = R.string.songs_screen))
+        composable("{Screen.SongList.name}/{albumId}") {
+            val albumId = it.arguments?.getString("albumId") ?: ""
+            PlaceholderScreen(screenName = stringResource(id = R.string.songs_screen)) {
+                Text(text = "Song for album $albumId")
+            }
         }
         composable(Screen.VideoLibrary.name) {
             PlaceholderScreen(screenName = stringResource(id = R.string.video_library))

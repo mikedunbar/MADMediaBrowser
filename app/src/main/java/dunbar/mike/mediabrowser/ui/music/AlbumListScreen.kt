@@ -8,12 +8,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,19 +43,20 @@ import dunbar.mike.mediabrowser.util.formatDateLocalMedium
 @Composable
 fun AlbumListScreenRoot(
     viewModel: AlbumListViewModel = hiltViewModel<AlbumListViewModel>(),
-    onClickAlbum: (String) -> Unit = {}
+    onClickAlbum: (String) -> Unit
 ) {
-    AlbumListScreen(uiState = viewModel.uiState.collectAsStateWithLifecycle().value, onClickAlbum)
+    AlbumListScreen(uiState = viewModel.uiState.collectAsStateWithLifecycle().value, onClickAlbum = onClickAlbum, onLoadMore = viewModel::onLoadMore )
 }
 
 @Composable
 fun AlbumListScreen(
     uiState: AlbumListUiState,
-    onClickAlbum: (String) -> Unit = {}
+    onClickAlbum: (String) -> Unit,
+    onLoadMore: () -> Unit,
 ) {
     when (uiState) {
         is AlbumListUiState.Success -> {
-            AlbumListView(albumList = uiState.albums, onClickAlbum = onClickAlbum)
+            AlbumListView(albumList = uiState.albums, onClickAlbum = onClickAlbum, onLoadMore = onLoadMore)
         }
 
         is AlbumListUiState.Error -> {
@@ -64,12 +70,35 @@ fun AlbumListScreen(
 }
 
 @Composable
-fun AlbumListView(albumList: List<Album>, onClickAlbum: (String) -> Unit = {}) {
-    val scrollState = rememberLazyListState()
+fun AlbumListView(
+    albumList: List<Album>,
+    onClickAlbum: (String) -> Unit,
+    onLoadMore: () -> Unit,
+) {
+    val listState = rememberLazyListState()
 
-    LazyColumn(state = scrollState) {
-        items(albumList.size) {
-            AlbumCard(albumList[it], onClickAlbum)
+    val reachedBottom by remember {
+        derivedStateOf {
+            val totalItemsCount = listState.layoutInfo.totalItemsCount
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+            val lastVisibleItemIndex = lastVisibleItem?.index ?: 0
+            val hasReachedBottom = lastVisibleItemIndex != 0 && lastVisibleItemIndex == totalItemsCount - 1
+            hasReachedBottom
+        }
+    }
+
+    LaunchedEffect(reachedBottom) {
+        if (reachedBottom) {
+            onLoadMore()
+        }
+    }
+
+    LazyColumn(state = listState) {
+        items(
+            items = albumList,
+            key = { it.id }
+        ) {
+            AlbumCard(album = it, onClickAlbum = onClickAlbum)
         }
     }
 }
@@ -114,7 +143,9 @@ class UiStateProvider : PreviewParameterProvider<AlbumListUiState> {
         AlbumListUiState.Error("Unable to fetch artists for album"),
         AlbumListUiState.Loading,
         AlbumListUiState.Success(
-            listOf(
+            bandId = "DatBand",
+            page = 1,
+            albums = listOf(
                 createTestAlbum(name = "Bombs and Butterflies"),
                 createTestAlbum(name = "Magical Mystery Tour"),
                 createTestAlbum(name = "Running Wide"),
@@ -132,7 +163,7 @@ class UiStateProvider : PreviewParameterProvider<AlbumListUiState> {
 fun AlbumListScreenPreview(@PreviewParameter(UiStateProvider::class) uiState: AlbumListUiState) {
     MediaBrowserTheme {
         Surface {
-            AlbumListScreen(uiState = uiState)
+            AlbumListScreen(uiState = uiState, onClickAlbum = {}, onLoadMore = {})
         }
     }
 }

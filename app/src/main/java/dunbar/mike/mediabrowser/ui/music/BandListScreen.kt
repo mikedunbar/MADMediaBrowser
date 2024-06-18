@@ -79,7 +79,7 @@ fun BandListScreen(
 fun BandListView(
     bandList: List<Band>,
     onClickBand: (String) -> Unit,
-    onLoadMore: () -> Unit = {},
+    onLoadMore: () -> Unit,
 ) {
     val listState = rememberLazyListState()
 
@@ -187,6 +187,7 @@ fun BandListPreview() {
                     Band("Outkast", "Hip Hop", "Outkast")
                 ),
                 onClickBand = {},
+                onLoadMore = {}
             )
         }
     }
