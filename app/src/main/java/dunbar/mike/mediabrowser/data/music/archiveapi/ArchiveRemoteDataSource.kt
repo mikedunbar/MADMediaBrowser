@@ -3,7 +3,6 @@ package dunbar.mike.mediabrowser.data.music.archiveapi
 import dunbar.mike.mediabrowser.data.music.Album
 import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.data.music.MusicRemoteDataSource
-import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -16,7 +15,7 @@ class ArchiveRemoteDataSource @Inject constructor(
 
     override suspend fun getBands(startPage: Int): Result<List<Band>> = withContext(Dispatchers.IO) {
         val response = archiveApi.searchBands(rows = PAGE_SIZE, page = startPage)
-        val payload = response.body()?.bandSearchResponsePayload
+        val payload = response.body()?.response
 
         if (!response.isSuccessful || payload == null) {
             throw ArchiveApi.Exception("Unable to getBands, response code: ${response.code()}, response body: ${response.errorBody()?.string()}")
@@ -25,8 +24,8 @@ class ArchiveRemoteDataSource @Inject constructor(
         payload.docs
             .map { band ->
                 async {
-                    val metadata = archiveApi.getMetaData(band.identifier)
-                    Band(name = band.creator, description = metadata.subject ?: "unknown", id = band.identifier)
+                    val subject: String = archiveApi.getMetaData(band.identifier).body()?.subject ?: "unknown"
+                    Band(name = band.creator, description = subject, id = band.identifier)
                 }
             }
             .awaitAll()
@@ -35,7 +34,7 @@ class ArchiveRemoteDataSource @Inject constructor(
 
     override suspend fun getAlbums(bandId: String, startPage: Int): Result<List<Album>> = withContext(Dispatchers.IO) {
         val response = archiveApi.searchAlbums(rows = PAGE_SIZE, page = startPage, query = "collection:($bandId)")
-        val payload = response.body()?.albumSearchResponsePayload
+        val payload = response.body()?.response
 
         if (!response.isSuccessful || payload == null) {
             throw ArchiveApi.Exception("Unable to getAlbums, response code: ${response.code()}, response body: ${response.errorBody()?.string()}")
@@ -44,21 +43,26 @@ class ArchiveRemoteDataSource @Inject constructor(
         payload.docs
             .map { album ->
                 async {
-                    val metadata = archiveApi.getMetaData(album.identifier)
-                    val flacFiles = metadata.files.filter {
-                        SupportedAudioFile.FLAC.ids.contains(it.format)
+                    val metadataResponse = archiveApi.getMetaData(album.identifier)
+                    val metadata = metadataResponse.body()
+                    if (metadataResponse.isSuccessful && metadata != null) {
+                        val flacFiles = metadata.files.filter {
+                            SupportedAudioFile.FLAC.ids.contains(it.format)
+                        }
+                        ArchiveAlbum(responseDoc = album, metadataResponse = metadata.copy(files = flacFiles))
+                    } else {
+                        null
                     }
-                    ArchiveAlbum(responseDoc = album, metadataResponse = metadata.copy(files = flacFiles))
+
                 }
             }
             .awaitAll()
+            .filterNotNull()
             .map { it.toDomainAlbum() }
             .let { Result.success(it) }
-
     }
 
     companion object {
-        const val TAG = "ArchiveRemoteDataSource"
         const val PAGE_SIZE = 20
     }
 }

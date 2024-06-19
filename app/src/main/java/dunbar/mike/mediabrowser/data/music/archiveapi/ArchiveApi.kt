@@ -34,7 +34,7 @@ interface ArchiveApi {
     suspend fun searchBands(@Query("rows") rows: Int, @Query("page") page: Int): Response<BandSearchResponse>
 
     @GET("metadata/{archiveId}")
-    suspend fun getMetaData(@Path("archiveId") archiveId: String): MetadataResponse
+    suspend fun getMetaData(@Path("archiveId") archiveId: String): Response<MetadataResponse>
 
     class Exception(message: String, cause: Throwable? = null) : kotlin.Exception(message, cause)
 

@@ -2,17 +2,13 @@
 
 package dunbar.mike.mediabrowser.data.music.archiveapi
 
-import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-
-sealed interface SearchResponse
 
 //region Band Search
 @JsonClass(generateAdapter = true)
 data class BandSearchResponse(
-    @Json(name = "response")
-    val bandSearchResponsePayload: BandSearchResponsePayload
-) : SearchResponse
+    val response: BandSearchResponsePayload
+)
 
 @JsonClass(generateAdapter = true)
 data class BandSearchResponsePayload(
@@ -31,9 +27,8 @@ data class BandSearchResponseDoc(
 //region Album Search
 @JsonClass(generateAdapter = true)
 data class AlbumSearchResponse(
-    @Json(name = "response")
-    val albumSearchResponsePayload: AlbumSearchResponsePayload
-) : SearchResponse
+    val response: AlbumSearchResponsePayload
+)
 
 @JsonClass(generateAdapter = true)
 data class AlbumSearchResponsePayload(
