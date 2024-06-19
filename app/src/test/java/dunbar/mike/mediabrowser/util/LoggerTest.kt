@@ -1,6 +1,5 @@
-package dunbar.mike.mediabrowser
+package dunbar.mike.mediabrowser.util
 
-import dunbar.mike.mediabrowser.util.ConsoleLogger
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 

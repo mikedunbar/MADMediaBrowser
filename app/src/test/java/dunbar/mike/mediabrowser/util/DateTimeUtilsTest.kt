@@ -1,7 +1,5 @@
-package dunbar.mike.mediabrowser
+package dunbar.mike.mediabrowser.util
 
-import dunbar.mike.mediabrowser.util.ZoneOffsetProvider
-import dunbar.mike.mediabrowser.util.localDateTimeFromIsoInstant
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments

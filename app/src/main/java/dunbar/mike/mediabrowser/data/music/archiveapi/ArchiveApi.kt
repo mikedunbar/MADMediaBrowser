@@ -28,13 +28,13 @@ https://archive.org/metadata/gd1984-04-29.149679.beyerm201.holbrook.flac2448
 interface ArchiveApi {
 
     @GET("advancedsearch.php?output=json&fl[]=date,title,avg_rating,identifier,downloads,creator")
-    suspend fun searchAlbums(@Query("rows") rows: Int, @Query("page") page: Int, @Query("q")query: String): AlbumSearchSuccessResponse
+    suspend fun searchAlbums(@Query("rows") rows: Int, @Query("page") page: Int, @Query("q")query: String): AlbumSearchResponse
 
     @GET("advancedsearch.php?output=json&fl[]=creator,identifier,publicdate&sort[]=creator asc&q=collection:etree AND mediatype:collection")
     suspend fun searchBands(@Query("rows") rows: Int, @Query("page") page: Int): Response<BandSearchResponse>
 
     @GET("metadata/{archiveId}")
-    suspend fun getMetaData(@Path("archiveId") archiveId: String): SuccessfulMetadataResponse
+    suspend fun getMetaData(@Path("archiveId") archiveId: String): MetadataResponse
 
     class Exception(message: String, cause: Throwable? = null) : kotlin.Exception(message, cause)
 

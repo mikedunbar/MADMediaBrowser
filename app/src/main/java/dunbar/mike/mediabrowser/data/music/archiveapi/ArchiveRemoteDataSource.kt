@@ -16,7 +16,6 @@ class ArchiveRemoteDataSource @Inject constructor(
 ) : MusicRemoteDataSource {
 
     override suspend fun getBands(startPage: Int): Result<List<Band>> = withContext(Dispatchers.IO) {
-        logger.d(TAG, "Getting bands from page $startPage")
         val bandSearchResponse = archiveApi.searchBands(rows = PAGE_SIZE, page = startPage)
         val bandSearchResponseBody = bandSearchResponse.body()
 
@@ -25,27 +24,18 @@ class ArchiveRemoteDataSource @Inject constructor(
                 "Unable to getBands, response code: ${bandSearchResponse.code()}, response body: ${bandSearchResponse.errorBody()?.string()}"
             )
         }
-        val bands = mutableListOf<Band>()
-        val bandSearchResponseList = bandSearchResponseBody.bandSearchResponsePayload.docs
-        bandSearchResponseList.map {
+
+        val bandList = bandSearchResponseBody.bandSearchResponsePayload.docs.map {
             async {
-                val bandMetadata = getMetaData(it.identifier)
-                bands.add(Band(name = it.creator, description = bandMetadata.subject ?: "unknown", id = it.identifier))
+                val bandMetadata = archiveApi.getMetaData(it.identifier)
+                Band(name = it.creator, description = bandMetadata.subject ?: "unknown", id = it.identifier)
             }
         }.awaitAll()
-        logger.d(TAG, "Returning bands from page=%d: %s", startPage, bands)
-        Result.success(bands)
-    }
-
-    private suspend fun getMetaData(identifier: String): SuccessfulMetadataResponse {
-//        logger.d(TAG, "Getting metadata for $identifier")
-        val metadata = archiveApi.getMetaData(identifier)
-//        logger.d(TAG, "Got metadata $identifier: $metadata")
-        return metadata
+        Result.success(bandList)
     }
 
     override suspend fun getAlbums(bandId: String, startPage: Int): Result<List<Album>> {
-        val albumSearchResponse = AlbumSearchSuccessResponse(
+        val albumSearchResponse = AlbumSearchResponse(
             archiveApi.searchAlbums(
                 rows = PAGE_SIZE,
                 page = startPage,
@@ -64,31 +54,16 @@ class ArchiveRemoteDataSource @Inject constructor(
                 archiveAlbums.add(
                     ArchiveAlbum(
                         doc,
-                        SuccessfulMetadataResponse(server = showMetadata.server, dir = showMetadata.dir, showMetadata.subject, files = flacFiles)
+                        MetadataResponse(server = showMetadata.server, dir = showMetadata.dir, showMetadata.subject, files = flacFiles)
                     )
                 )
             } catch (t: Throwable) {
                 logger.e(TAG, "Error getting metadata for album ${doc.identifier}", t)
             }
         }
-        println("got albums (${archiveAlbums.size}):")
         val albums = mutableListOf<Album>()
         archiveAlbums.forEach {
-            albums.add(it.asAlbum())
-            println("Title: ${it.responseDoc.title}")
-            println("Date: ${it.responseDoc.date}")
-            println("Avg Rating: ${it.responseDoc.avg_rating}")
-            println("Web page URL: http://archive.org/details/${it.responseDoc.identifier}")
-            println("Metadata URL:  https://archive.org/metadata/${it.responseDoc.identifier}")
-            when (it.metadataResponse) {
-                is SuccessfulMetadataResponse -> {
-                    logger.d(TAG, "Files (${it.metadataResponse.files.size})")
-                    val files = it.metadataResponse.files
-                    files.forEach { file ->
-                        logger.d(TAG, "\t\tTitle: ${file.title}, Name: http://archive.org/download/${it.responseDoc.identifier}/${file.name}, Length: ${file.length}")
-                    }
-                }
-            }
+            albums.add(it.toDomainAlbum())
         }
         return Result.success(albums)
     }

@@ -29,7 +29,6 @@ class AlbumListViewModel @Inject constructor(private val musicRepository: MusicR
     }
 
     fun onLoadMore() {
-        _uiState.update { AlbumListUiState.Loading }
         getAlbums()
     }
 
