@@ -12,60 +12,49 @@ import javax.inject.Inject
 
 class ArchiveRemoteDataSource @Inject constructor(
     private val archiveApi: ArchiveApi,
-    private val logger: Logger,
 ) : MusicRemoteDataSource {
 
     override suspend fun getBands(startPage: Int): Result<List<Band>> = withContext(Dispatchers.IO) {
-        val bandSearchResponse = archiveApi.searchBands(rows = PAGE_SIZE, page = startPage)
-        val bandSearchResponseBody = bandSearchResponse.body()
+        val response = archiveApi.searchBands(rows = PAGE_SIZE, page = startPage)
+        val payload = response.body()?.bandSearchResponsePayload
 
-        if (!bandSearchResponse.isSuccessful || bandSearchResponseBody == null) {
-            throw ArchiveApi.Exception(
-                "Unable to getBands, response code: ${bandSearchResponse.code()}, response body: ${bandSearchResponse.errorBody()?.string()}"
-            )
+        if (!response.isSuccessful || payload == null) {
+            throw ArchiveApi.Exception("Unable to getBands, response code: ${response.code()}, response body: ${response.errorBody()?.string()}")
         }
 
-        val bandList = bandSearchResponseBody.bandSearchResponsePayload.docs.map {
-            async {
-                val bandMetadata = archiveApi.getMetaData(it.identifier)
-                Band(name = it.creator, description = bandMetadata.subject ?: "unknown", id = it.identifier)
+        payload.docs
+            .map { band ->
+                async {
+                    val metadata = archiveApi.getMetaData(band.identifier)
+                    Band(name = band.creator, description = metadata.subject ?: "unknown", id = band.identifier)
+                }
             }
-        }.awaitAll()
-        Result.success(bandList)
+            .awaitAll()
+            .let { Result.success(it) }
     }
 
-    override suspend fun getAlbums(bandId: String, startPage: Int): Result<List<Album>> {
-        val albumSearchResponse = AlbumSearchResponse(
-            archiveApi.searchAlbums(
-                rows = PAGE_SIZE,
-                page = startPage,
-                query = "collection:($bandId)"
-            ).albumSearchResponsePayload
-        )
-        val archiveAlbums = mutableListOf<ArchiveAlbum>()
-        albumSearchResponse.albumSearchResponsePayload.docs.forEach { doc ->
-            try {
-                val showMetadata = withContext(Dispatchers.IO) {
-                    archiveApi.getMetaData(doc.identifier)
+    override suspend fun getAlbums(bandId: String, startPage: Int): Result<List<Album>> = withContext(Dispatchers.IO) {
+        val response = archiveApi.searchAlbums(rows = PAGE_SIZE, page = startPage, query = "collection:($bandId)")
+        val payload = response.body()?.albumSearchResponsePayload
+
+        if (!response.isSuccessful || payload == null) {
+            throw ArchiveApi.Exception("Unable to getAlbums, response code: ${response.code()}, response body: ${response.errorBody()?.string()}")
+        }
+
+        payload.docs
+            .map { album ->
+                async {
+                    val metadata = archiveApi.getMetaData(album.identifier)
+                    val flacFiles = metadata.files.filter {
+                        SupportedAudioFile.FLAC.ids.contains(it.format)
+                    }
+                    ArchiveAlbum(responseDoc = album, metadataResponse = metadata.copy(files = flacFiles))
                 }
-                val flacFiles = showMetadata.files.filter {
-                    SupportedAudioFile.FLAC.ids.contains(it.format)
-                }
-                archiveAlbums.add(
-                    ArchiveAlbum(
-                        doc,
-                        MetadataResponse(server = showMetadata.server, dir = showMetadata.dir, showMetadata.subject, files = flacFiles)
-                    )
-                )
-            } catch (t: Throwable) {
-                logger.e(TAG, "Error getting metadata for album ${doc.identifier}", t)
             }
-        }
-        val albums = mutableListOf<Album>()
-        archiveAlbums.forEach {
-            albums.add(it.toDomainAlbum())
-        }
-        return Result.success(albums)
+            .awaitAll()
+            .map { it.toDomainAlbum() }
+            .let { Result.success(it) }
+
     }
 
     companion object {

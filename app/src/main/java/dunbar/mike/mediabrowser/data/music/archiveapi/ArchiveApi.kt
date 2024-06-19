@@ -28,7 +28,7 @@ https://archive.org/metadata/gd1984-04-29.149679.beyerm201.holbrook.flac2448
 interface ArchiveApi {
 
     @GET("advancedsearch.php?output=json&fl[]=date,title,avg_rating,identifier,downloads,creator")
-    suspend fun searchAlbums(@Query("rows") rows: Int, @Query("page") page: Int, @Query("q")query: String): AlbumSearchResponse
+    suspend fun searchAlbums(@Query("rows") rows: Int, @Query("page") page: Int, @Query("q")query: String): Response<AlbumSearchResponse>
 
     @GET("advancedsearch.php?output=json&fl[]=creator,identifier,publicdate&sort[]=creator asc&q=collection:etree AND mediatype:collection")
     suspend fun searchBands(@Query("rows") rows: Int, @Query("page") page: Int): Response<BandSearchResponse>
