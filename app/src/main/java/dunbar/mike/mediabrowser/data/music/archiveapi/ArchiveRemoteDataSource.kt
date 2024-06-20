@@ -13,27 +13,30 @@ class ArchiveRemoteDataSource @Inject constructor(
     private val archiveApi: ArchiveApi,
 ) : MusicRemoteDataSource {
 
-    override suspend fun getBands(startPage: Int): Result<List<Band>> = withContext(Dispatchers.IO) {
-        val response = archiveApi.searchBands(rows = PAGE_SIZE, page = startPage)
-        when {
-            response.isSuccessful && response.body() != null -> {
-                response.body()!!.response.docs
-                    .map {
-                        async {
-                            val subject: String = archiveApi.getMetaData(it.identifier).body()?.subject ?: "unknown"
-                            Band(name = it.creator, description = subject, id = it.identifier)
+    override suspend fun getBands(startPage: Int) = archiveApi.searchBands(rows = PAGE_SIZE, page = startPage).let { response ->
+        response.body().let { body ->
+            when {
+                response.isSuccessful && body != null -> {
+                    body.response.docs
+                        .map {
+                            withContext(Dispatchers.IO) {
+                                async {
+                                    val subject: String = archiveApi.getMetaData(it.identifier).body()?.subject ?: "unknown"
+                                    Band(name = it.creator, description = subject, id = it.identifier)
+                                }
+                            }
                         }
-                    }
-                    .awaitAll()
-                    .let { band -> Result.success(band) }
-            }
-            else -> {
-                Result.failure(
-                    ArchiveApi.Exception("Unable to getBands, response code: ${response.code()}, response body: ${response.errorBody()?.string()}")
-                )
+                        .awaitAll()
+                        .let { band -> Result.success(band) }
+                }
+
+                else -> {
+                    Result.failure(ArchiveApi.Exception("response code: ${response.code()}, error body: ${response.errorBody()?.string()}"))
+                }
             }
         }
     }
+
 
     override suspend fun getAlbums(bandId: String, startPage: Int): Result<List<Album>> = withContext(Dispatchers.IO) {
         val response = archiveApi.searchAlbums(rows = PAGE_SIZE, page = startPage, query = "collection:($bandId)")
