@@ -15,21 +15,24 @@ class ArchiveRemoteDataSource @Inject constructor(
 
     override suspend fun getBands(startPage: Int): Result<List<Band>> = withContext(Dispatchers.IO) {
         val response = archiveApi.searchBands(rows = PAGE_SIZE, page = startPage)
-        val payload = response.body()?.response
-
-        if (!response.isSuccessful || payload == null) {
-            throw ArchiveApi.Exception("Unable to getBands, response code: ${response.code()}, response body: ${response.errorBody()?.string()}")
-        }
-
-        payload.docs
-            .map { band ->
-                async {
-                    val subject: String = archiveApi.getMetaData(band.identifier).body()?.subject ?: "unknown"
-                    Band(name = band.creator, description = subject, id = band.identifier)
-                }
+        when {
+            response.isSuccessful && response.body() != null -> {
+                response.body()!!.response.docs
+                    .map {
+                        async {
+                            val subject: String = archiveApi.getMetaData(it.identifier).body()?.subject ?: "unknown"
+                            Band(name = it.creator, description = subject, id = it.identifier)
+                        }
+                    }
+                    .awaitAll()
+                    .let { band -> Result.success(band) }
             }
-            .awaitAll()
-            .let { Result.success(it) }
+            else -> {
+                Result.failure(
+                    ArchiveApi.Exception("Unable to getBands, response code: ${response.code()}, response body: ${response.errorBody()?.string()}")
+                )
+            }
+        }
     }
 
     override suspend fun getAlbums(bandId: String, startPage: Int): Result<List<Album>> = withContext(Dispatchers.IO) {
@@ -53,7 +56,6 @@ class ArchiveRemoteDataSource @Inject constructor(
                     } else {
                         null
                     }
-
                 }
             }
             .awaitAll()

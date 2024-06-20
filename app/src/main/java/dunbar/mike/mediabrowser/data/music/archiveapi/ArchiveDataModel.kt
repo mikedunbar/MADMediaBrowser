@@ -55,7 +55,6 @@ data class ArchiveAlbum(
 //endregion
 
 //region Item Metadata
-
 @JsonClass(generateAdapter = true)
 data class MetadataResponse(
     val server: String,
