@@ -117,8 +117,9 @@ fun BandListView(
             val totalItemsCount = listState.layoutInfo.totalItemsCount
             val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
             val lastVisibleItemIndex = lastVisibleItem?.index ?: 0
-            val hasReachedBottom = lastVisibleItemIndex != 0 && lastVisibleItemIndex == totalItemsCount - bufferSize
-            hasReachedBottom
+            val hasReachedBottom = lastVisibleItemIndex >= totalItemsCount - bufferSize - 1
+            // TODO
+            hasReachedBottom && totalItemsCount > 15
         }
     }
 

@@ -79,11 +79,11 @@ fun AlbumListView(
 
     val reachedBottom by remember {
         derivedStateOf {
+            val bufferSize = 5
             val totalItemsCount = listState.layoutInfo.totalItemsCount
-            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
-            val lastVisibleItemIndex = lastVisibleItem?.index ?: 0
-            val hasReachedBottom = lastVisibleItemIndex != 0 && lastVisibleItemIndex == totalItemsCount - 1
-            hasReachedBottom
+            val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            val hasReachedBottom = lastVisibleItemIndex >= totalItemsCount - bufferSize - 1
+            hasReachedBottom && totalItemsCount > 15
         }
     }
 

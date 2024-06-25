@@ -17,9 +17,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BandListViewModel @Inject constructor(
-    private val musicRepository: MusicRepository,
-) : ViewModel() {
+class BandListViewModel @Inject constructor(private val musicRepository: MusicRepository) : ViewModel() {
     private val _uiState = MutableStateFlow<BandListUiState>(BandListUiState.Initial)
     val uiState: StateFlow<BandListUiState> = _uiState
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), BandListUiState.Initial)
@@ -73,9 +71,6 @@ class BandListViewModel @Inject constructor(
 sealed interface BandListUiState {
     data object Initial : BandListUiState
     data object Loading : BandListUiState
-
     data class Success(val page: Int, val bands: List<Band>) : BandListUiState
-
     data class Error(val message: String) : BandListUiState
-
 }
