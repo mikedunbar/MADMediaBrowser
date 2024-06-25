@@ -60,7 +60,15 @@ data class MetadataResponse(
     val server: String,
     val dir: String,
     val subject: String?,
-    val files: List<MetadataFile>
+    val files: List<MetadataFile>,
+    val metadata: Metadata
+)
+
+@JsonClass(generateAdapter = true)
+data class Metadata(
+    val creator: String,
+    val title: String?,
+    val date: String?,
 )
 
 @JsonClass(generateAdapter = true)

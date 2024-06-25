@@ -3,26 +3,22 @@ package dunbar.mike.mediabrowser.data.music.archiveapi
 import dunbar.mike.mediabrowser.data.music.Album
 import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.data.music.Song
-import dunbar.mike.mediabrowser.util.localDateTimeFromIsoInstant
+import java.time.LocalDate
 
 
-fun ArchiveAlbum.toDomainAlbum(): Album {
+fun ArchiveAlbum.toDomainAlbum(band: Band): Album {
     val songList = List(metadataResponse.files.size) {
         Song(
-            name = metadataResponse.files[it].title ?: "unknown",
+            name = metadataResponse.files[it].name,
             durationSeconds = metadataResponse.files[it].length?.toDoubleOrNull()
         )
     }
 
     return Album(
-        band = Band(
-            name = responseDoc.creator,
-            description = "Rock",
-            id = responseDoc.identifier,
-        ),
+        band = band,
         name = responseDoc.title,
         id = responseDoc.identifier,
-        releaseDate = localDateTimeFromIsoInstant(responseDoc.date).toLocalDate(),
+        releaseDate = LocalDate.parse(metadataResponse.metadata.date),
         songs = songList,
     )
 }

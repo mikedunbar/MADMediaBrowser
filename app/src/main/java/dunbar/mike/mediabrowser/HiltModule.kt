@@ -38,7 +38,7 @@ object HiltModule {
     @Provides
     fun provideMusicRemoteDataSource(api: ArchiveApi, logger: Logger): MusicRemoteDataSource {
 //        return FakeMusicRemoteDataSource()
-        return ArchiveRemoteDataSource(api, logger)
+        return ArchiveRemoteDataSource(api, logger, Dispatchers.IO)
     }
 
     @Provides

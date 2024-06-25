@@ -1,0 +1,109 @@
+{
+  "created": 1718987416,
+  "d1": "ia601209.us.archive.org",
+  "d2": "ia801209.us.archive.org",
+  "dir": "/19/items/EastNashGrass",
+  "files": [
+    {
+      "name": "EastNashGrass_archive.torrent",
+      "source": "metadata",
+      "btih": "cbb788cdaf7f3a0f149fa5f0a56e8fc3f677fe0f",
+      "mtime": "1704637874",
+      "size": "1982",
+      "md5": "c4db0f7e3eace6116400e181401e39d0",
+      "crc32": "67d2d52a",
+      "sha1": "ff965558a3fd238cda94a185c36566d78f7f08e4",
+      "format": "Archive BitTorrent"
+    },
+    {
+      "name": "EastNashGrass_files.xml",
+      "source": "original",
+      "format": "Metadata",
+      "md5": "269429d0bf19dab71624f7e787e7e767",
+      "summation": "md5"
+    },
+    {
+      "name": "EastNashGrass_meta.sqlite",
+      "source": "original",
+      "mtime": "1704637746",
+      "size": "20480",
+      "md5": "8e2c328e1c452c1dd684dc79545a11b4",
+      "crc32": "e79721f4",
+      "sha1": "59821cc9956c11c1564bc44c35de837cb69c7337",
+      "format": "Metadata"
+    },
+    {
+      "name": "EastNashGrass_meta.xml",
+      "source": "original",
+      "mtime": "1704637872",
+      "size": "1013",
+      "md5": "1a1e322ea5553c71234daada8dc4724b",
+      "crc32": "2fb7d8e8",
+      "sha1": "7d6f50906e55fa33c4ca0685b35f06e8b0de4bcb",
+      "format": "Metadata"
+    },
+    {
+      "name": "__ia_thumb.jpg",
+      "source": "original",
+      "mtime": "1704637751",
+      "size": "7041",
+      "md5": "ee438de2dcbe0e5ad2ceb0fa17852572",
+      "crc32": "5d0e3508",
+      "sha1": "b1c5caed5bd0f22fdf9d6a89b1d53ed63bbe1749",
+      "format": "Item Tile",
+      "rotation": "0"
+    },
+    {
+      "name": "lma.jpg",
+      "source": "original",
+      "mtime": "1704637720",
+      "size": "86750",
+      "md5": "e0e3bd11a95b9ab2ead3d83ea95b0801",
+      "crc32": "6f53d1a9",
+      "sha1": "3ac9f7df2747117e9375115a4e7d7f9d8586961b",
+      "format": "JPEG",
+      "rotation": "0"
+    },
+    {
+      "name": "lma_thumb.jpg",
+      "source": "derivative",
+      "format": "JPEG Thumb",
+      "original": "lma.jpg",
+      "mtime": "1704637771",
+      "size": "8346",
+      "md5": "75a85c7f3659663c27d9b3487d4e6da3",
+      "crc32": "9f4106ea",
+      "sha1": "ee5f17a4333a8b218881e2d66125cac9b82f25ff"
+    }
+  ],
+  "files_count": 7,
+  "is_collection": true,
+  "item_last_updated": 1704637874,
+  "item_size": 125612,
+  "metadata": {
+    "identifier": "EastNashGrass",
+    "mediatype": "collection",
+    "collection": [
+      "etree",
+      "audio"
+    ],
+    "creator": "East Nash Grass",
+    "scanner": "Internet Archive HTML5 Uploader 1.7.0",
+    "subject": "East Nash Grass",
+    "title": "East Nash Grass",
+    "uploader": "vanark@gmail.com",
+    "publicdate": "2024-01-07 14:28:55",
+    "addeddate": "2024-01-07 14:28:55",
+    "curation": "[curator]validator@archive.org[/curator][date]20240107142923[/date][comment]checked for malware[/comment]",
+    "hidden": "true",
+    "rights": "<b>On January 3, 2024, permission was granted to the LMA:</b>\n\nMaddie Denton of East Nash Grass granted permission to add a collection on archive.org for live audio recordings for public download and noncommercial, royalty-free circulation.",
+    "publisher": "etree.org",
+    "show_search_by_year": "true"
+  },
+  "server": "ia801209.us.archive.org",
+  "uniq": 1895895164,
+  "workable_servers": [
+    "ia801209.us.archive.org",
+    "ia601209.us.archive.org"
+  ]
+}

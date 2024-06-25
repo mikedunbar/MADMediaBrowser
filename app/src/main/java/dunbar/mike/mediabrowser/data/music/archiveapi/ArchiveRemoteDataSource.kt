@@ -3,50 +3,76 @@ package dunbar.mike.mediabrowser.data.music.archiveapi
 import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.data.music.MusicRemoteDataSource
 import dunbar.mike.mediabrowser.util.Logger
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class ArchiveRemoteDataSource @Inject constructor(private val archiveApi: ArchiveApi, private val logger: Logger) : MusicRemoteDataSource {
+class ArchiveRemoteDataSource @Inject constructor(
+    private val archiveApi: ArchiveApi,
+    private val logger: Logger,
+    private val ioDispatcher: CoroutineDispatcher,
+) : MusicRemoteDataSource {
 
-    override suspend fun getBands(startPage: Int) = archiveApi.searchBands(rows = PAGE_SIZE, page = startPage).let { response ->
-            response.body().let { responseBody ->
-                if (response.isSuccessful && responseBody != null) {
-                    val start = System.currentTimeMillis()
-                    responseBody.response.docs
-                        .map {
-                            withContext(Dispatchers.IO) {
+    override suspend fun getBands(searchString: String, startPage: Int): Result<List<Band>> {
+        val topLevelStart = System.currentTimeMillis()
+        return withContext(ioDispatcher) {
+            archiveApi.searchBands(
+                rows = PAGE_SIZE,
+                page = startPage,
+                query = "collection:etree AND mediatype:collection AND creator:${searchString}*"
+            ).let { response ->
+                logger.d(TAG, "top-level search took ${System.currentTimeMillis() - topLevelStart}ms on ${Thread.currentThread().name}")
+                response.body().let { responseBody ->
+                    if (response.isSuccessful && responseBody != null) {
+                        responseBody.response.docs
+                            .map {
                                 async {
-                                    logger.d(TAG, "getting metadata for ${it.creator}")
-                                    val subject: String = archiveApi.getMetaData(it.identifier).body()?.subject ?: "unknown"
-                                    logger.d(TAG, "got metadata for ${it.creator}")
+                                    val innerStart = System.currentTimeMillis()
+                                    logger.d(TAG, "getting metadata for ${it.creator} on ${Thread.currentThread().name}")
+                                    val subject: String = archiveApi.getMetaData(it.identifier).body()?.metadata?.title ?: "unknown"
+                                    logger.d(TAG, "got metadata for ${it.creator} in ${System.currentTimeMillis() - innerStart}ms")
                                     Band(name = it.creator, description = subject, id = it.identifier)
                                 }
                             }
-                        }
-                        .awaitAll()
-                        .let { band ->
-                            val end = System.currentTimeMillis()
-                            logger.d(TAG, "getBands took ${end - start}ms")
-                            Result.success(band)
-                        }
-
-                } else {
-                    Result.failure(ArchiveApi.Exception("response code: ${response.code()}, error body: ${response.errorBody()?.string()}"))
+                            .awaitAll()
+                            .let { bandList ->
+                                val end = System.currentTimeMillis()
+                                logger.d(TAG, "getBands took ${end - topLevelStart}ms")
+                                Result.success(bandList)
+                            }
+                    } else {
+                        Result.failure(ArchiveApi.Exception("response code: ${response.code()}, error body: ${response.errorBody()?.string()}"))
+                    }
                 }
             }
+        }
+
     }
 
-    override suspend fun getAlbums(bandId: String, startPage: Int) =
-        archiveApi.searchAlbums(rows = PAGE_SIZE, page = startPage, query = "collection:($bandId)").let { response ->
+    // TODO Call from getBands/remove duplication
+    override suspend fun getBand(bandId: String): Result<Band?> {
+        archiveApi.getMetaData(bandId).let { response ->
             response.body().let { body ->
                 if (response.isSuccessful && body != null) {
-                    withContext(Dispatchers.IO) {
+                    return Result.success(Band(name = body.metadata.creator, description = body.metadata.title ?: "unknown", id = bandId))
+                } else {
+                    return Result.failure(ArchiveApi.Exception("response code: ${response.code()}, error body: ${response.errorBody()?.string()}"))
+                }
+            }
+        }
+    }
+
+    override suspend fun getAlbums(band: Band, startPage: Int) =
+        archiveApi.searchAlbums(rows = PAGE_SIZE, page = startPage, query = "collection:(${band.id})").let { response ->
+            response.body().let { body ->
+                if (response.isSuccessful && body != null) {
+                    withContext(ioDispatcher) {
                         body.response.docs
                             .map {
                                 async {
+                                    logger.d(TAG, "getting metadata for album ${it.identifier}")
                                     archiveApi.getMetaData(it.identifier).body()?.let { metadata ->
                                         val flacFiles = metadata.files.filter {
                                             SupportedAudioFile.FLAC.ids.contains(it.format)
@@ -57,7 +83,7 @@ class ArchiveRemoteDataSource @Inject constructor(private val archiveApi: Archiv
                             }
                             .awaitAll()
                             .filterNotNull()
-                            .map { it.toDomainAlbum() }
+                            .map { it.toDomainAlbum(band) }
                             .let { Result.success(it) }
                     }
                 } else {

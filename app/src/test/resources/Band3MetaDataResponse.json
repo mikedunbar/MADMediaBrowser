@@ -1,0 +1,103 @@
+{
+  "alternate_locations": {
+    "servers": [
+      {
+        "server": "dn720301.ca.archive.org",
+        "dir": "/0/items/EastCoastDave"
+      }
+    ],
+    "workable": [
+      {
+        "server": "dn720301.ca.archive.org",
+        "dir": "/0/items/EastCoastDave"
+      }
+    ]
+  },
+  "created": 1718989933,
+  "d1": "ia601908.us.archive.org",
+  "d2": "ia801908.us.archive.org",
+  "dir": "/15/items/EastCoastDave",
+  "files": [
+    {
+      "name": "EastCoastDave_files.xml",
+      "source": "original",
+      "format": "Metadata",
+      "md5": "137dbd719a8ae02f14fb48f2acd99ab2"
+    },
+    {
+      "name": "EastCoastDave_meta.xml",
+      "source": "original",
+      "format": "Metadata",
+      "mtime": "1565839673",
+      "size": "1477",
+      "md5": "d6ace3314a085de787d2c7699967f0eb",
+      "crc32": "81169bc0",
+      "sha1": "a23de62cf7cc234deb5becf54a3b293771aa0aa0"
+    },
+    {
+      "name": "__ia_thumb.jpg",
+      "source": "original",
+      "mtime": "1530755595",
+      "size": "6041",
+      "md5": "05c3f11af8d5fa22f47725303e074eeb",
+      "crc32": "5f490d7f",
+      "sha1": "de31a58295168a4952de8a672f838c8f185c4ca6",
+      "format": "JPEG Thumb",
+      "rotation": "0"
+    },
+    {
+      "name": "activationimage.jpg",
+      "source": "original",
+      "format": "JPEG",
+      "mtime": "1364265640",
+      "size": "26641",
+      "md5": "97ebd3441323f9b5d9f0fc0cf38f2ddd",
+      "crc32": "6edbc801",
+      "sha1": "ff9485b26300721b2899330c15cfe960a79f40e1",
+      "rotation": "0"
+    },
+    {
+      "name": "activationimage_thumb.jpg",
+      "source": "derivative",
+      "format": "JPEG Thumb",
+      "original": "activationimage.jpg",
+      "mtime": "1364265700",
+      "size": "3239",
+      "md5": "9455901c5fd1c83f9c9077680bd7dce1",
+      "crc32": "28adf6f5",
+      "sha1": "54418380d6a3f520ebbb8c1c48e73d6bf7e19857"
+    }
+  ],
+  "files_count": 5,
+  "is_collection": true,
+  "item_last_updated": 1565839673,
+  "item_size": 37398,
+  "metadata": {
+    "mediatype": "collection",
+    "collection": [
+      "etree",
+      "audio"
+    ],
+    "title": "East Coast Dave",
+    "subject": "East Coast Dave",
+    "creator": "East Coast Dave",
+    "identifier": "EastCoastDave",
+    "uploader": "greenone@bluestraveler.net",
+    "addeddate": "2013-03-26 02:41:33",
+    "publicdate": "2013-03-26 02:41:38",
+    "hidden": "true",
+    "rights": "<b>On February 27th 2013, David Maguire granted permission to host his recordings on the Live Music Archive:</b>\n\nMy name is David Maguire (a.k.a East Coast Dave), and I would like to give permission for my solo shows as well as with my band (The Midwest Swingers) to be non-commercially distributed on thye Live Music Archive. At this point, I would like only shows that have been reviewed and uploaded by me to be accepted. I love your site and look forward to participating!\n\nDavid Maguire (\"East Coast Dave\")",
+    "publisher": "etree.org",
+    "show_search_by_year": "true",
+    "noarchivetorrent": "true",
+    "curation": "[curator]alexis@archive.org[/curator][date]20141103192125[/date][state]un-dark[/state][comment]restoring empty etree collections so items can be uploaded into them in the future[/comment]",
+    "backup_location": "ia905608_21",
+    "show_related_music_by_track": "true"
+  },
+  "server": "ia601908.us.archive.org",
+  "uniq": 849510585,
+  "workable_servers": [
+    "ia601908.us.archive.org",
+    "ia801908.us.archive.org"
+  ]
+}

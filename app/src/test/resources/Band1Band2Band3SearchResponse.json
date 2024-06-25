@@ -1,0 +1,45 @@
+{
+  "responseHeader": {
+    "status": 0,
+    "QTime": 2648,
+    "params": {
+      "query": "(( ( collection:etree AND mediatype:collection AND creator:East (title:Na*^100 OR salients:Na*^50 OR subject:Na*^25 OR description:Na*^15 OR collection:Na*^10 OR language:Na*^10 OR text:Na*^1) ) AND !collection:(podcasts OR radio OR uspto))^2 OR ( ( collection:etree AND mediatype:collection AND creator:East (title:Na*^100 OR salients:Na*^50 OR subject:Na*^25 OR description:Na*^15 OR collection:Na*^10 OR language:Na*^10 OR text:Na*^1) ) AND collection:(podcasts OR radio OR uspto))^0.5)",
+      "qin": "collection:etree AND mediatype:collection  AND creator:East Na*",
+      "fields": "identifier,creator,collection",
+      "wt": "json",
+      "sort": "creator desc",
+      "rows": "100",
+      "start": 0
+    }
+  },
+  "response": {
+    "numFound": 3,
+    "start": 0,
+    "docs": [
+      {
+        "collection": [
+          "etree",
+          "audio"
+        ],
+        "creator": "East Nash Grass",
+        "identifier": "EastNashGrass"
+      },
+      {
+        "collection": [
+          "etree",
+          "audio"
+        ],
+        "creator": "East Coast Dave and the Midwest Swingers",
+        "identifier": "EastCoastDaveAndTheMidwestSwingers"
+      },
+      {
+        "collection": [
+          "etree",
+          "audio"
+        ],
+        "creator": "East Coast Dave",
+        "identifier": "EastCoastDave"
+      }
+    ]
+  }
+}

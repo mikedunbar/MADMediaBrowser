@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package dunbar.mike.mediabrowser.ui.music
 
 import androidx.compose.foundation.Image
@@ -12,8 +14,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -41,28 +46,40 @@ import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
 @Composable
 fun BandListScreenRoot(
     viewModel: BandListViewModel = hiltViewModel<BandListViewModel>(),
-    onClickBand: (String) -> Unit, // TODO - fold into ViewModel?
+    onClickBand: (String) -> Unit,
 ) {
     BandListScreen(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        searchString = viewModel.searchQuery.value,
         onClickBand = onClickBand,
-        onLoadMore = viewModel::nextPage
+        onLoadMore = viewModel::nextPage,
+        onSearchChanged = viewModel::search
     )
 }
 
 @Composable
 fun BandListScreen(
     uiState: BandListUiState,
+    searchString: String = "",
     onClickBand: (String) -> Unit = {},
-    onLoadMore: () -> Unit = {}
+    onLoadMore: () -> Unit = {},
+    onSearchChanged: (String) -> Unit = {},
 ) {
     when (uiState) {
+        is BandListUiState.Initial -> {
+            BandSearchCard(searchString = searchString, onSearchChanged = onSearchChanged)
+        }
+
         is BandListUiState.Success -> {
-            BandListView(
-                bandList = uiState.bands,
-                onClickBand = onClickBand,
-                onLoadMore = onLoadMore
-            )
+            Column {
+                BandSearchCard(searchString = searchString, onSearchChanged = onSearchChanged)
+                BandListView(
+                    bandList = uiState.bands,
+                    onClickBand = onClickBand,
+                    onLoadMore = onLoadMore
+                )
+            }
+
         }
 
         is BandListUiState.Error -> {
@@ -72,6 +89,17 @@ fun BandListScreen(
         is BandListUiState.Loading -> {
             LoadingView()
         }
+    }
+}
+
+@Composable
+fun BandSearchCard(
+    searchString: String,
+    onSearchChanged: (String) -> Unit,
+) {
+    Column (modifier = Modifier.fillMaxWidth()){
+        Text(text = "Search for Bands")
+        TextField(value = searchString, onValueChange = onSearchChanged)
     }
 }
 
@@ -146,6 +174,7 @@ fun BandCard(
 
 class BandListUiStateProvider : PreviewParameterProvider<BandListUiState> {
     override val values = sequenceOf(
+        BandListUiState.Initial,
         BandListUiState.Loading,
         BandListUiState.Error("You appear to be offline"),
         BandListUiState.Success(
@@ -155,10 +184,10 @@ class BandListUiStateProvider : PreviewParameterProvider<BandListUiState> {
                 Band("Metallica", "Heavy Metal", "Metallica"),
                 Band("Outkast", "Hip Hop", "Outkast"),
                 Band("Nirvana", "Grunge", "Nirvana"),
-                Band("Widespread Panic", "Rock", "Widespread Panic"),
-                Band("Metallica", "Heavy Metal", "Metallica"),
-                Band("Outkast", "Hip Hop", "Outkast"),
-                Band("Nirvana", "Grunge", "Nirvana"),
+                Band("Widespread Panic", "Rock", "Widespread Panic2"),
+                Band("Metallica", "Heavy Metal", "Metallica2"),
+                Band("Outkast", "Hip Hop", "Outkast2"),
+                Band("Nirvana", "Grunge", "Nirvana2"),
             )
         )
     )
@@ -171,7 +200,7 @@ class BandListUiStateProvider : PreviewParameterProvider<BandListUiState> {
 fun BandListScreenPreview(@PreviewParameter(BandListUiStateProvider::class) uiState: BandListUiState) {
     MediaBrowserTheme {
         Surface {
-            BandListScreen(uiState = uiState)
+            BandListScreen(uiState = uiState, searchString = "Gratef")
         }
     }
 }

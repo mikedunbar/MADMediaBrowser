@@ -3,11 +3,14 @@ package dunbar.mike.mediabrowser.data.music
 import java.time.LocalDate
 
 
+@Suppress("unused") // Used by manually updating the Hilt module
 class FakeMusicRemoteDataSource : MusicRemoteDataSource {
 
-    override suspend fun getBands(startPage: Int) = Result.success(createTestBandList())
+    override suspend fun getBands(searchString: String, startPage: Int) = Result.success(createTestBandList())
 
-    override suspend fun getAlbums(bandId: String, startPage: Int) = Result.success(createTestAlbumList(bandId))
+    override suspend fun getBand(bandId: String) = Result.success(Band("Widespread Panic", "Rock", "widespreadpanic"))
+
+    override suspend fun getAlbums(band: Band, startPage: Int) = Result.success(createTestAlbumList(band))
 
 }
 
@@ -67,13 +70,13 @@ fun createTestAlbum(
     )
 ) = Album(band, name, id, releaseDate, songList)
 
-fun createTestAlbumList(bandName: String): List<Album> {
+fun createTestAlbumList(band: Band): List<Album> {
     val albums = mutableListOf<Album>()
     (0..5).forEach {
-        val albumName = "$bandName Album $it"
+        val albumName = "$band.name Album $it"
         albums.add(
             createTestAlbum(
-                band = createTestBand(bandName),
+                band = band,
                 name = albumName,
                 songList = listOf(
                     Song("$albumName Song 1", 300.5),
