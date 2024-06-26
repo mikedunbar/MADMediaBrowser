@@ -20,6 +20,8 @@ I welcome any and all feedback. Thanks!
 - Material 3 App Theming
 - Material 3 App Scaffolding, with top and bottom bars, plus navigation drawer
 - Dark Theme Support, including option to override system setting
+- Work in progress (like search results location) survives configuration changes (e.g. layout mode, locale/language
+- View all bands and performances uploaded to the [Live Music Archive] 
 
 ### Tech
 - Kotlin, Coroutines and Flows 
@@ -34,22 +36,19 @@ I welcome any and all feedback. Thanks!
 - Unidirectional Data Flow
 - REST API integration with OkHttp, RetroFit, and Moshi
 - Behavior testing with JUnit 5
+- ViewModel tests
+- Domain and Data Layer tests (with OkHttp MockWebserver)
+
 
 ## In flight
-### Training for interview coding challenges
-- Gotta, gotta eat. Whatever it takes
-
 ### MVP Functionality
-- Real API: Scrollable, paged Band List Screen. Click to Album List Screen, Click to Song List Screen.
+- Click from Album to Song List Screen.
 - Play songs
 
 ## On Deck
+- Save favorite artists and/or albums
 - UI tests with Espresso
-- ViewModel tests
-- Domain and Data Layer tests
 - Optimize layout in landscape mode
-- Play a song
-- Data survives configuration change (settings input field, e.g.)
 - TOML version catalogue for dependencies
 - WorkManager (for syncing)
 - Offline first
