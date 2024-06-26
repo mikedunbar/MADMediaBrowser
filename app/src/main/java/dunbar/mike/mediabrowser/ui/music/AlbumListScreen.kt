@@ -45,7 +45,7 @@ fun AlbumListScreenRoot(
     viewModel: AlbumListViewModel = hiltViewModel<AlbumListViewModel>(),
     onClickAlbum: (String) -> Unit
 ) {
-    AlbumListScreen(uiState = viewModel.uiState.collectAsStateWithLifecycle().value, onClickAlbum = onClickAlbum, onLoadMore = viewModel::onLoadMore )
+    AlbumListScreen(uiState = viewModel.uiState.collectAsStateWithLifecycle().value, onClickAlbum = onClickAlbum, onLoadMore = viewModel::onLoadMore)
 }
 
 @Composable
@@ -80,10 +80,11 @@ fun AlbumListView(
     val reachedBottom by remember {
         derivedStateOf {
             val bufferSize = 5
+            val minItemsForPaging = 15
             val totalItemsCount = listState.layoutInfo.totalItemsCount
             val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
             val hasReachedBottom = lastVisibleItemIndex >= totalItemsCount - bufferSize - 1
-            hasReachedBottom && totalItemsCount > 15
+            hasReachedBottom && totalItemsCount > minItemsForPaging
         }
     }
 

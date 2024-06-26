@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class UserDataRepo @Inject constructor(
+class UserDataRepository @Inject constructor(
     private val userDataSource: UserDataSource,
     ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {

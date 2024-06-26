@@ -11,7 +11,6 @@ class LoggerTest {
         """\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d:\d\d?\d?.*"""
     )
 
-    //TODO Parameterize these
     @Test
     fun `test debug logging`() {
         // given

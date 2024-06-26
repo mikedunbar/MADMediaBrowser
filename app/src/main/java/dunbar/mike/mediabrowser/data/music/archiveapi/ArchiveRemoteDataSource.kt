@@ -30,13 +30,14 @@ class ArchiveRemoteDataSource @Inject constructor(
                             .map {
                                 async {
                                     val innerStart = System.currentTimeMillis()
-                                    logger.d(TAG, "getting metadata for ${it.creator} on ${Thread.currentThread().name}")
-                                    val subject: String = archiveApi.getMetaData(it.identifier).body()?.metadata?.title ?: "unknown"
-                                    logger.d(TAG, "got metadata for ${it.creator} in ${System.currentTimeMillis() - innerStart}ms")
-                                    Band(name = it.creator, description = subject, id = it.identifier)
+                                    logger.d(TAG, "getting band data for ${it.creator} on ${Thread.currentThread().name}")
+                                    val band = getBand(it.identifier).getOrNull()
+                                    logger.d(TAG, "got band data: $band for ${it.creator} in ${System.currentTimeMillis() - innerStart}ms")
+                                    band
                                 }
                             }
                             .awaitAll()
+                            .filterNotNull()
                             .let { bandList ->
                                 val end = System.currentTimeMillis()
                                 logger.d(TAG, "getBands took ${end - topLevelStart}ms")
@@ -48,10 +49,8 @@ class ArchiveRemoteDataSource @Inject constructor(
                 }
             }
         }
-
     }
 
-    // TODO Call from getBands/remove duplication
     override suspend fun getBand(bandId: String): Result<Band?> {
         archiveApi.getMetaData(bandId).let { response ->
             response.body().let { body ->

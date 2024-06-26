@@ -34,6 +34,7 @@ import dunbar.mike.mediabrowser.ui.music.AlbumListViewModel
 import dunbar.mike.mediabrowser.ui.music.BandListScreenRoot
 import dunbar.mike.mediabrowser.ui.music.MusicLibraryScreen
 import dunbar.mike.mediabrowser.ui.settings.SettingsScreenRoot
+import dunbar.mike.mediabrowser.ui.shared.PlaceholderScreen
 
 @Composable
 fun NavDrawerBody(

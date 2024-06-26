@@ -11,7 +11,7 @@ import dunbar.mike.mediabrowser.data.music.MusicRepository
 import dunbar.mike.mediabrowser.data.music.archiveapi.ArchiveApi
 import dunbar.mike.mediabrowser.data.music.archiveapi.ArchiveRemoteDataSource
 import dunbar.mike.mediabrowser.data.user.RealUserDataSource
-import dunbar.mike.mediabrowser.data.user.UserDataRepo
+import dunbar.mike.mediabrowser.data.user.UserDataRepository
 import dunbar.mike.mediabrowser.data.user.UserDataSource
 import dunbar.mike.mediabrowser.util.AndroidLogger
 import dunbar.mike.mediabrowser.util.Logger
@@ -68,7 +68,7 @@ object HiltModule {
     }
 
     @Provides
-    fun provideUserDataRepo(userDataSource: UserDataSource): UserDataRepo = UserDataRepo(userDataSource)
+    fun provideUserDataRepo(userDataSource: UserDataSource): UserDataRepository = UserDataRepository(userDataSource)
 
     @Provides
     fun provideUserDataDataSource(@ApplicationContext context: Context): UserDataSource = RealUserDataSource(context)

@@ -5,7 +5,6 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.util.concurrent.TimeUnit
 
@@ -14,10 +13,24 @@ class MusicDataTests {
 
     @Test
     fun getBandsShallWorkWithBasicThreeBandSearchResponse() = runTest(testDispatcher) {
-        mockWebServer.enqueue(MockResponse().setBody(band1Band2Band3BandSearchResponse))
-        mockWebServer.enqueue(MockResponse().setBody(band1MetadataResponse))
-        mockWebServer.enqueue(MockResponse().setBody(band2MetadataResponse))
-        mockWebServer.enqueue(MockResponse().setBody(band3MetadataResponse))
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForBandSearch("East Na"),
+            response = MockResponse().setBody(band1Band2Band3BandSearchResponse)
+        )
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForMetadataRequest(band1Id),
+            response = MockResponse().setBody(band1MetadataResponse)
+        )
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForMetadataRequest(band2Id),
+            response = MockResponse().setBody(band2MetadataResponse)
+        )
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForMetadataRequest(band3Id),
+            response = MockResponse().setBody(band3MetadataResponse)
+        )
+
+        mockWebServer.dispatcher = RequestBasedDispatcher
         mockWebServer.start()
         val musicRepository = createMusicRepository(mockWebServer)
 
@@ -26,9 +39,9 @@ class MusicDataTests {
         assertTrue(bandsResult.isSuccess)
         assertEquals(
             listOf(
-                Band(band1Name, band1Description, band1Id),
-                Band(band2Name, band2Description, band2Id),
-                Band(band3Name, band3Description, band3Id)
+                band1,
+                band2,
+                band3,
             ), bandsResult.getOrNull()
         )
         mockWebServer.shutdown()
@@ -36,10 +49,26 @@ class MusicDataTests {
 
     @Test
     fun getAlbumsShallWorkWithBasicThreeAlbumResponse() = runTest(testDispatcher) {
-        mockWebServer.enqueue(MockResponse().setBody(band1AlbumSearchResponse))
-        mockWebServer.enqueue(MockResponse().setBody(band1Album1MetadataResponse))
-        mockWebServer.enqueue(MockResponse().setBody(band1Album2MetadataResponse))
-        mockWebServer.enqueue(MockResponse().setBody(band1Album3MetadataResponse))
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForAlbumSearch(band1Id),
+            response = MockResponse().setBody(band1AlbumSearchResponse)
+        )
+
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForMetadataRequest(band1Album1.id),
+            response = MockResponse().setBody(band1Album1MetadataResponse)
+        )
+
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForMetadataRequest(band1Album2.id),
+            response = MockResponse().setBody(band1Album2MetadataResponse)
+        )
+
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForMetadataRequest(band1Album3.id),
+            response = MockResponse().setBody(band1Album3MetadataResponse)
+        )
+        mockWebServer.dispatcher = RequestBasedDispatcher
         mockWebServer.start()
         val musicRepository = createMusicRepository(mockWebServer)
 
@@ -58,10 +87,24 @@ class MusicDataTests {
 
     @Test
     fun getBandsShallParallelizeBandMetadataRequests() = runTest(testDispatcher) {
-        mockWebServer.enqueue(MockResponse().setBody(band1Band2Band3BandSearchResponse))
-        mockWebServer.enqueue(MockResponse().setBody(band1MetadataResponse).setBodyDelay(500, TimeUnit.MILLISECONDS))
-        mockWebServer.enqueue(MockResponse().setBody(band2MetadataResponse).setBodyDelay(500, TimeUnit.MILLISECONDS))
-        mockWebServer.enqueue(MockResponse().setBody(band3MetadataResponse).setBodyDelay(500, TimeUnit.MILLISECONDS))
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForBandSearch("East Na"),
+            response = MockResponse().setBody(band1Band2Band3BandSearchResponse)
+        )
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForMetadataRequest(band1Id),
+            response = MockResponse().setBody(band1MetadataResponse)
+        )
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForMetadataRequest(band2Id),
+            response = MockResponse().setBody(band2MetadataResponse)
+        )
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForMetadataRequest(band3Id),
+            response = MockResponse().setBody(band3MetadataResponse)
+        )
+
+        mockWebServer.dispatcher = RequestBasedDispatcher
         mockWebServer.start()
         val musicRepository = createMusicRepository(mockWebServer)
 
@@ -76,10 +119,26 @@ class MusicDataTests {
 
     @Test
     fun getAlbumsShallParallelizeAlbumMetadataRequests() = runTest(testDispatcher) {
-        mockWebServer.enqueue(MockResponse().setBody(band1AlbumSearchResponse))
-        mockWebServer.enqueue(MockResponse().setBody(band1Album1MetadataResponse).setBodyDelay(500, TimeUnit.MILLISECONDS))
-        mockWebServer.enqueue(MockResponse().setBody(band1Album2MetadataResponse).setBodyDelay(500, TimeUnit.MILLISECONDS))
-        mockWebServer.enqueue(MockResponse().setBody(band1Album3MetadataResponse).setBodyDelay(500, TimeUnit.MILLISECONDS))
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForAlbumSearch(band1Id),
+            response = MockResponse().setBody(band1AlbumSearchResponse)
+        )
+
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForMetadataRequest(band1Album1.id),
+            response = MockResponse().setBody(band1Album1MetadataResponse)
+        )
+
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForMetadataRequest(band1Album2.id),
+            response = MockResponse().setBody(band1Album2MetadataResponse)
+        )
+
+        RequestBasedDispatcher.setResponseForPath(
+            path = getPathForMetadataRequest(band1Album3.id),
+            response = MockResponse().setBody(band1Album3MetadataResponse)
+        )
+        mockWebServer.dispatcher = RequestBasedDispatcher
         mockWebServer.start()
         val musicRepository = createMusicRepository(mockWebServer)
 

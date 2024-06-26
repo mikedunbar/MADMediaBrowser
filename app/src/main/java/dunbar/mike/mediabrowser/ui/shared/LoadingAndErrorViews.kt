@@ -37,7 +37,6 @@ fun ErrorView(message: String) {
         Text(text = "Error Encountered", fontSize = MaterialTheme.typography.titleLarge.fontSize)
         Text(text = message, fontStyle = FontStyle.Italic)
     }
-
 }
 
 @PreviewLightDark

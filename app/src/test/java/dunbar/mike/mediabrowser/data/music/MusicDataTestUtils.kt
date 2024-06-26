@@ -1,19 +1,19 @@
 package dunbar.mike.mediabrowser.data.music
 
 import dunbar.mike.mediabrowser.data.music.TestFileReader.fileContentsAsString
-import dunbar.mike.mediabrowser.data.music.archiveapi.AlbumSearchResponse
 import dunbar.mike.mediabrowser.data.music.archiveapi.ArchiveApi
 import dunbar.mike.mediabrowser.data.music.archiveapi.ArchiveRemoteDataSource
-import dunbar.mike.mediabrowser.data.music.archiveapi.BandSearchResponse
-import dunbar.mike.mediabrowser.data.music.archiveapi.MetadataResponse
 import dunbar.mike.mediabrowser.util.ConsoleLogger
 import kotlinx.coroutines.test.StandardTestDispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import retrofit2.Response
+import okhttp3.mockwebserver.RecordedRequest
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.net.URLEncoder
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
@@ -70,12 +70,12 @@ val band1Album3 = Album(
 val band2Id = "EastCoastDaveAndTheMidwestSwingers"
 val band2Name = "East Coast Dave and the Midwest Swingers"
 val band2Description = "East Coast Dave and the Midwest Swingers"
-val band2 = Band(band2Id, band2Name, band2Description)
+val band2 = Band(band2Name, band2Description, band2Id)
 
 val band3Id = "EastCoastDave"
 val band3Name = "East Coast Dave"
 val band3Description = "East Coast Dave"
-val band3 = Band(band3Id, band3Name, band3Description)
+val band3 = Band(band3Name, band3Description, band3Id)
 
 val band1Band2Band3BandSearchResponse = fileContentsAsString("Band1Band2Band3SearchResponse.json")
 val band1MetadataResponse = fileContentsAsString("Band1MetadataResponse.json")
@@ -126,3 +126,31 @@ object TestFileReader {
     fun fileContentsAsString(fileName: String) =
         javaClass.classLoader?.getResourceAsStream(fileName)!!.bufferedReader().use { it.readText() }
 }
+
+fun getPathForBandSearch(searchString: String, resultsPage: Int = 1): String {
+    val encodedQueryString = URLEncoder.encode("collection:etree AND mediatype:collection AND creator:${searchString}*", "UTF-8")
+        .replace("+", "%20") // for some reason URLEncoder encodes spaces as "+", whereas Retrofit is encoding them as "%20"
+    return "/advancedsearch.php?output=json&fl[]=creator,identifier,publicdate&sort[]=creator%20asc&rows=20&page=$resultsPage&q=$encodedQueryString"
+}
+
+fun getPathForAlbumSearch(bandId: String, resultsPage: Int = 1): String {
+    return "/advancedsearch.php?output=json&fl[]=date,title,avg_rating,identifier,downloads,creator&rows=20&page=$resultsPage&q=collection%3A%28$bandId%29"
+}
+
+fun getPathForMetadataRequest(itemId: String): String {
+    return "/metadata/$itemId"
+}
+
+object RequestBasedDispatcher : Dispatcher() {
+    private val map = mutableMapOf<String, MockResponse>()
+
+    fun setResponseForPath(path: String, response: MockResponse) {
+        map[path] = response
+    }
+
+    override fun dispatch(request: RecordedRequest): MockResponse {
+        return map[request.path] ?: MockResponse().setResponseCode(404)
+    }
+
+}
+

@@ -118,7 +118,6 @@ fun MediaBrowserTopAppBar(
 
         },
         title = {
-            // TODO Make this dynamic, based on current screen
             Text(text = stringResource(R.string.app_name))
         },
         modifier = modifier,

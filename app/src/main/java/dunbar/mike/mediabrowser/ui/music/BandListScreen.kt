@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -97,7 +96,7 @@ fun BandSearchCard(
     searchString: String,
     onSearchChanged: (String) -> Unit,
 ) {
-    Column (modifier = Modifier.fillMaxWidth()){
+    Column(modifier = Modifier.fillMaxWidth()) {
         Text(text = "Search for Bands")
         TextField(value = searchString, onValueChange = onSearchChanged)
     }
@@ -114,12 +113,12 @@ fun BandListView(
     val reachedBottom by remember {
         derivedStateOf {
             val bufferSize = 5
+            val minItemsForPaging = 15
             val totalItemsCount = listState.layoutInfo.totalItemsCount
             val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
             val lastVisibleItemIndex = lastVisibleItem?.index ?: 0
             val hasReachedBottom = lastVisibleItemIndex >= totalItemsCount - bufferSize - 1
-            // TODO
-            hasReachedBottom && totalItemsCount > 15
+            hasReachedBottom && totalItemsCount > minItemsForPaging
         }
     }
 

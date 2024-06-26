@@ -5,6 +5,8 @@ package dunbar.mike.mediabrowser.ui.music
 import app.cash.turbine.test
 import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.data.music.MusicRepository
+import dunbar.mike.mediabrowser.data.music.band1
+import dunbar.mike.mediabrowser.data.music.band2
 import dunbar.mike.mediabrowser.data.music.testDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,8 +22,6 @@ import org.mockito.kotlin.KInvocationOnMock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
-import dunbar.mike.mediabrowser.data.music.band1
-import dunbar.mike.mediabrowser.data.music.band2
 
 class BandListViewModelTest {
 
@@ -33,7 +33,7 @@ class BandListViewModelTest {
     )
 
     @Test
-    fun creationEmitsInitialUiState() = runTest(testDispatcher) {
+    fun creationEmitsInitialState() = runTest(testDispatcher) {
         assertEquals(BandListUiState.Initial, viewModel.uiState.value)
     }
 
@@ -55,7 +55,7 @@ class BandListViewModelTest {
     }
 
     @Test
-    fun searchingInInitialUiStateEmitsLoadingFollowedBySuccessForSuccessfulSearch() = runTest(testDispatcher) {
+    fun searchingInInitialStateEmitsLoadingFollowedBySuccessForSuccessfulSearch() = runTest(testDispatcher) {
         viewModel.uiState.test {
             assertEquals(BandListUiState.Initial, awaitItem())
             viewModel.search("Grateful")
@@ -65,7 +65,7 @@ class BandListViewModelTest {
     }
 
     @Test
-    fun searchingInInitialUiStateEmitsLoadingFollowedByErrorForFailedSearch() = runTest(testDispatcher) {
+    fun searchingInInitialStateEmitsLoadingFollowedByErrorForFailedSearch() = runTest(testDispatcher) {
         viewModel = BandListViewModel(
             createMockRepository {
                 delay(100)
