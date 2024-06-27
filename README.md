@@ -21,7 +21,9 @@ I welcome any and all feedback. Thanks!
 - Material 3 App Scaffolding, with top and bottom bars, plus navigation drawer
 - Dark Theme Support, including option to override system setting
 - Work in progress (like search results location) survives configuration changes (e.g. layout mode, locale)
-- View all 7K+ bands and 250K+ performances uploaded to the [Live Music Archive](https://archive.org/details/etree)
+- Search/View all 7K+ bands and 250K+ performances uploaded to the [Live Music Archive](https://archive.org/details/etree)
+    - Paginated, infinite, scrollable lists
+
 
 ### Tech
 - Kotlin, Coroutines and Flows 
