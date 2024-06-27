@@ -20,7 +20,7 @@ I welcome any and all feedback. Thanks!
 - Material 3 App Theming
 - Material 3 App Scaffolding, with top and bottom bars, plus navigation drawer
 - Dark Theme Support, including option to override system setting
-- Work in progress (like search results location) survives configuration changes (e.g. layout mode, locale/language
+- Work in progress (like search results location) survives configuration changes (e.g. layout mode, locale)
 - View all bands and performances uploaded to the [Live Music Archive] 
 
 ### Tech
