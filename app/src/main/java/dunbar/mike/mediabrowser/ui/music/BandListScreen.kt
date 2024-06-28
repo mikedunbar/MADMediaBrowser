@@ -2,7 +2,6 @@
 
 package dunbar.mike.mediabrowser.ui.music
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,7 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -36,11 +36,15 @@ import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import dunbar.mike.mediabrowser.R
 import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.ui.shared.ErrorView
 import dunbar.mike.mediabrowser.ui.shared.LoadingView
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
+import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun BandListScreenRoot(
@@ -143,6 +147,23 @@ fun BandCard(
     band: Band,
     onClickBand: (String) -> Unit,
 ) {
+    val context = LocalContext.current
+    val placeholder = R.drawable.ic_baseline_music_note_24
+    val imageUrl = "https://archive.org/services/img/${band.id}"
+
+    // Build an ImageRequest with Coil
+    val imageRequest = ImageRequest.Builder(context)
+        .data(imageUrl)
+        .dispatcher(Dispatchers.IO)
+        .memoryCacheKey(imageUrl)
+        .diskCacheKey(imageUrl)
+        .placeholder(placeholder)
+        .error(placeholder)
+        .fallback(placeholder)
+        .diskCachePolicy(CachePolicy.ENABLED)
+        .memoryCachePolicy(CachePolicy.ENABLED)
+        .build()
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -154,13 +175,15 @@ fun BandCard(
             )
     )
     {
-        Image(
-            painter = painterResource(id = R.drawable.ic_baseline_music_note_24),
-            contentDescription = R.string.musical_note.toString(),
+        // Load and display the image with AsyncImage
+        AsyncImage(
+            model = imageRequest,
+            contentDescription = "Image Description",
             modifier = Modifier
                 .size(64.dp)
                 .clip(CircleShape)
-                .border(2.dp, Color.Gray, CircleShape)
+                .border(2.dp, Color.Gray, CircleShape),
+            contentScale = ContentScale.Crop,
         )
         Column(modifier = Modifier.padding(5.dp))
         {
