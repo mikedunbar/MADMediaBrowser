@@ -25,11 +25,12 @@ import org.mockito.kotlin.mock
 
 class BandListViewModelTest {
 
+
     private var viewModel = BandListViewModel(
-        createMockRepository {
+        createMockRepository(getBandsAnswers = listOf {
             delay(100)
             Result.success(listOf(band1, band2))
-        }
+        })
     )
 
     @Test
@@ -67,10 +68,10 @@ class BandListViewModelTest {
     @Test
     fun searchingInInitialStateEmitsLoadingFollowedByErrorForFailedSearch() = runTest(testDispatcher) {
         viewModel = BandListViewModel(
-            createMockRepository {
+            createMockRepository(getBandsAnswers = listOf {
                 delay(100)
                 Result.failure(Exception("Search Failed"))
-            }
+            })
         )
 
         viewModel.uiState.test {
@@ -82,30 +83,32 @@ class BandListViewModelTest {
     }
 
     @Test
-    fun searchingInStateOtherThanInitialMaintainsCurrentStateThenEmitsSuccessForSuccessfulSearch() = runTest(testDispatcher) {
+    fun searchingInSuccessStateEmitsSuccessWithPageResetToOneForSuccessfulSearch() = runTest(testDispatcher) {
         viewModel.uiState.test {
-            // Drive to loading state
+            // Drive to success state
             assertEquals(BandListUiState.Initial, awaitItem())
             viewModel.search("Grateful")
             assertEquals(BandListUiState.Loading, awaitItem())
+            assertEquals(BandListUiState.Success(page = 1, bands = listOf(band1, band2)), awaitItem())
 
-            // Search again before delay in mock completes
+            // Search
             viewModel.search("The Beatles")
+            // no loading for now, but will change
             assertEquals(BandListUiState.Success(page = 1, bands = listOf(band1, band2)), awaitItem())
         }
     }
 
     @Test
-    fun searchingInStateOtherThanInitialMaintainsCurrentStateThenEmitsErrorForFailedSearch() = runTest(testDispatcher) {
+    fun searchingInSuccessStateEmitsErrorForFailedSearch() = runTest(testDispatcher) {
         viewModel = BandListViewModel(
-            createMockRepository {
+            createMockRepository(getBandsAnswers = listOf {
                 delay(100)
                 Result.failure(Exception("Search Failed"))
-            }
+            })
         )
 
         viewModel.uiState.test {
-            // Drive to loading state
+            // Drive to success state
             assertEquals(BandListUiState.Initial, awaitItem())
             viewModel.search("Grateful")
             assertEquals(BandListUiState.Loading, awaitItem())
@@ -115,7 +118,6 @@ class BandListViewModelTest {
             assertEquals(BandListUiState.Error("Search Failed"), awaitItem())
         }
     }
-
 
     companion object {
         @JvmStatic
@@ -133,9 +135,11 @@ class BandListViewModelTest {
 }
 
 private fun createMockRepository(
-    getBandsAnswer: suspend (KInvocationOnMock) -> Result<List<Band>>
+    getBandsAnswers: List<suspend (KInvocationOnMock) -> Result<List<Band>>>
 ): MusicRepository {
+    var index = 0
+
     return mock {
-        onBlocking { it.getBands(any(), any()) } doSuspendableAnswer getBandsAnswer
+        onBlocking { it.getBands(any(), any()) } doSuspendableAnswer getBandsAnswers[index++]
     }
 }

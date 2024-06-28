@@ -53,6 +53,7 @@ class BandListViewModel @Inject constructor(private val musicRepository: MusicRe
             var page = (_uiState.value as? BandListUiState.Success)?.page ?: 1
             if (newQuery) {
                 bands = mutableListOf()
+                page = 1
             } else {
                 page += 1
             }
