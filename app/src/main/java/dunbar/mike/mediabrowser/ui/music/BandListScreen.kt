@@ -90,6 +90,7 @@ fun BandListScreen(
         }
 
         is BandListUiState.Loading -> {
+            BandSearchCard(searchString = searchString, onSearchChanged = onSearchChanged)
             LoadingView()
         }
     }

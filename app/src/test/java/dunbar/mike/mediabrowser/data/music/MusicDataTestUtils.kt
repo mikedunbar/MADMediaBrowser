@@ -109,8 +109,10 @@ fun createTestApi(mockServer: MockWebServer): ArchiveApi {
             loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
             addInterceptor(loggingInterceptor)
         }
-        .connectTimeout(15, TimeUnit.SECONDS)
-        .readTimeout(15, TimeUnit.SECONDS)
+        // Timeouts low to speed up tests, since we are using a mock server anyhow and real responses are instantaneous
+        .connectTimeout(1, TimeUnit.SECONDS)
+        .readTimeout(1, TimeUnit.SECONDS)
+        .writeTimeout(1, TimeUnit.SECONDS)
         .build()
 
     return Retrofit.Builder()
@@ -144,7 +146,7 @@ fun getPathForMetadataRequest(itemId: String): String {
 object RequestBasedDispatcher : Dispatcher() {
     private val map = mutableMapOf<String, MockResponse>()
 
-    fun setResponseForPath(path: String, response: MockResponse) {
+    fun setResponseForRequest(path: String, response: MockResponse) {
         map[path] = response
     }
 

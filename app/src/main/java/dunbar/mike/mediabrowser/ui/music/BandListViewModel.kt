@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.data.music.MusicRepository
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -37,13 +38,6 @@ class BandListViewModel @Inject constructor(private val musicRepository: MusicRe
         if (searchString.length < 4) {
             return
         }
-        _uiState.update { state ->
-            if (state is BandListUiState.Initial) {
-                BandListUiState.Loading
-            } else {
-                state
-            }
-        }
         getBands(newQuery = true)
     }
 
@@ -52,6 +46,8 @@ class BandListViewModel @Inject constructor(private val musicRepository: MusicRe
         bandsJob = viewModelScope.launch {
             var page = (_uiState.value as? BandListUiState.Success)?.page ?: 1
             if (newQuery) {
+                delay(1000) // TODO refactor
+                _uiState.update { BandListUiState.Loading }
                 bands = mutableListOf()
                 page = 1
             } else {

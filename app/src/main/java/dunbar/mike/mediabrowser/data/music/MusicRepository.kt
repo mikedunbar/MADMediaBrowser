@@ -8,12 +8,35 @@ class MusicRepository @Inject constructor(
     private val remoteDataSource: MusicRemoteDataSource,
     private val ioDispatcher: CoroutineDispatcher,
 ) {
-    suspend fun getBands(searchString: String, startPage: Int): Result<List<Band>> =
-        withContext(ioDispatcher) { remoteDataSource.getBands(searchString, startPage) }
+    suspend fun getBands(searchString: String, startPage: Int): Result<List<Band>> {
+        return withContext(ioDispatcher) {
+            try {
+                remoteDataSource.getBands(searchString, startPage)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
 
-    suspend fun getAlbums(band: Band) = withContext(ioDispatcher) { remoteDataSource.getAlbums(band) }
+    suspend fun getAlbums(band: Band): Result<List<Album>> {
+        return withContext(ioDispatcher) {
+            try {
+                remoteDataSource.getAlbums(band)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
 
-    suspend fun getBand(bandId: String) = withContext(ioDispatcher) { remoteDataSource.getBand(bandId) }
+    suspend fun getBand(bandId: String): Result<Band?> {
+        return withContext(ioDispatcher) {
+            try {
+                remoteDataSource.getBand(bandId)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
 
 }
 
