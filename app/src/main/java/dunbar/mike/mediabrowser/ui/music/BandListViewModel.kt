@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.data.music.MusicRepository
+import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +19,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BandListViewModel @Inject constructor(private val musicRepository: MusicRepository) : ViewModel() {
+class BandListViewModel @Inject constructor(
+    private val musicRepository: MusicRepository,
+    private val logger: Logger,
+) : ViewModel() {
+    private val TAG = "BandListViewModel"
     private val _uiState = MutableStateFlow<BandListUiState>(BandListUiState.Initial)
     val uiState: StateFlow<BandListUiState> = _uiState
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), BandListUiState.Initial)
@@ -42,6 +47,7 @@ class BandListViewModel @Inject constructor(private val musicRepository: MusicRe
     }
 
     private fun getBands(newQuery: Boolean = false) {
+        logger.d(TAG, "getBands")
         bandsJob?.cancel()
         bandsJob = viewModelScope.launch {
             var page = (_uiState.value as? BandListUiState.Success)?.page ?: 1

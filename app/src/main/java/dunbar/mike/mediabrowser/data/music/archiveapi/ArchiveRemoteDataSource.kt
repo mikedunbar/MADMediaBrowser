@@ -18,6 +18,7 @@ class ArchiveRemoteDataSource @Inject constructor(
     override suspend fun getBands(searchString: String, startPage: Int): Result<List<Band>> {
         val topLevelStart = System.currentTimeMillis()
         return withContext(ioDispatcher) {
+            logger.d(TAG, "getBands on ${Thread.currentThread().name}")
             archiveApi.searchBands(
                 rows = PAGE_SIZE,
                 page = startPage,
