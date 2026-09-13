@@ -24,13 +24,15 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val logTag = "MainActivity"
+
     private val viewModel: MainActivityViewModel by viewModels()
     private val logger = AndroidLogger
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val splashScreen = installSplashScreen()
-        logger.d(TAG, "onCreate: installed splash screen, holding until minimal user data loaded")
+        logger.d(logTag, "onCreate: installed splash screen, holding until minimal user data loaded")
 
         var uiState: MainActivityUiState by mutableStateOf(Loading)
 
@@ -38,7 +40,7 @@ class MainActivity : ComponentActivity() {
             lifecycle.repeatOnLifecycle(STARTED) {
                 viewModel.uiState.collect {
                     uiState = it
-                    logger.d(TAG, "onCreate: collected uiState = $uiState")
+                    logger.d(logTag, "onCreate: collected uiState = $uiState")
                 }
             }
         }
@@ -53,10 +55,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             MediaBrowserApp(shouldUseDarkTheme(uiState))
         }
-    }
-
-    companion object {
-        private const val TAG = "MainActivity"
     }
 }
 

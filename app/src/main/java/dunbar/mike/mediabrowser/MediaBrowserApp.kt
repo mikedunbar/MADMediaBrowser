@@ -24,7 +24,6 @@ class MediaBrowserApp : Application(), ImageLoaderFactory {
                     .build()
             }
             .logger(DebugLogger())
-            .respectCacheHeaders(false)
             .build()
     }
 }
