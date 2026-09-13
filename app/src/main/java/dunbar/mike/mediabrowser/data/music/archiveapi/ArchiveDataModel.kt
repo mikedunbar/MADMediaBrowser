@@ -21,6 +21,7 @@ data class BandSearchResponsePayload(
 data class BandSearchResponseDoc(
     val creator: String,
     val identifier: String,
+    val title: String?,
 )
 //endregion
 

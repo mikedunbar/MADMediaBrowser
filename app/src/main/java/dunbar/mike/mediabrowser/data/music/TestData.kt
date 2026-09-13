@@ -1,12 +1,16 @@
 package dunbar.mike.mediabrowser.data.music
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.time.LocalDate
 
 
 @Suppress("unused") // Used by manually updating the Hilt module
 class FakeMusicRemoteDataSource : MusicRemoteDataSource {
 
-    override suspend fun getBands(searchString: String, startPage: Int) = Result.success(createTestBandList())
+    override fun getBands(searchString: String, startPage: Int): Flow<List<Band>> = flow {
+        emit(createTestBandList())
+    }
 
     override suspend fun getBand(bandId: String) = Result.success(Band("Widespread Panic", "Rock", "widespreadpanic"))
 
@@ -73,7 +77,7 @@ fun createTestAlbum(
 fun createTestAlbumList(band: Band): List<Album> {
     val albums = mutableListOf<Album>()
     (0..5).forEach {
-        val albumName = "$band.name Album $it"
+        val albumName = "${band.name} Album $it"
         albums.add(
             createTestAlbum(
                 band = band,
@@ -95,4 +99,3 @@ fun createTestAlbumList(band: Band): List<Album> {
     }
     return albums
 }
-

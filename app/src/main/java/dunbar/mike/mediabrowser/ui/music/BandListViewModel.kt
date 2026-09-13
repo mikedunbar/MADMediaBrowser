@@ -13,6 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -60,12 +61,13 @@ class BandListViewModel @Inject constructor(
                 page += 1
             }
             musicRepository.getBands(searchQuery.value, page)
-                .onSuccess {
-                    bands.addAll(it)
-                    _uiState.update { BandListUiState.Success(bands = bands, page = page) }
-                }
-                .onFailure { error ->
+                .catch { error ->
+                    logger.e(TAG, "Error fetching bands", error)
                     _uiState.update { BandListUiState.Error(message = error.message ?: "Unknown error") }
+                }
+                .collect { newBands ->
+                    bands.addAll(newBands)
+                    _uiState.update { BandListUiState.Success(bands = bands.toList(), page = page) }
                 }
         }
     }

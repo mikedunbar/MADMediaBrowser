@@ -30,7 +30,7 @@ interface ArchiveApi {
     @GET("advancedsearch.php?output=json&fl[]=date,title,avg_rating,identifier,downloads,creator")
     suspend fun searchAlbums(@Query("rows") rows: Int, @Query("page") page: Int, @Query("q")query: String): Response<AlbumSearchResponse>
 
-    @GET("advancedsearch.php?output=json&fl[]=creator,identifier,publicdate&sort[]=creator asc")
+    @GET("advancedsearch.php?output=json&fl[]=creator,identifier,publicdate,title&sort[]=creator asc")
     suspend fun searchBands(@Query("rows") rows: Int, @Query("page") page: Int, @Query("q")query: String): Response<BandSearchResponse>
 
     @GET("metadata/{archiveId}")
