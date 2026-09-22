@@ -9,6 +9,7 @@ import dunbar.mike.mediabrowser.data.music.MusicRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AlbumListViewModel @Inject constructor(private val musicRepository: MusicRepository) : ViewModel() {
     private val _uiState = MutableStateFlow<AlbumListUiState>(AlbumListUiState.Loading)
-    val uiState: StateFlow<AlbumListUiState> = _uiState
+    val uiState: StateFlow<AlbumListUiState> = _uiState.asStateFlow()
 
     private var band: Band? = null
     private var bandJob: Job? = null

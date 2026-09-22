@@ -11,10 +11,9 @@ import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,8 +25,7 @@ class BandListViewModel @Inject constructor(
 ) : ViewModel() {
     private val TAG = "BandListViewModel"
     private val _uiState = MutableStateFlow<BandListUiState>(BandListUiState.Initial)
-    val uiState: StateFlow<BandListUiState> = _uiState
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), BandListUiState.Initial)
+    val uiState: StateFlow<BandListUiState> = _uiState.asStateFlow()
 
     private var bands = mutableListOf<Band>()
     private var bandsJob: Job? = null

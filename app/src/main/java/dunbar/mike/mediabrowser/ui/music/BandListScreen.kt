@@ -134,11 +134,8 @@ fun BandListView(
     }
 
     LazyColumn(state = listState) {
-        items(
-            items = bandList,
-            key = { it.id }
-        ) {
-            BandCard(it, onClickBand)
+        items(items = bandList, key = { band -> band.id }) { band ->
+            BandCard(band, onClickBand)
         }
     }
 }
