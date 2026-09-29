@@ -114,9 +114,10 @@ fun MediaBrowserNavHost(
                 },
             )
         }
-        composable("${Screen.AlbumList.name}/{bandId}") {
-            val bandId = it.arguments?.getString("bandId") ?: ""
+        composable("${Screen.AlbumList.name}/{bandId}") { backStackEntry ->
+            val bandId = backStackEntry.arguments?.getString("bandId") ?: ""
             val albumListViewModel = hiltViewModel<AlbumListViewModel>()
+
             albumListViewModel.setBandId(bandId)
             AlbumListScreenRoot(
                 viewModel = albumListViewModel,
