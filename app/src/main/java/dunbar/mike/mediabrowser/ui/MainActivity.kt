@@ -6,9 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.lifecycleScope
@@ -20,20 +22,27 @@ import dunbar.mike.mediabrowser.data.user.DarkThemeConfig.SYSTEM_SETTING
 import dunbar.mike.mediabrowser.ui.MainActivityUiState.Loading
 import dunbar.mike.mediabrowser.ui.MainActivityUiState.Success
 import dunbar.mike.mediabrowser.util.AndroidLogger
+import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+val LocalLogger = staticCompositionLocalOf<Logger> { AndroidLogger() }
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val logTag = "MainActivity"
 
     private val viewModel: MainActivityViewModel by viewModels()
-    private val logger = AndroidLogger
+
+    @Inject
+    lateinit var logger: Logger
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val splashScreen = installSplashScreen()
         logger.d(logTag, "onCreate: installed splash screen, holding until minimal user data loaded")
 
+        // TODO: Move to ViewModel
         var uiState: MainActivityUiState by mutableStateOf(Loading)
 
         lifecycleScope.launch {
@@ -53,7 +62,9 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            MediaBrowserApp(shouldUseDarkTheme(uiState))
+            CompositionLocalProvider(LocalLogger provides logger) {
+                MediaBrowserApp(shouldUseDarkTheme(uiState))
+            }
         }
     }
 }

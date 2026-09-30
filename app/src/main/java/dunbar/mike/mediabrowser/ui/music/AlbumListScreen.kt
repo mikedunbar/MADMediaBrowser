@@ -30,8 +30,10 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import dunbar.mike.mediabrowser.R
 import dunbar.mike.mediabrowser.data.music.Album
 import dunbar.mike.mediabrowser.data.music.createTestAlbum
@@ -42,7 +44,9 @@ import dunbar.mike.mediabrowser.util.formatDateLocalMedium
 
 @Composable
 fun AlbumListScreenRoot(
-    viewModel: AlbumListViewModel = hiltViewModel<AlbumListViewModel>(),
+    viewModel: AlbumListViewModel = hiltViewModel(checkNotNull<ViewModelStoreOwner>(LocalViewModelStoreOwner.current) {
+        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+    }, null),
     onClickAlbum: (String) -> Unit
 ) {
     AlbumListScreen(uiState = viewModel.uiState.collectAsStateWithLifecycle().value, onClickAlbum = onClickAlbum, onLoadMore = viewModel::onLoadMore)

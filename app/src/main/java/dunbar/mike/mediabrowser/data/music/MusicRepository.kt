@@ -1,14 +1,23 @@
 package dunbar.mike.mediabrowser.data.music
 
+import dunbar.mike.mediabrowser.di.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+interface MusicRemoteDataSource {
+    fun getBands(searchString: String, startPage: Int = 1): Flow<List<Band>>
+
+    suspend fun getBand(bandId: String): Result<Band?>
+
+    suspend fun getAlbums(band: Band, startPage: Int = 1): Result<List<Album>>
+}
+
 class MusicRepository @Inject constructor(
     private val remoteDataSource: MusicRemoteDataSource,
-    private val ioDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {
     fun getBands(searchString: String, startPage: Int): Flow<List<Band>> {
         return remoteDataSource.getBands(searchString, startPage)
@@ -35,12 +44,4 @@ class MusicRepository @Inject constructor(
         }
     }
 
-}
-
-interface MusicRemoteDataSource {
-    fun getBands(searchString: String, startPage: Int = 1): Flow<List<Band>>
-
-    suspend fun getBand(bandId: String): Result<Band?>
-
-    suspend fun getAlbums(band: Band, startPage: Int = 1): Result<List<Album>>
 }

@@ -6,6 +6,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
+import javax.inject.Inject
 
 interface Logger {
 
@@ -29,7 +30,7 @@ enum class Level(val token: String) {
     ERROR("E"),
 }
 
-object AndroidLogger : Logger {
+class AndroidLogger @Inject constructor() : Logger {
     override fun d(tag: String, msg: String, vararg msgArgs: Any?) {
         formatMsg(level = Level.DEBUG, tag = tag, msg = msg, msgArgs = msgArgs).let {
             Log.d(tag, it)

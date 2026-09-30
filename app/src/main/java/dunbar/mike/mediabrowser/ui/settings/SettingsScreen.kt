@@ -17,18 +17,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dunbar.mike.mediabrowser.data.user.DarkThemeConfig
+import dunbar.mike.mediabrowser.ui.LocalLogger
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
-import dunbar.mike.mediabrowser.util.AndroidLogger
-import dunbar.mike.mediabrowser.util.Logger
 
 @Composable
 fun SettingsScreenRoot(
     viewModel: SettingsViewModel = hiltViewModel<SettingsViewModel>(),
-    logger: Logger = AndroidLogger,
 ) {
+    val logger = LocalLogger.current
     val currentConfig = viewModel.darkThemeConfig.collectAsStateWithLifecycle(initialValue = DarkThemeConfig.SYSTEM_SETTING).value
     logger.d("SettingsScreenRoot", "currentConfig: $currentConfig")
     val currentOption = DarkThemeSettingsOption.fromConfig(currentConfig)
@@ -89,12 +88,13 @@ fun DarkThemeSetting(
         LazyColumn {
             items(darkThemeSettingsOptions) { option ->
                 // Create a Row for each option
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        onSelected(option)
-                    }
-                    .padding(16.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onSelected(option)
+                        }
+                        .padding(16.dp)) {
                     // Display the option name
                     Text(
                         text = option.desc, style = MaterialTheme.typography.bodySmall

@@ -3,6 +3,7 @@ package dunbar.mike.mediabrowser.data.music.archiveapi
 import dunbar.mike.mediabrowser.data.music.Album
 import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.data.music.MusicRemoteDataSource
+import dunbar.mike.mediabrowser.di.IoDispatcher
 import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
@@ -15,7 +16,7 @@ import javax.inject.Inject
 class ArchiveRemoteDataSource @Inject constructor(
     private val archiveApi: ArchiveApi,
     private val logger: Logger,
-    private val ioDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : MusicRemoteDataSource {
 
     override fun getBands(searchString: String, startPage: Int): Flow<List<Band>> = flow {

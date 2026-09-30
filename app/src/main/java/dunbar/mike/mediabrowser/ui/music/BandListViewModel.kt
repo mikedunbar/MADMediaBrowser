@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class BandListViewModel @Inject constructor(
@@ -45,13 +46,14 @@ class BandListViewModel @Inject constructor(
         getBands(newQuery = true)
     }
 
+    //TODO: Taking too long + Resets to zero results after completing band name sometimes
     private fun getBands(newQuery: Boolean = false) {
         logger.d(TAG, "getBands")
         bandsJob?.cancel()
         bandsJob = viewModelScope.launch {
             var page = (_uiState.value as? BandListUiState.Success)?.page ?: 1
             if (newQuery) {
-                delay(1000) // TODO refactor
+                delay(1000.milliseconds) // TODO refactor
                 _uiState.update { BandListUiState.Loading }
                 bands = mutableListOf()
                 page = 1

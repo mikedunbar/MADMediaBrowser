@@ -6,44 +6,21 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import dunbar.mike.mediabrowser.di.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class UserDataRepository @Inject constructor(
-    private val userDataSource: UserDataSource,
-    ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-) {
-    val userData: Flow<UserData> = userDataSource.userData.flowOn(ioDispatcher)
-
-    suspend fun updateUserData(userData: UserData) {
-        userDataSource.updateUserData(userData)
-    }
-
-}
+private val Context.userPrefDataStore: DataStore<Preferences> by preferencesDataStore(name = "UserSettings")
 
 interface UserDataSource {
     val userData: Flow<UserData>
 
     suspend fun updateUserData(userData: UserData)
 }
-
-class FakeUserDataSource : UserDataSource {
-    private val _userData = MutableStateFlow(UserData(false, DarkThemeConfig.SYSTEM_SETTING))
-    override val userData: Flow<UserData> = _userData.asStateFlow()
-
-    override suspend fun updateUserData(userData: UserData) {
-        _userData.value = userData
-    }
-
-}
-
-private val Context.userPrefDataStore: DataStore<Preferences> by preferencesDataStore(name = "UserSettings")
 
 class RealUserDataSource(
     private val context: Context
@@ -67,6 +44,18 @@ class RealUserDataSource(
 
     companion object {
         private val DARK_THEME_KEY = stringPreferencesKey("dark_theme")
+    }
+
+}
+
+class UserDataRepository @Inject constructor(
+    private val userDataSource: UserDataSource,
+    @IoDispatcher ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+) {
+    val userData: Flow<UserData> = userDataSource.userData.flowOn(ioDispatcher)
+
+    suspend fun updateUserData(userData: UserData) {
+        userDataSource.updateUserData(userData)
     }
 
 }
