@@ -50,9 +50,9 @@ fun StubScreen(
             text = stringResource(title),
             style = MaterialTheme.typography.headlineLarge,
             modifier =
-            Modifier
-                .padding(horizontal = 16.dp)
-                .align(Alignment.CenterHorizontally)
+                Modifier
+                    .padding(horizontal = 16.dp)
+                    .align(Alignment.CenterHorizontally)
         )
         SearchBar(Modifier.padding(horizontal = 16.dp))
         ContentSection(title = R.string.trending_videos) {

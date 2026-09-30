@@ -52,7 +52,7 @@ class AlbumListViewModel @Inject constructor(private val musicRepository: MusicR
                         _uiState.update { AlbumListUiState.Success(theBand.id, page, albums) }
                     }
                     .onFailure { error ->
-                        _uiState.update {  AlbumListUiState.Error(error.message ?: "Unknown error") }
+                        _uiState.update { AlbumListUiState.Error(error.message ?: "Unknown error") }
                     }
             }
         } ?: throw IllegalStateException("Band cannot be null")
