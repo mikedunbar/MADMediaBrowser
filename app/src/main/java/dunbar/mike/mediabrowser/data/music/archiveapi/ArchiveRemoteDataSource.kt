@@ -21,7 +21,7 @@ class ArchiveRemoteDataSource @Inject constructor(
 
     override fun getBands(searchString: String, startPage: Int): Flow<List<Band>> = flow {
         val topLevelStart = System.currentTimeMillis()
-        logger.d(TAG, "getBands on ${Thread.currentThread().name}")
+        logger.d(TAG, "getBands: searchString = $searchString, startPage = $startPage")
 
         val response = archiveApi.searchBands(
             rows = PAGE_SIZE,

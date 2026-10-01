@@ -24,13 +24,14 @@ class BandListViewModel @Inject constructor(
     private val musicRepository: MusicRepository,
     private val logger: Logger,
 ) : ViewModel() {
-    private val TAG = "BandListViewModel"
+    private val logTag = "BandListViewModel"
     private val _uiState = MutableStateFlow<BandListUiState>(BandListUiState.Initial)
     val uiState: StateFlow<BandListUiState> = _uiState.asStateFlow()
 
     private var bands = mutableListOf<Band>()
     private var bandsJob: Job? = null
 
+    // TODO Fold into UI state
     var searchQuery: MutableState<String> = mutableStateOf("")
         private set
 
@@ -48,7 +49,7 @@ class BandListViewModel @Inject constructor(
 
     //TODO: Taking too long + Resets to zero results after completing band name sometimes
     private fun getBands(newQuery: Boolean = false) {
-        logger.d(TAG, "getBands")
+        logger.d(logTag, "getBands newQuery = $newQuery")
         bandsJob?.cancel()
         bandsJob = viewModelScope.launch {
             var page = (_uiState.value as? BandListUiState.Success)?.page ?: 1
@@ -62,7 +63,7 @@ class BandListViewModel @Inject constructor(
             }
             musicRepository.getBands(searchQuery.value, page)
                 .catch { error ->
-                    logger.e(TAG, "Error fetching bands", error)
+                    logger.e(logTag, "Error fetching bands", error)
                     _uiState.update { BandListUiState.Error(message = error.message ?: "Unknown error") }
                 }
                 .collect { newBands ->
