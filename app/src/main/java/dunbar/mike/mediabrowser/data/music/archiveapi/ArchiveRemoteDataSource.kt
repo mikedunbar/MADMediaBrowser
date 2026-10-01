@@ -26,7 +26,7 @@ class ArchiveRemoteDataSource @Inject constructor(
         val response = archiveApi.searchBands(
             rows = PAGE_SIZE,
             page = startPage,
-            query = "collection:etree AND mediatype:collection AND creator:${searchString}*"
+            query = "collection:etree AND mediatype:collection AND creator:(${searchString}*)"
         )
 
         logger.d(TAG, "top-level search took ${System.currentTimeMillis() - topLevelStart}ms")
