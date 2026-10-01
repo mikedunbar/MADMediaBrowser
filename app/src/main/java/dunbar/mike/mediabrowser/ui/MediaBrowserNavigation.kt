@@ -98,7 +98,7 @@ fun MediaBrowserNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.name,
+        startDestination = Screen.BandList.name,
         modifier = modifier,
     ) {
         composable(Screen.Home.name) {

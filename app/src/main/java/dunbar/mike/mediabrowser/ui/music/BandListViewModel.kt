@@ -1,7 +1,5 @@
 package dunbar.mike.mediabrowser.ui.music
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,58 +23,57 @@ class BandListViewModel @Inject constructor(
     private val logger: Logger,
 ) : ViewModel() {
     private val logTag = "BandListViewModel"
-    private val _uiState = MutableStateFlow<BandListUiState>(BandListUiState.Initial)
+    private val _uiState = MutableStateFlow(BandListUiState())
     val uiState: StateFlow<BandListUiState> = _uiState.asStateFlow()
 
-    private var bands = mutableListOf<Band>()
     private var bandsJob: Job? = null
-
-    // TODO Fold into UI state
-    var searchQuery: MutableState<String> = mutableStateOf("")
-        private set
 
     fun nextPage() {
         getBands(newQuery = false)
     }
 
     fun search(searchString: String) {
-        searchQuery.value = searchString
+        logger.d(logTag, "search: $searchString")
+        _uiState.update { it.copy(searchString = searchString) }
         if (searchString.length < 4) {
             return
         }
         getBands(newQuery = true)
     }
 
-    //TODO: Taking too long + Resets to zero results after completing band name sometimes
+    //TODO: Taking too long?
     private fun getBands(newQuery: Boolean = false) {
-        logger.d(logTag, "getBands newQuery = $newQuery")
         bandsJob?.cancel()
         bandsJob = viewModelScope.launch {
-            var page = (_uiState.value as? BandListUiState.Success)?.page ?: 1
             if (newQuery) {
-                delay(1000.milliseconds) // TODO refactor
-                _uiState.update { BandListUiState.Loading }
-                bands = mutableListOf()
-                page = 1
+                delay(1000.milliseconds)
+                _uiState.value = _uiState.value.copy(isLoading = true, bands = emptyList(), page = 1)
             } else {
-                page += 1
+                _uiState.update { old ->
+                    old.copy(isLoading = true, page = old.page + 1)
+                }
             }
-            musicRepository.getBands(searchQuery.value, page)
+            musicRepository.getBands(_uiState.value.searchString, _uiState.value.page)
                 .catch { error ->
                     logger.e(logTag, "Error fetching bands", error)
-                    _uiState.update { BandListUiState.Error(message = error.message ?: "Unknown error") }
+                    _uiState.update { old ->
+                        old.copy(isLoading = false, errorMessage = error.message)
+                    }
                 }
                 .collect { newBands ->
-                    bands.addAll(newBands)
-                    _uiState.update { BandListUiState.Success(bands = bands.toList(), page = page) }
+
+                    _uiState.update { old ->
+                        old.copy(isLoading = false, bands = old.bands + newBands)
+                    }
                 }
         }
     }
 }
 
-sealed interface BandListUiState {
-    data object Initial : BandListUiState
-    data object Loading : BandListUiState
-    data class Success(val page: Int, val bands: List<Band>) : BandListUiState
-    data class Error(val message: String) : BandListUiState
-}
+data class BandListUiState(
+    val searchString: String = "",
+    val page: Int = 1,
+    val bands: List<Band> = emptyList(),
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+)

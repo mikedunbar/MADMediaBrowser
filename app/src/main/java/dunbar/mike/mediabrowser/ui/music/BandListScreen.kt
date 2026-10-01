@@ -21,14 +21,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -41,6 +47,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import dunbar.mike.mediabrowser.R
 import dunbar.mike.mediabrowser.data.music.Band
+import dunbar.mike.mediabrowser.ui.LocalLogger
 import dunbar.mike.mediabrowser.ui.shared.ErrorView
 import dunbar.mike.mediabrowser.ui.shared.LoadingView
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
@@ -51,9 +58,9 @@ fun BandListScreenRoot(
     viewModel: BandListViewModel = hiltViewModel<BandListViewModel>(),
     onClickBand: (String) -> Unit,
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     BandListScreen(
-        uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
-        searchString = viewModel.searchQuery.value,
+        uiState = uiState,
         onClickBand = onClickBand,
         onLoadMore = viewModel::nextPage,
         onSearchChanged = viewModel::search
@@ -63,35 +70,26 @@ fun BandListScreenRoot(
 @Composable
 fun BandListScreen(
     uiState: BandListUiState,
-    searchString: String = "",
     onClickBand: (String) -> Unit = {},
     onLoadMore: () -> Unit = {},
     onSearchChanged: (String) -> Unit = {},
 ) {
-    when (uiState) {
-        is BandListUiState.Initial -> {
-            BandSearchCard(searchString = searchString, onSearchChanged = onSearchChanged)
-        }
-
-        is BandListUiState.Success -> {
-            Column {
-                BandSearchCard(searchString = searchString, onSearchChanged = onSearchChanged)
+    if (uiState.isLoading) {
+        BandSearchCard(searchString = uiState.searchString, onSearchChanged = onSearchChanged)
+        LoadingView()
+    } else if (uiState.errorMessage != null) {
+        BandSearchCard(searchString = uiState.searchString, onSearchChanged = onSearchChanged)
+        ErrorView(uiState.errorMessage)
+    } else {
+        Column {
+            BandSearchCard(searchString = uiState.searchString, onSearchChanged = onSearchChanged)
+            if (uiState.bands.isNotEmpty()) {
                 BandListView(
                     bandList = uiState.bands,
                     onClickBand = onClickBand,
                     onLoadMore = onLoadMore
                 )
             }
-
-        }
-
-        is BandListUiState.Error -> {
-            ErrorView(uiState.message)
-        }
-
-        is BandListUiState.Loading -> {
-            BandSearchCard(searchString = searchString, onSearchChanged = onSearchChanged)
-            LoadingView()
         }
     }
 }
@@ -101,9 +99,45 @@ fun BandSearchCard(
     searchString: String,
     onSearchChanged: (String) -> Unit,
 ) {
+    var searchFieldValue by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = searchString,
+                selection = TextRange(searchString.length)
+            )
+        )
+    }
+
+    // TODO - Strictly needed?
+    LaunchedEffect(searchString) {
+        if (searchFieldValue.text != searchString) {
+            searchFieldValue = TextFieldValue(
+                text = searchString,
+                selection = TextRange(searchString.length)
+            )
+        }
+    }
+
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     Column(modifier = Modifier.fillMaxWidth()) {
+        val logger = LocalLogger.current
         Text(text = "Search for Bands")
-        TextField(value = searchString, onValueChange = onSearchChanged)
+        TextField(
+            value = searchFieldValue,
+            onValueChange = { newValue ->
+                logger.d("BandListScreen", "onValueChange: $newValue")
+                searchFieldValue = newValue
+                if (newValue.text != searchString) {
+                    onSearchChanged(newValue.text)
+                }
+            },
+            modifier = Modifier.focusRequester(focusRequester)
+        )
     }
 }
 
@@ -195,10 +229,10 @@ fun BandCard(
 
 class BandListUiStateProvider : PreviewParameterProvider<BandListUiState> {
     override val values = sequenceOf(
-        BandListUiState.Initial,
-        BandListUiState.Loading,
-        BandListUiState.Error("You appear to be offline"),
-        BandListUiState.Success(
+        BandListUiState(),
+        BandListUiState(isLoading = true),
+        BandListUiState(errorMessage = "You appear to be offline"),
+        BandListUiState(
             page = 1,
             bands = listOf(
                 Band("Widespread Panic", "Rock", "Widespread Panic"),
@@ -221,7 +255,7 @@ class BandListUiStateProvider : PreviewParameterProvider<BandListUiState> {
 fun BandListScreenPreview(@PreviewParameter(BandListUiStateProvider::class) uiState: BandListUiState) {
     MediaBrowserTheme {
         Surface {
-            BandListScreen(uiState = uiState, searchString = "Gratef")
+            BandListScreen(uiState = uiState)
         }
     }
 }
