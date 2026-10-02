@@ -3,14 +3,16 @@
 package dunbar.mike.mediabrowser.ui.music
 
 import app.cash.turbine.test
+import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.data.music.MusicRepository
 import dunbar.mike.mediabrowser.data.music.band1
 import dunbar.mike.mediabrowser.data.music.band2
-import dunbar.mike.mediabrowser.data.music.band3
 import dunbar.mike.mediabrowser.data.music.testDispatcher
+import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -19,129 +21,55 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doSuspendableAnswer
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 
 class BandListViewModelTest {
 
+    private val musicRepository: MusicRepository = mock {
+        on { getBands(any(), any()) }.thenReturn(flowOf(listOf(band1, band2)))
+    }
+    private val logger: Logger = mock()
+
     private var viewModel = BandListViewModel(
-        musicRepository = mock<MusicRepository> {
-            onBlocking { getBands(any(), any()) } doSuspendableAnswer {
-                delay(100)
-                Result.success(listOf(band1, band2))
-            }
-        }
+        musicRepository = musicRepository,
+        logger = logger
     )
 
     @Test
     fun creationEmitsInitialState() = runTest(testDispatcher) {
-        assertEquals(BandListUiState.Initial, viewModel.uiState.value)
+        assertEquals(BandListUiState(), viewModel.uiState.value)
     }
 
     @Test
-    fun searchingWithStringLessThanFourCharactersDoesNotQueryRepositoryAndEmitsNothing() = runTest(testDispatcher) {
+    fun searchingWithStringLessThanFourCharactersDoesNotQueryRepository() = runTest(testDispatcher) {
         viewModel.uiState.test {
-            assertEquals(BandListUiState.Initial, awaitItem())
+            assertEquals(BandListUiState(), awaitItem())
             viewModel.search("G")
             viewModel.search("Gr")
             viewModel.search("Gra")
-            // No additional items emitted yet, after BandListUiState.Initial
+            advanceTimeBy(1000)
+            assertEquals("Gra", viewModel.uiState.value.searchString)
+            assertEquals(emptyList<Band>(), viewModel.uiState.value.bands)
+        }
+    }
+
+    @Test
+    fun searchingWithStringAtLeastFourCharactersDebouncesAndQueriesRepository() = runTest(testDispatcher) {
+        viewModel.uiState.test {
+            assertEquals(BandListUiState(), awaitItem())
+            
             viewModel.search("Grat")
-            assertEquals(BandListUiState.Loading, awaitItem())
-            assertEquals(BandListUiState.Success(page = 1, bands = listOf(band1, band2)), awaitItem())
-            viewModel.search("Gra")
-            viewModel.search("Gr")
-            // No emissions here either, simulating delete text in search bar
+            assertEquals("Grat", viewModel.uiState.value.searchString)
+
+            advanceTimeBy(1000)
+
+            val loadingState = awaitItem()
+            assertEquals(true, loadingState.isLoading)
+
+            val successState = awaitItem()
+            assertEquals(false, successState.isLoading)
+            assertEquals(listOf(band1, band2), successState.bands)
         }
-    }
-
-    @Test
-    fun searchingInInitialStateEmitsLoadingFollowedBySuccessForSuccessfulSearch() = runTest(testDispatcher) {
-        viewModel.uiState.test {
-            assertEquals(BandListUiState.Initial, awaitItem())
-            viewModel.search("Grateful")
-            assertEquals(BandListUiState.Loading, awaitItem())
-            assertEquals(BandListUiState.Success(page = 1, bands = listOf(band1, band2)), awaitItem())
-        }
-    }
-
-    @Test
-    fun searchingInInitialStateEmitsLoadingFollowedByErrorForFailedSearch() = runTest(testDispatcher) {
-        viewModel = BandListViewModel(
-            mock<MusicRepository> {
-                onBlocking { getBands(any(), any()) } doSuspendableAnswer {
-                    delay(100)
-                    Result.failure(Exception("Search Failed"))
-                }
-            })
-
-        viewModel.uiState.test {
-            assertEquals(BandListUiState.Initial, awaitItem())
-            viewModel.search("Grateful")
-            assertEquals(BandListUiState.Loading, awaitItem())
-            assertEquals(BandListUiState.Error(message = "Search Failed"), awaitItem())
-        }
-    }
-
-    @Test
-    fun searchingInSuccessStateEmitsSuccessWithPageResetToOneForSuccessfulSearch() = runTest(testDispatcher) {
-        viewModel = BandListViewModel(
-            mock<MusicRepository> {
-                onBlocking { getBands(eq("Grateful"), any()) } doSuspendableAnswer {
-                    delay(100)
-                    Result.success(listOf(band1, band2))
-                }
-                onBlocking { getBands(eq("The Beatles"), any()) } doSuspendableAnswer {
-                    delay(100)
-                    Result.success(listOf(band3))
-                }
-            })
-
-        viewModel.uiState.test {
-            // Drive to success state
-            assertEquals(BandListUiState.Initial, awaitItem())
-            viewModel.search("Grateful")
-            assertEquals(BandListUiState.Loading, awaitItem())
-            assertEquals(BandListUiState.Success(page = 1, bands = listOf(band1, band2)), awaitItem())
-
-            // Search
-            viewModel.search("The Beatles")
-            assertEquals(BandListUiState.Loading, awaitItem())
-            assertEquals(BandListUiState.Success(page = 1, bands = listOf(band3)), awaitItem())
-        }
-    }
-
-    @Test
-    fun searchingInSuccessStateEmitsErrorForFailedSearch() = runTest(testDispatcher) {
-        viewModel = BandListViewModel(
-            mock<MusicRepository> {
-                onBlocking { getBands(any(), any()) } doSuspendableAnswer {
-                    delay(100)
-                    Result.failure(Exception("Search Failed"))
-                }
-            })
-
-        viewModel.uiState.test {
-            // Drive to success state
-            assertEquals(BandListUiState.Initial, awaitItem())
-            viewModel.search("Grateful")
-            assertEquals(BandListUiState.Loading, awaitItem())
-
-            // Search again before delay in mock completes
-            viewModel.search("The Beatles")
-            assertEquals(BandListUiState.Error("Search Failed"), awaitItem())
-        }
-    }
-
-    @Test
-    fun pagingInSuccessStateEmitsSuccessWithPageIncrementedForSuccessfulSearch() = runTest(testDispatcher) {
-    }
-
-
-    @Test
-    fun pagingInErrorStateDoesAndEmitsNothing() = runTest(testDispatcher) {
-
     }
 
     companion object {
