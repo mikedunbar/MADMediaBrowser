@@ -28,7 +28,6 @@ class BandListViewModel @Inject constructor(
     private val logTag = "BandListViewModel"
     private val _uiState = MutableStateFlow(BandListUiState())
     val uiState: StateFlow<BandListUiState> = _uiState.asStateFlow()
-
     private val searchQuery = MutableStateFlow("")
     private var bandsJob: Job? = null
 

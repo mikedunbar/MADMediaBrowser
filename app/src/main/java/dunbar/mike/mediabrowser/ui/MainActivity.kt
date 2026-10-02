@@ -8,12 +8,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.Lifecycle.State.STARTED
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import dunbar.mike.mediabrowser.data.user.DarkThemeConfig.DARK
 import dunbar.mike.mediabrowser.data.user.DarkThemeConfig.LIGHT
@@ -21,7 +17,6 @@ import dunbar.mike.mediabrowser.data.user.DarkThemeConfig.SYSTEM_SETTING
 import dunbar.mike.mediabrowser.ui.MainActivityUiState.Loading
 import dunbar.mike.mediabrowser.ui.MainActivityUiState.Success
 import dunbar.mike.mediabrowser.util.Logger
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -37,26 +32,13 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
         logger.d(logTag, "onCreate: installed splash screen, holding until minimal user data loaded")
 
-        // TODO: Move to ViewModel
-        var uiState: MainActivityUiState by mutableStateOf(Loading)
-
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(STARTED) {
-                viewModel.uiState.collect {
-                    uiState = it
-                    logger.d(logTag, "onCreate: collected uiState = $uiState")
-                }
-            }
-        }
-
         splashScreen.setKeepOnScreenCondition {
-            when (uiState) {
-                Loading -> true
-                is Success -> false
-            }
+            viewModel.uiState.value is Loading
         }
 
         setContent {
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
             CompositionLocalProvider(LocalLogger provides logger) {
                 MediaBrowserApp(shouldUseDarkTheme(uiState))
             }
