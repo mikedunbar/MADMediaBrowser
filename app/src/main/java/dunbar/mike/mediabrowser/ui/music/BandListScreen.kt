@@ -47,7 +47,6 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import dunbar.mike.mediabrowser.R
 import dunbar.mike.mediabrowser.data.music.Band
-import dunbar.mike.mediabrowser.ui.LocalLogger
 import dunbar.mike.mediabrowser.ui.shared.ErrorView
 import dunbar.mike.mediabrowser.ui.shared.LoadingView
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
@@ -108,16 +107,6 @@ fun BandSearchCard(
         )
     }
 
-    // TODO - Strictly needed?
-    LaunchedEffect(searchString) {
-        if (searchFieldValue.text != searchString) {
-            searchFieldValue = TextFieldValue(
-                text = searchString,
-                selection = TextRange(searchString.length)
-            )
-        }
-    }
-
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
@@ -125,12 +114,10 @@ fun BandSearchCard(
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        val logger = LocalLogger.current
         Text(text = "Search for Bands")
         TextField(
             value = searchFieldValue,
             onValueChange = { newValue ->
-                logger.d("BandListScreen", "onValueChange: $newValue")
                 searchFieldValue = newValue
                 if (newValue.text != searchString) {
                     onSearchChanged(newValue.text)
