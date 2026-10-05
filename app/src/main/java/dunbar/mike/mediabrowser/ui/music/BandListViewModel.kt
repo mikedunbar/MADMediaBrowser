@@ -11,7 +11,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.update
@@ -41,13 +40,13 @@ class BandListViewModel @Inject constructor(
                         getBands(newQuery = true)
                     } else {
                         bandsJob?.cancel()
-                        _uiState.update { 
+                        _uiState.update {
                             it.copy(
                                 isLoading = false,
                                 bands = emptyList(),
                                 page = 1,
                                 errorMessage = null
-                            ) 
+                            )
                         }
                     }
                 }
@@ -82,18 +81,20 @@ class BandListViewModel @Inject constructor(
                     old.copy(isLoading = true, page = old.page + 1, errorMessage = null)
                 }
             }
-            musicRepository.getBands(searchString, _uiState.value.page)
-                .catch { error ->
+            musicRepository.getBands(searchString, _uiState.value.page).fold(
+                onSuccess = { newBands ->
+                    _uiState.update { old ->
+                        old.copy(isLoading = false, bands = old.bands + newBands)
+                    }
+
+                },
+                onFailure = { error ->
                     logger.e(logTag, "Error fetching bands", error)
                     _uiState.update { old ->
                         old.copy(isLoading = false, errorMessage = error.message)
                     }
                 }
-                .collect { newBands ->
-                    _uiState.update { old ->
-                        old.copy(isLoading = false, bands = old.bands + newBands)
-                    }
-                }
+            )
         }
     }
 }

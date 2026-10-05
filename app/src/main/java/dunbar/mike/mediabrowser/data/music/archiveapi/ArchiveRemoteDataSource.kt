@@ -8,8 +8,6 @@ import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -19,7 +17,7 @@ class ArchiveRemoteDataSource @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : MusicRemoteDataSource {
 
-    override fun getBands(searchString: String, startPage: Int): Flow<List<Band>> = flow {
+    override suspend fun getBands(searchString: String, startPage: Int): Result<List<Band>> {
         val topLevelStart = System.currentTimeMillis()
         logger.d(TAG, "getBands: searchString = $searchString, startPage = $startPage")
 
@@ -32,7 +30,7 @@ class ArchiveRemoteDataSource @Inject constructor(
         logger.d(TAG, "top-level search took ${System.currentTimeMillis() - topLevelStart}ms")
 
         val responseBody = response.body()
-        if (response.isSuccessful && responseBody != null) {
+        return if (response.isSuccessful && responseBody != null) {
             val initialBands = responseBody.response.docs.map { doc ->
                 Band(
                     name = doc.creator,
@@ -40,12 +38,13 @@ class ArchiveRemoteDataSource @Inject constructor(
                     id = doc.identifier
                 )
             }
-            // Emit the results immediately from the search query (fast path)
-            emit(initialBands)
             logger.d(TAG, "Emitted ${initialBands.size} bands from search query")
+            Result.success(initialBands)
         } else {
-            logger.e(TAG, "Search failed: ${response.code()} ${response.errorBody()?.string()}")
-            emit(emptyList())
+            val code = response.code()
+            val errorBody = response.errorBody()?.string()
+            logger.e(TAG, "Search failed: $code: $errorBody")
+            Result.failure(Exception("$code: $errorBody"))
         }
     }
 

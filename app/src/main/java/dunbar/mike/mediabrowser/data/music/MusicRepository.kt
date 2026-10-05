@@ -2,45 +2,34 @@ package dunbar.mike.mediabrowser.data.music
 
 import dunbar.mike.mediabrowser.di.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-
-interface MusicRemoteDataSource {
-    fun getBands(searchString: String, startPage: Int = 1): Flow<List<Band>>
-
-    suspend fun getBand(bandId: String): Result<Band?>
-
-    suspend fun getAlbums(band: Band, startPage: Int = 1): Result<List<Album>>
-}
 
 class MusicRepository @Inject constructor(
     private val remoteDataSource: MusicRemoteDataSource,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {
-    fun getBands(searchString: String, startPage: Int): Flow<List<Band>> {
-        return remoteDataSource.getBands(searchString, startPage)
-            .flowOn(ioDispatcher)
-    }
-
-    suspend fun getAlbums(band: Band): Result<List<Album>> {
-        return withContext(ioDispatcher) {
-            try {
-                remoteDataSource.getAlbums(band)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
+    suspend fun getBands(searchString: String, startPage: Int): Result<List<Band>> = withContext(ioDispatcher) {
+        try {
+            remoteDataSource.getBands(searchString, startPage)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
-    suspend fun getBand(bandId: String): Result<Band?> {
-        return withContext(ioDispatcher) {
-            try {
-                remoteDataSource.getBand(bandId)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
+    suspend fun getAlbums(band: Band): Result<List<Album>> = withContext(ioDispatcher) {
+        try {
+            remoteDataSource.getAlbums(band)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getBand(bandId: String): Result<Band?> = withContext(ioDispatcher) {
+        try {
+            remoteDataSource.getBand(bandId)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 

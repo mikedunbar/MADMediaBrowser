@@ -1,25 +1,18 @@
 package dunbar.mike.mediabrowser.data.music
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import java.time.LocalDate
 
 
 @Suppress("unused") // Used by manually updating the Hilt module
 class FakeMusicRemoteDataSource : MusicRemoteDataSource {
 
-    override fun getBands(searchString: String, startPage: Int): Flow<List<Band>> = flow {
-        emit(createTestBandList())
-    }
+    override suspend fun getBands(searchString: String, startPage: Int): Result<List<Band>> = Result.success(createTestBandList())
 
     override suspend fun getBand(bandId: String) = Result.success(Band("Widespread Panic", "Rock", "widespreadpanic"))
 
     override suspend fun getAlbums(band: Band, startPage: Int) = Result.success(createTestAlbumList(band))
 
 }
-
-val widespreadPanic = createTestBand("Widespread Panic")
-val spaceWrangler = createTestAlbum(band = widespreadPanic, name = "Space Wrangler")
 
 fun createTestBand(bandName: String): Band {
     return when {
