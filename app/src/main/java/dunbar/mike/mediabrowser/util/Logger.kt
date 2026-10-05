@@ -72,7 +72,12 @@ private fun formatMsg(date: Date? = null, level: Level, tag: String, msg: String
         formatStr = "$dateStr $formatStr"
     }
 
-    return String.format(formatStr, *msgArgs)
+    return if (msgArgs.isNotEmpty()) {
+        String.format(formatStr, *msgArgs)
+    }
+    else {
+        formatStr
+    }
 }
 
 fun main() {

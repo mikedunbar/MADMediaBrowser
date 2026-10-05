@@ -96,9 +96,7 @@ fun createMusicRepository(
         ArchiveRemoteDataSource(
             createTestApi(mockServer),
             testLogger,
-            testDispatcher
-        ),
-        testDispatcher
+        )
     )
 }
 
@@ -130,9 +128,9 @@ object TestFileReader {
 }
 
 fun getPathForBandSearch(searchString: String, resultsPage: Int = 1): String {
-    val encodedQueryString = URLEncoder.encode("collection:etree AND mediatype:collection AND creator:${searchString}*", "UTF-8")
+    val encodedQueryString = URLEncoder.encode("collection:etree AND mediatype:collection AND creator:(${searchString}*)", "UTF-8")
         .replace("+", "%20") // for some reason URLEncoder encodes spaces as "+", whereas Retrofit is encoding them as "%20"
-    return "/advancedsearch.php?output=json&fl[]=creator,identifier,publicdate&sort[]=creator%20asc&rows=20&page=$resultsPage&q=$encodedQueryString"
+    return "/advancedsearch.php?output=json&fl[]=creator,identifier,publicdate,title&sort[]=creator%20asc&rows=20&page=$resultsPage&q=$encodedQueryString"
 }
 
 fun getPathForAlbumSearch(bandId: String, resultsPage: Int = 1): String {
@@ -148,11 +146,16 @@ object RequestBasedDispatcher : Dispatcher() {
 
     fun setResponseForRequest(path: String, response: MockResponse) {
         map[path] = response
+        map[path.removePrefix("/")] = response
+        map["/$path"] = response
     }
 
     override fun dispatch(request: RecordedRequest): MockResponse {
-        return map[request.path] ?: MockResponse().setResponseCode(404)
+        val requestPath = request.path ?: ""
+        println("MockWebServer received request: method=${request.method}, path=$requestPath")
+        return map[requestPath] ?: map[requestPath.removePrefix("/")] ?: MockResponse().setResponseCode(404).also {
+            println("MockWebServer 404: path='$requestPath', registered paths=${map.keys}")
+        }
     }
-
 }
 

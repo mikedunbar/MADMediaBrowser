@@ -10,7 +10,6 @@ import dunbar.mike.mediabrowser.data.music.MusicRemoteDataSource
 import dunbar.mike.mediabrowser.data.music.archiveapi.ArchiveApi
 import dunbar.mike.mediabrowser.data.music.archiveapi.ArchiveRemoteDataSource
 import dunbar.mike.mediabrowser.util.Logger
-import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -47,7 +46,7 @@ object NetworkModule {
 
     @Provides
     fun provideMusicRemoteDataSource(api: ArchiveApi, logger: Logger): MusicRemoteDataSource {
-        return ArchiveRemoteDataSource(api, logger, Dispatchers.IO)
+        return ArchiveRemoteDataSource(api, logger)
     }
 
 }

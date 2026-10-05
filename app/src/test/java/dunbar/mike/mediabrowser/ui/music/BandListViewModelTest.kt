@@ -2,17 +2,17 @@
 
 package dunbar.mike.mediabrowser.ui.music
 
-import app.cash.turbine.test
 import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.data.music.MusicRepository
 import dunbar.mike.mediabrowser.data.music.band1
 import dunbar.mike.mediabrowser.data.music.band2
 import dunbar.mike.mediabrowser.data.music.testDispatcher
+import dunbar.mike.mediabrowser.util.ConsoleLogger
 import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -22,54 +22,49 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import kotlin.time.Duration.Companion.milliseconds
 
 class BandListViewModelTest {
 
     private val musicRepository: MusicRepository = mock {
-        on { getBands(any(), any()) }.thenReturn(flowOf(listOf(band1, band2)))
+        on { getBands(any(), any<Int>()) }.thenReturn(Result.success(listOf(band1, band2)))
     }
-    private val logger: Logger = mock()
-
-    private var viewModel = BandListViewModel(
-        musicRepository = musicRepository,
-        logger = logger
-    )
+    private val logger: Logger = ConsoleLogger()
 
     @Test
     fun creationEmitsInitialState() = runTest(testDispatcher) {
+        val viewModel = BandListViewModel(musicRepository, logger)
         assertEquals(BandListUiState(), viewModel.uiState.value)
     }
 
     @Test
     fun searchingWithStringLessThanFourCharactersDoesNotQueryRepository() = runTest(testDispatcher) {
-        viewModel.uiState.test {
-            assertEquals(BandListUiState(), awaitItem())
-            viewModel.search("G")
-            viewModel.search("Gr")
-            viewModel.search("Gra")
-            advanceTimeBy(1000)
-            assertEquals("Gra", viewModel.uiState.value.searchString)
-            assertEquals(emptyList<Band>(), viewModel.uiState.value.bands)
-        }
+        val viewModel = BandListViewModel(musicRepository, logger)
+        assertEquals(BandListUiState(), viewModel.uiState.value)
+        viewModel.search("G")
+        viewModel.search("Gr")
+        viewModel.search("Gra")
+        advanceTimeBy(1000.milliseconds)
+        assertEquals("Gra", viewModel.uiState.value.searchString)
+        assertEquals(emptyList<Band>(), viewModel.uiState.value.bands)
+
     }
 
     @Test
     fun searchingWithStringAtLeastFourCharactersDebouncesAndQueriesRepository() = runTest(testDispatcher) {
-        viewModel.uiState.test {
-            assertEquals(BandListUiState(), awaitItem())
-            
-            viewModel.search("Grat")
-            assertEquals("Grat", viewModel.uiState.value.searchString)
+        val viewModel = BandListViewModel(musicRepository, logger)
+        advanceUntilIdle()
+        assertEquals(BandListUiState(), viewModel.uiState.value)
 
-            advanceTimeBy(1000)
+        viewModel.search("Grat")
+        assertEquals("Grat", viewModel.uiState.value.searchString)
 
-            val loadingState = awaitItem()
-            assertEquals(true, loadingState.isLoading)
+        // Advance time past the 1-second debounce to trigger getBands()
+        advanceTimeBy(1000.milliseconds)
+        advanceUntilIdle()
 
-            val successState = awaitItem()
-            assertEquals(false, successState.isLoading)
-            assertEquals(listOf(band1, band2), successState.bands)
-        }
+        assertEquals(false, viewModel.uiState.value.isLoading)
+        assertEquals(listOf(band1, band2), viewModel.uiState.value.bands)
     }
 
     companion object {

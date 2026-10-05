@@ -154,7 +154,7 @@ class MusicDataTests {
     }
 
     @Test
-    fun getAlbumsShallReturnFailureForSocketTimeoutAndNotCrashApp() = runTest(testDispatcher){
+    fun getAlbumsShallReturnFailureForSocketTimeoutAndNotCrashApp() = runTest(testDispatcher) {
         RequestBasedDispatcher.setResponseForRequest(
             path = getPathForAlbumSearch(band1Id, 1),
             response = MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE)
@@ -170,7 +170,7 @@ class MusicDataTests {
     }
 
     @Test
-    fun getBandsShallReturnFailureForSocketTimeoutAndNotCrashApp() = runTest(testDispatcher){
+    fun getBandsShallReturnFailureForSocketTimeoutAndNotCrashApp() = runTest(testDispatcher) {
         RequestBasedDispatcher.setResponseForRequest(
             path = getPathForBandSearch("blah", 1),
             response = MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE)
@@ -186,7 +186,7 @@ class MusicDataTests {
     }
 
     @Test
-    fun getBandShallReturnFailureForSocketTimeoutAndNotCrashApp() = runTest(testDispatcher){
+    fun getBandShallReturnFailureForSocketTimeoutAndNotCrashApp() = runTest(testDispatcher) {
         RequestBasedDispatcher.setResponseForRequest(
             path = getPathForMetadataRequest("Blah"),
             response = MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE)

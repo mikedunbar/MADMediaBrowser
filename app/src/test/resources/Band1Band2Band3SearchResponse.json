@@ -1,44 +1,38 @@
 {
   "responseHeader": {
     "status": 0,
-    "QTime": 2648,
+    "QTime": 164,
     "params": {
-      "query": "(( ( collection:etree AND mediatype:collection AND creator:East (title:Na*^100 OR salients:Na*^50 OR subject:Na*^25 OR description:Na*^15 OR collection:Na*^10 OR language:Na*^10 OR text:Na*^1) ) AND !collection:(podcasts OR radio OR uspto))^2 OR ( ( collection:etree AND mediatype:collection AND creator:East (title:Na*^100 OR salients:Na*^50 OR subject:Na*^25 OR description:Na*^15 OR collection:Na*^10 OR language:Na*^10 OR text:Na*^1) ) AND collection:(podcasts OR radio OR uspto))^0.5)",
-      "qin": "collection:etree AND mediatype:collection  AND creator:East Na*",
-      "fields": "identifier,creator,collection",
+      "query": "collection:etree AND mediatype:collection AND creator:(East *)",
+      "qin": "collection:etree AND mediatype:collection AND creator:(East *)",
+      "fields": "creator,identifier,publicdate,title",
       "wt": "json",
-      "sort": "creator desc",
-      "rows": "100",
+      "sort": "creator asc",
+      "rows": 20,
       "start": 0
     }
   },
   "response": {
-    "numFound": 3,
+    "numFound": 5,
     "start": 0,
     "docs": [
       {
-        "collection": [
-          "etree",
-          "audio"
-        ],
         "creator": "East Nash Grass",
-        "identifier": "EastNashGrass"
+        "identifier": "EastNashGrass",
+        "publicdate": "2024-01-07T14:28:55Z",
+        "title": "East Nash Grass"
       },
       {
-        "collection": [
-          "etree",
-          "audio"
-        ],
         "creator": "East Coast Dave and the Midwest Swingers",
-        "identifier": "EastCoastDaveAndTheMidwestSwingers"
+        "identifier": "EastCoastDaveAndTheMidwestSwingers",
+        "publicdate": "2013-03-26T02:44:20Z",
+        "title": "East Coast Dave and the Midwest Swingers"
       },
       {
-        "collection": [
-          "etree",
-          "audio"
-        ],
         "creator": "East Coast Dave",
-        "identifier": "EastCoastDave"
+        "identifier": "EastCoastDave",
+        "publicdate": "2013-03-26T02:41:38Z",
+        "title": "East Coast Dave"
       }
     ]
   }

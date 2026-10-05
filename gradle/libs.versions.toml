@@ -73,6 +73,7 @@ junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-para
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
 okhttp-mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "okhttpMockwebserver" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

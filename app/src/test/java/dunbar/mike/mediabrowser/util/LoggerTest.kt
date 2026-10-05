@@ -59,4 +59,10 @@ class LoggerTest {
         assertTrue(logMsg.endsWith("D: TEST_TAG Cat List=[Tiger, Eeyore, Abby]"))
     }
 
+    @Test
+    fun `test no msg args`() {
+        val path = "path"
+        loggerUnderTest.d("TAG", "What it is: $path")
+    }
+
 }

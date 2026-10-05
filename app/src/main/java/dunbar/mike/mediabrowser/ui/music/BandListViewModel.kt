@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -32,10 +33,12 @@ class BandListViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            logger.d(logTag, "init: launched searchQueryFlow")
             searchQuery
                 .drop(1)
                 .debounce(1000.milliseconds)
                 .collect { searchString ->
+                    logger.d(logTag, "searchQueryFlow: Collected $searchString")
                     if (searchString.length >= 4) {
                         getBands(newQuery = true)
                     } else {
