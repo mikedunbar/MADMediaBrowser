@@ -74,7 +74,7 @@ class MusicDataTests {
         mockWebServer.start()
         val musicRepository = createMusicRepository(mockWebServer)
 
-        val albumsResult = musicRepository.getAlbums(band1)
+        val albumsResult = musicRepository.getAlbums(band1.id)
 
         assertTrue(albumsResult.isSuccess)
         assertEquals(
@@ -145,7 +145,7 @@ class MusicDataTests {
         val musicRepository = createMusicRepository(mockWebServer)
 
         val start = System.currentTimeMillis()
-        val albumsResult = musicRepository.getAlbums(band1)
+        val albumsResult = musicRepository.getAlbums(band1.id)
         val elapsed = System.currentTimeMillis() - start
 
         assertTrue(albumsResult.isSuccess)
@@ -163,7 +163,7 @@ class MusicDataTests {
         mockWebServer.start()
         val musicRepository = createMusicRepository(mockWebServer)
 
-        val albumsRequest = musicRepository.getAlbums(band1)
+        val albumsRequest = musicRepository.getAlbums(band1.id)
 
         assertTrue(albumsRequest.isFailure)
         assertTrue(albumsRequest.exceptionOrNull() is SocketTimeoutException)
@@ -183,23 +183,6 @@ class MusicDataTests {
 
         assertTrue(bandsRequest.isFailure)
         assertTrue(bandsRequest.exceptionOrNull() is SocketTimeoutException)
-    }
-
-    @Test
-    fun getBandShallReturnFailureForSocketTimeoutAndNotCrashApp() = runTest(testDispatcher) {
-        RequestBasedDispatcher.setResponseForRequest(
-            path = getPathForMetadataRequest("Blah"),
-            response = MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE)
-        )
-        mockWebServer.dispatcher = RequestBasedDispatcher
-        mockWebServer.start()
-        val musicRepository = createMusicRepository(mockWebServer)
-
-        val bandRequest = musicRepository.getBand("Blah")
-
-        assertTrue(bandRequest.isFailure)
-        testLogger.d("temp", "ex: ${bandRequest.exceptionOrNull()}")
-        assertTrue(bandRequest.exceptionOrNull() is SocketTimeoutException)
     }
 
 }

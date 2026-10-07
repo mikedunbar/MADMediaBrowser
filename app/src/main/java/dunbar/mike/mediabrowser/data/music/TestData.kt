@@ -8,9 +8,7 @@ class FakeMusicRemoteDataSource : MusicRemoteDataSource {
 
     override suspend fun getBands(searchString: String, startPage: Int): Result<List<Band>> = Result.success(createTestBandList())
 
-    override suspend fun getBand(bandId: String) = Result.success(Band("Widespread Panic", "Rock", "widespreadpanic"))
-
-    override suspend fun getAlbums(band: Band, startPage: Int) = Result.success(createTestAlbumList(band))
+    override suspend fun getAlbums(bandId: String, startPage: Int) = Result.success(createTestAlbumList(bandId))
 
 }
 
@@ -49,9 +47,9 @@ fun createTestBandList(): List<Band> {
 }
 
 fun createTestAlbum(
-    band: Band = Band("Grateful Dead", "Psychedelic Rock", id = "GratefulDead"),
-    name: String = band.name,
-    id: String = "abc",
+    bandId: String = "Grateful Dead",
+    albumId: String = "Aoxamoa",
+    name: String = "Grateful Dead",
     releaseDate: LocalDate = LocalDate.now(),
     songList: List<Song> = listOf(
         Song("$name Song 1", 300.5),
@@ -65,16 +63,17 @@ fun createTestAlbum(
         Song("$name Song 9", 300.5),
         Song("$name Song 10", 300.5),
     )
-) = Album(band, name, id, releaseDate, songList)
+) = Album(bandId, name, albumId, releaseDate, songList)
 
-fun createTestAlbumList(band: Band): List<Album> {
+fun createTestAlbumList(bandId: String): List<Album> {
     val albums = mutableListOf<Album>()
     (0..5).forEach {
-        val albumName = "${band.name} Album $it"
+        val albumName = "$bandId} Album $it"
         albums.add(
             createTestAlbum(
-                band = band,
+                bandId = bandId,
                 name = albumName,
+                albumId = "blah",
                 songList = listOf(
                     Song("$albumName Song 1", 300.5),
                     Song("$albumName Song 2", 300.5),

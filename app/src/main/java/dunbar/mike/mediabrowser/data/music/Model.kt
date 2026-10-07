@@ -3,7 +3,7 @@ package dunbar.mike.mediabrowser.data.music
 import java.time.LocalDate
 
 data class Album(
-    val band: Band,
+    val bandId: String,
     val name: String,
     val id: String,
     val releaseDate: LocalDate,

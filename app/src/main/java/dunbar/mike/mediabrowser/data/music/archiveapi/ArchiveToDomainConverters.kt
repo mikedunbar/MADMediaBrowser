@@ -6,7 +6,7 @@ import dunbar.mike.mediabrowser.data.music.Song
 import java.time.LocalDate
 
 
-fun ArchiveAlbum.toDomainAlbum(band: Band): Album {
+fun ArchiveAlbum.toDomainAlbum(bandId: String): Album {
     val songList = List(metadataResponse.files.size) {
         Song(
             name = metadataResponse.files[it].name,
@@ -15,7 +15,7 @@ fun ArchiveAlbum.toDomainAlbum(band: Band): Album {
     }
 
     return Album(
-        band = band,
+        bandId = bandId,
         name = responseDoc.title,
         id = responseDoc.identifier,
         releaseDate = LocalDate.parse(metadataResponse.metadata.date),

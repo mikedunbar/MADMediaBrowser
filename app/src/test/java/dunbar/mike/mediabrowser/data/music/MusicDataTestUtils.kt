@@ -23,7 +23,7 @@ val band1Description = "East Nash Grass"
 val band1 = Band(band1Name, band1Description, band1Id)
 
 val band1Album1 = Album(
-    band = band1,
+    bandId = band1.id,
     name = "East Nash Grass Live at Moravian Pottery and Tileworks on 2022-07-31",
     id = "east-nash-grass",
     releaseDate = LocalDate.of(2022, 7, 31),
@@ -38,7 +38,7 @@ val band1Album1 = Album(
 )
 
 val band1Album2 = Album(
-    band = band1,
+    bandId = band1.id,
     name = "East Nash Grass Live at Wild Horse Saloon on 2024-04-21",
     id = "EastNashGrass2024-04-21.flac16-schoepsmk4-soundboardmatrix",
     releaseDate = LocalDate.of(2024, 4, 21),
@@ -53,7 +53,7 @@ val band1Album2 = Album(
 )
 
 val band1Album3 = Album(
-    band = band1,
+    bandId = band1.id,
     name = "East Nash Grass Live at 3rd & Lindsley Nashville, TN on 2023-12-28",
     id = "EastNashGrass2023-12-28",
     releaseDate = LocalDate.of(2023, 12, 28),

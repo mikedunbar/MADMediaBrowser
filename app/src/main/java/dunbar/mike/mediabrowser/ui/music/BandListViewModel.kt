@@ -3,7 +3,6 @@ package dunbar.mike.mediabrowser.ui.music
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.data.music.MusicRepository
 import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.FlowPreview
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -102,10 +100,3 @@ class BandListViewModel @Inject constructor(
     }
 }
 
-data class BandListUiState(
-    val searchString: String = "",
-    val page: Int = 1,
-    val bands: List<Band> = emptyList(),
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null,
-)

@@ -17,6 +17,7 @@ interface Logger {
      */
     fun d(tag: String, msg: String, vararg msgArgs: Any?)
 
+    // TODO: Overload that takes an Exception
     /**
      * Logs [msg] at error level, after formatting with/substituting [msgArgs]
      *
