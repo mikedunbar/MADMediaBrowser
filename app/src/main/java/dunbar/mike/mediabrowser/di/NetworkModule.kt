@@ -20,16 +20,41 @@ import java.util.concurrent.TimeUnit
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    @Provides
-    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
-        .apply {
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object NetworkModule {
+
+        @Provides
+        fun provideOkHttpClient(logger: Logger): OkHttpClient {
             val loggingInterceptor = HttpLoggingInterceptor()
             loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-            addInterceptor(loggingInterceptor)
+
+            val dispatcher = okhttp3.Dispatcher().apply {
+                maxRequests = 64
+                maxRequestsPerHost = 20
+            }
+
+            val timingInterceptor = okhttp3.Interceptor { chain ->
+                val request = chain.request()
+                val startNs = System.nanoTime()
+
+                val response = chain.proceed(request) // Executes the network call
+
+                val tookMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNs)
+                logger.d("NetworkTiming", "${request.method} ${request.url.encodedPath} took ${tookMs}ms [Code: ${response.code}]")
+
+                response
+            }
+
+            return OkHttpClient.Builder()
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
+                .dispatcher(dispatcher)
+                .addInterceptor(timingInterceptor)      // Add timing interceptor
+                .addInterceptor(loggingInterceptor)   // Add body logging interceptor
+                .build()
         }
-        .connectTimeout(15, TimeUnit.SECONDS)
-        .readTimeout(15, TimeUnit.SECONDS)
-        .build()
+    }
 
     @Provides
     fun provideMoshi(): Moshi = Moshi.Builder()

@@ -48,8 +48,7 @@ class ArchiveRemoteDataSource @Inject constructor(
         val (albums, duration) = measureTimedValue {
             archiveApi.searchAlbums(rows = PAGE_SIZE, page = startPage, query = "collection:($bandId)")
         }
-        logger.d(TAG, "getAlbums: bandId = $bandId, albums search took $duration")
-
+        logger.d(TAG, "getAlbums: bandId=$bandId, startPage=$startPage albums search took $duration")
 
         val (result, totalMetaDataDuration) = measureTimedValue {
             albums.let { response ->
@@ -59,8 +58,11 @@ class ArchiveRemoteDataSource @Inject constructor(
                             body.response.docs
                                 .map { doc ->
                                     async {
-                                        val (metadata, metadataDuration) = measureTimedValue { archiveApi.getMetaData(doc.identifier) }
-                                        logger.d(TAG, "getAlbums: metadata search for ${doc.identifier} took $metadataDuration")
+                                        val (metadata, metadataDuration) = measureTimedValue {
+                                            logger.d(TAG, "getAlbums: metadata search STARTING for ${doc.identifier}")
+                                            archiveApi.getMetaData(doc.identifier)
+                                        }
+                                        logger.d(TAG, "getAlbums: metadata search COMPLETED for ${doc.identifier} in $metadataDuration")
                                         metadata.body()?.let { metadata ->
                                             val flacFiles = metadata.files.filter {
                                                 SupportedAudioFile.FLAC.ids.contains(it.format)

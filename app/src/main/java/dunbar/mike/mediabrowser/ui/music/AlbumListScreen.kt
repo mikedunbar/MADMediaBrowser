@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
@@ -50,7 +51,8 @@ fun AlbumListScreenRoot(
     AlbumListScreen(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
         onClickAlbum = onClickAlbum,
-        onLoadMore = viewModel::onLoadMore)
+        onLoadMore = viewModel::onLoadMore
+    )
 }
 
 @Composable
@@ -59,17 +61,18 @@ fun AlbumListScreen(
     onClickAlbum: (String) -> Unit,
     onLoadMore: () -> Unit,
 ) {
-    when (uiState) {
-        is AlbumListUiState.Success -> {
-            AlbumListView(albumList = uiState.albums, onClickAlbum = onClickAlbum, onLoadMore = onLoadMore)
-        }
-
-        is AlbumListUiState.Error -> {
-            ErrorView(uiState.message)
-        }
-
-        is AlbumListUiState.Loading -> {
+    val listState = rememberLazyListState()
+    when {
+        uiState.isLoading -> {
             LoadingView()
+        }
+
+        uiState.errorMessage != null -> {
+            ErrorView(uiState.errorMessage)
+        }
+
+        else -> {
+            AlbumListView(albumList = uiState.albums, onClickAlbum = onClickAlbum, onLoadMore = onLoadMore, listState = listState)
         }
     }
 }
@@ -79,15 +82,15 @@ fun AlbumListView(
     albumList: List<Album>,
     onClickAlbum: (String) -> Unit,
     onLoadMore: () -> Unit,
+    listState: LazyListState,
 ) {
-    val listState = rememberLazyListState()
-
     val reachedBottom by remember {
         derivedStateOf {
             val bufferSize = 5
             val minItemsForPaging = 15
             val totalItemsCount = listState.layoutInfo.totalItemsCount
-            val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+            val lastVisibleItemIndex = lastVisibleItem?.index ?: 0
             val hasReachedBottom = lastVisibleItemIndex >= totalItemsCount - bufferSize - 1
             hasReachedBottom && totalItemsCount > minItemsForPaging
         }
@@ -100,10 +103,7 @@ fun AlbumListView(
     }
 
     LazyColumn(state = listState) {
-        items(
-            items = albumList,
-            key = { it.id }
-        ) {
+        items(items = albumList, key = { it.id }) {
             AlbumCard(album = it, onClickAlbum = onClickAlbum)
         }
     }
@@ -146,12 +146,10 @@ fun AlbumCard(
 
 class UiStateProvider : PreviewParameterProvider<AlbumListUiState> {
     override val values = sequenceOf(
-        AlbumListUiState.Error("Unable to fetch artists for album"),
-        AlbumListUiState.Loading,
-        AlbumListUiState.Success(
-            bandId = "DatBand",
-            page = 1,
-            albums = listOf(
+        AlbumListUiState(errorMessage = "Unable to fetch artists for album"),
+        AlbumListUiState(isLoading = true),
+        AlbumListUiState(
+            page = 1, albums = listOf(
                 createTestAlbum(name = "Bombs and Butterflies"),
                 createTestAlbum(name = "Magical Mystery Tour"),
                 createTestAlbum(name = "Running Wide"),

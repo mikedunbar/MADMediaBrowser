@@ -74,7 +74,7 @@ class MusicDataTests {
         mockWebServer.start()
         val musicRepository = createMusicRepository(mockWebServer)
 
-        val albumsResult = musicRepository.getAlbums(band1.id)
+        val albumsResult = musicRepository.getAlbums(band1.id, startPage = 1)
 
         assertTrue(albumsResult.isSuccess)
         assertEquals(
@@ -145,7 +145,7 @@ class MusicDataTests {
         val musicRepository = createMusicRepository(mockWebServer)
 
         val start = System.currentTimeMillis()
-        val albumsResult = musicRepository.getAlbums(band1.id)
+        val albumsResult = musicRepository.getAlbums(band1.id, startPage = 1)
         val elapsed = System.currentTimeMillis() - start
 
         assertTrue(albumsResult.isSuccess)
@@ -163,7 +163,7 @@ class MusicDataTests {
         mockWebServer.start()
         val musicRepository = createMusicRepository(mockWebServer)
 
-        val albumsRequest = musicRepository.getAlbums(band1.id)
+        val albumsRequest = musicRepository.getAlbums(band1.id, startPage = 1)
 
         assertTrue(albumsRequest.isFailure)
         assertTrue(albumsRequest.exceptionOrNull() is SocketTimeoutException)

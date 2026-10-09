@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
@@ -47,6 +48,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import dunbar.mike.mediabrowser.R
 import dunbar.mike.mediabrowser.data.music.Band
+import dunbar.mike.mediabrowser.ui.LocalLogger
 import dunbar.mike.mediabrowser.ui.shared.ErrorView
 import dunbar.mike.mediabrowser.ui.shared.LoadingView
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
@@ -73,6 +75,8 @@ fun BandListScreen(
     onLoadMore: () -> Unit = {},
     onSearchChanged: (String) -> Unit = {},
 ) {
+    val listState = rememberLazyListState()
+
     if (uiState.isLoading) {
         BandSearchCard(searchString = uiState.searchString, onSearchChanged = onSearchChanged)
         LoadingView()
@@ -86,7 +90,8 @@ fun BandListScreen(
                 BandListView(
                     bandList = uiState.bands,
                     onClickBand = onClickBand,
-                    onLoadMore = onLoadMore
+                    onLoadMore = onLoadMore,
+                    listState = listState
                 )
             }
         }
@@ -133,8 +138,10 @@ fun BandListView(
     bandList: List<Band>,
     onClickBand: (String) -> Unit,
     onLoadMore: () -> Unit,
+    listState: LazyListState,
 ) {
-    val listState = rememberLazyListState()
+    val logger = LocalLogger.current
+    logger.d("BandListScreen", "Composing bandListCount=${bandList.size}")
 
     val reachedBottom by remember {
         derivedStateOf {
@@ -150,6 +157,7 @@ fun BandListView(
 
     LaunchedEffect(reachedBottom) {
         if (reachedBottom) {
+            logger.d("BandListScreen", "Reached bottom, bandCount=${bandList.size}")
             onLoadMore()
         }
     }
@@ -259,7 +267,8 @@ fun BandListPreview() {
                     Band("Outkast", "Hip Hop", "Outkast")
                 ),
                 onClickBand = {},
-                onLoadMore = {}
+                onLoadMore = {},
+                listState = rememberLazyListState()
             )
         }
     }

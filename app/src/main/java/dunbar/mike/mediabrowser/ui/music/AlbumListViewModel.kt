@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dunbar.mike.mediabrowser.data.music.Album
 import dunbar.mike.mediabrowser.data.music.MusicRepository
+import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,14 +17,15 @@ import javax.inject.Inject
 @HiltViewModel
 class AlbumListViewModel @Inject constructor(
     private val musicRepository: MusicRepository,
+    private val logger: Logger,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+    private val logTag = "AlbumListViewModel"
     private val bandId: String = checkNotNull(savedStateHandle["bandId"])
 
-    private val _uiState = MutableStateFlow<AlbumListUiState>(AlbumListUiState.Loading)
+    private val _uiState = MutableStateFlow(AlbumListUiState(isLoading = true))
     val uiState: StateFlow<AlbumListUiState> = _uiState.asStateFlow()
 
-    private val albums = mutableListOf<Album>()
     private var albumsJob: Job? = null
 
     fun onLoadMore() {
@@ -39,17 +40,21 @@ class AlbumListViewModel @Inject constructor(
     private fun getAlbums() {
         albumsJob?.cancel()
         albumsJob = viewModelScope.launch {
-            val page = (_uiState.value as? AlbumListUiState.Success)?.let { it.page + 1 } ?: 1
-            musicRepository.getAlbums(bandId)
+            val startPage = _uiState.value.page + 1
+            val albums = _uiState.value.albums
+            logger.d(logTag, "getAlbums: page=$startPage, albumsSize=${albums.size}")
+            _uiState.update { it.copy(isLoading = true) }
+            musicRepository.getAlbums(bandId, startPage)
                 .onSuccess {
-                    albums.addAll(it)
-                    _uiState.update { AlbumListUiState.Success(bandId, page, albums) }
+                    _uiState.update { state ->
+                        AlbumListUiState(isLoading = false, errorMessage = null, page = startPage, albums = (state.albums + it).toSet().toList())
+                    }
+                    logger.d(logTag, "getAlbums: success page=${uiState.value.page} albumsSize=${uiState.value.albums.size}")
                 }
                 .onFailure { error ->
-                    _uiState.update { AlbumListUiState.Error(error.message ?: "Unknown error") }
+                    _uiState.update { it.copy(isLoading = false, errorMessage = error.message ?: "Unknown error") }
                 }
         }
-
     }
 }
 
