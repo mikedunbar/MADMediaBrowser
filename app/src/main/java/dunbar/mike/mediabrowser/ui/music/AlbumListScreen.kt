@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -72,7 +73,12 @@ fun AlbumListScreen(
         }
 
         else -> {
-            AlbumListView(albumList = uiState.albums, onClickAlbum = onClickAlbum, onLoadMore = onLoadMore, listState = listState)
+            Column {
+                AlbumListView(albumList = uiState.albums, onClickAlbum = onClickAlbum, onLoadMore = onLoadMore, listState = listState)
+                if (uiState.isPaging) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                }
+            }
         }
     }
 }

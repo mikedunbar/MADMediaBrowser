@@ -7,5 +7,6 @@ data class BandListUiState(
     val page: Int = 1,
     val bands: List<Band> = emptyList(),
     val isLoading: Boolean = false,
+    val isPaging: Boolean = false,
     val errorMessage: String? = null,
 )

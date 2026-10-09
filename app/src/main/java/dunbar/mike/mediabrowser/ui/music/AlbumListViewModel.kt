@@ -29,7 +29,7 @@ class AlbumListViewModel @Inject constructor(
     private var albumsJob: Job? = null
 
     fun onLoadMore() {
-        getAlbums()
+        getAlbums(isPaging = true)
     }
 
     init {
@@ -37,22 +37,22 @@ class AlbumListViewModel @Inject constructor(
     }
 
 
-    private fun getAlbums() {
+    private fun getAlbums(isPaging: Boolean = false) {
         albumsJob?.cancel()
         albumsJob = viewModelScope.launch {
             val startPage = _uiState.value.page + 1
             val albums = _uiState.value.albums
             logger.d(logTag, "getAlbums: page=$startPage, albumsSize=${albums.size}")
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(isLoading = !isPaging, isPaging = isPaging) }
             musicRepository.getAlbums(bandId, startPage)
                 .onSuccess {
                     _uiState.update { state ->
-                        AlbumListUiState(isLoading = false, errorMessage = null, page = startPage, albums = (state.albums + it).toSet().toList())
+                        AlbumListUiState(isLoading = false, isPaging = false, errorMessage = null, page = startPage, albums = (state.albums + it).toSet().toList())
                     }
                     logger.d(logTag, "getAlbums: success page=${uiState.value.page} albumsSize=${uiState.value.albums.size}")
                 }
                 .onFailure { error ->
-                    _uiState.update { it.copy(isLoading = false, errorMessage = error.message ?: "Unknown error") }
+                    _uiState.update { it.copy(isLoading = false, isPaging = false, errorMessage = error.message ?: "Unknown error") }
                 }
         }
     }

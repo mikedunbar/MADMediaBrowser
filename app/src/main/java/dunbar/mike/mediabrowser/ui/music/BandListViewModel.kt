@@ -75,24 +75,24 @@ class BandListViewModel @Inject constructor(
             }
             if (newQuery) {
                 _uiState.update { old ->
-                    old.copy(isLoading = true, bands = emptyList(), page = 1, errorMessage = null)
+                    old.copy(isLoading = true, isPaging = false, bands = emptyList(), page = 1, errorMessage = null)
                 }
             } else {
                 _uiState.update { old ->
-                    old.copy(isLoading = true, page = old.page + 1, errorMessage = null)
+                    old.copy(isLoading = false, isPaging = true, page = old.page + 1, errorMessage = null)
                 }
             }
             musicRepository.getBands(searchString, _uiState.value.page).fold(
                 onSuccess = { newBands ->
                     _uiState.update { old ->
-                        old.copy(isLoading = false, bands = old.bands + newBands)
+                        old.copy(isLoading = false, isPaging = false, bands = old.bands + newBands)
                     }
 
                 },
                 onFailure = { error ->
                     logger.e(logTag, "Error fetching bands", error)
                     _uiState.update { old ->
-                        old.copy(isLoading = false, errorMessage = error.message)
+                        old.copy(isLoading = false, isPaging = false, errorMessage = error.message)
                     }
                 }
             )
