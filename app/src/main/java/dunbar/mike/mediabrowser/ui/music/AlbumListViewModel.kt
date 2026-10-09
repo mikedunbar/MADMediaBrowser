@@ -32,6 +32,10 @@ class AlbumListViewModel @Inject constructor(
         getAlbums(isPaging = true)
     }
 
+    fun clearError() {
+        _uiState.update { it.copy(errorMessage = null) }
+    }
+
     init {
         getAlbums()
     }

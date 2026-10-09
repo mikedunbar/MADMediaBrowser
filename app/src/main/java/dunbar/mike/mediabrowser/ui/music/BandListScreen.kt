@@ -2,6 +2,8 @@
 
 package dunbar.mike.mediabrowser.ui.music
 
+
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,7 +42,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -50,7 +51,6 @@ import coil.request.ImageRequest
 import dunbar.mike.mediabrowser.R
 import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.ui.LocalLogger
-import dunbar.mike.mediabrowser.ui.shared.ErrorView
 import dunbar.mike.mediabrowser.ui.shared.LoadingView
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
 import kotlinx.coroutines.Dispatchers
@@ -65,7 +65,8 @@ fun BandListScreenRoot(
         uiState = uiState,
         onClickBand = onClickBand,
         onLoadMore = viewModel::nextPage,
-        onSearchChanged = viewModel::search
+        onSearchChanged = viewModel::search,
+        onErrorShown = viewModel::clearError
     )
 }
 
@@ -75,15 +76,22 @@ fun BandListScreen(
     onClickBand: (String) -> Unit = {},
     onLoadMore: () -> Unit = {},
     onSearchChanged: (String) -> Unit = {},
+    onErrorShown: () -> Unit = {},
 ) {
+    val context = LocalContext.current
     val listState = rememberLazyListState()
+
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let { message ->
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+            onErrorShown()
+
+        }
+    }
 
     if (uiState.isLoading) {
         BandSearchCard(searchString = uiState.searchString, onSearchChanged = onSearchChanged)
         LoadingView()
-    } else if (uiState.errorMessage != null) {
-        BandSearchCard(searchString = uiState.searchString, onSearchChanged = onSearchChanged)
-        ErrorView(uiState.errorMessage)
     } else {
         Column {
             BandSearchCard(searchString = uiState.searchString, onSearchChanged = onSearchChanged)
@@ -249,7 +257,6 @@ class BandListUiStateProvider : PreviewParameterProvider<BandListUiState> {
 }
 
 @PreviewLightDark
-@PreviewScreenSizes
 @Composable
 fun BandListScreenPreview(@PreviewParameter(BandListUiStateProvider::class) uiState: BandListUiState) {
     MediaBrowserTheme {
@@ -277,15 +284,4 @@ fun BandListPreview() {
         }
     }
 }
-
-@PreviewLightDark
-@Composable
-fun BandCardPreview() {
-    MediaBrowserTheme {
-        Surface {
-            BandCard(Band("Outkast", "Hip Hop", "Outkast")) {}
-        }
-    }
-}
-
 //endregion

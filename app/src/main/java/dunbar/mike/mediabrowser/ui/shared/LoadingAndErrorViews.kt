@@ -30,32 +30,12 @@ fun LoadingView() {
     }
 }
 
-@Composable
-fun ErrorView(message: String) {
-    Column()
-    {
-        Text(text = "Error Encountered", fontSize = MaterialTheme.typography.titleLarge.fontSize)
-        Text(text = message, fontStyle = FontStyle.Italic)
-    }
-}
-
 @PreviewLightDark
 @Composable
 private fun LoadingPreview() {
     MediaBrowserTheme {
         Surface {
             LoadingView()
-        }
-    }
-}
-
-@PreviewLightDark
-@PreviewScreenSizes
-@Composable
-private fun ErrorPreview() {
-    MediaBrowserTheme {
-        Surface {
-            ErrorView("You appear to be offline")
         }
     }
 }

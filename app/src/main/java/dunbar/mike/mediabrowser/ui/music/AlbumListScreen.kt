@@ -1,5 +1,6 @@
 package dunbar.mike.mediabrowser.ui.music
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -37,8 +39,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dunbar.mike.mediabrowser.R
 import dunbar.mike.mediabrowser.data.music.Album
 import dunbar.mike.mediabrowser.data.music.createTestAlbum
-import dunbar.mike.mediabrowser.ui.LocalLogger
-import dunbar.mike.mediabrowser.ui.shared.ErrorView
 import dunbar.mike.mediabrowser.ui.shared.LoadingView
 import dunbar.mike.mediabrowser.ui.theme.MediaBrowserTheme
 import dunbar.mike.mediabrowser.util.formatDateLocalMedium
@@ -48,11 +48,11 @@ fun AlbumListScreenRoot(
     viewModel: AlbumListViewModel = hiltViewModel<AlbumListViewModel>(),
     onClickAlbum: (String) -> Unit
 ) {
-    LocalLogger.current.d("AlbumListScreenRoot", "Launched")
     AlbumListScreen(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
         onClickAlbum = onClickAlbum,
-        onLoadMore = viewModel::onLoadMore
+        onLoadMore = viewModel::onLoadMore,
+        onErrorShown = viewModel::clearError,
     )
 }
 
@@ -61,23 +61,25 @@ fun AlbumListScreen(
     uiState: AlbumListUiState,
     onClickAlbum: (String) -> Unit,
     onLoadMore: () -> Unit,
+    onErrorShown: () -> Unit = {},
 ) {
+    val context = LocalContext.current
     val listState = rememberLazyListState()
-    when {
-        uiState.isLoading -> {
-            LoadingView()
-        }
 
-        uiState.errorMessage != null -> {
-            ErrorView(uiState.errorMessage)
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let { message ->
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+            onErrorShown()
         }
+    }
 
-        else -> {
-            Column {
-                AlbumListView(albumList = uiState.albums, onClickAlbum = onClickAlbum, onLoadMore = onLoadMore, listState = listState)
-                if (uiState.isPaging) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-                }
+    if (uiState.isLoading) {
+        LoadingView()
+    } else {
+        Column {
+            AlbumListView(albumList = uiState.albums, onClickAlbum = onClickAlbum, onLoadMore = onLoadMore, listState = listState)
+            if (uiState.isPaging) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
             }
         }
     }

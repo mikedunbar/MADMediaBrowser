@@ -54,6 +54,7 @@ class BandListViewModel @Inject constructor(
         }
     }
 
+    // TODO Move to using Intent objects instead of methods
     fun nextPage() {
         if (_uiState.value.searchString.length >= 4) {
             getBands(newQuery = false)
@@ -65,6 +66,11 @@ class BandListViewModel @Inject constructor(
         _uiState.update { it.copy(searchString = searchString) }
         searchQuery.value = searchString
     }
+
+    fun clearError() {
+        _uiState.update { it.copy(errorMessage = null) }
+    }
+
 
     private fun getBands(newQuery: Boolean = false) {
         bandsJob?.cancel()
