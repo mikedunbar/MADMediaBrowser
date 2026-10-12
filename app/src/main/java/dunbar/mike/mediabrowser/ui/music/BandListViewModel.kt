@@ -24,10 +24,12 @@ class BandListViewModel @Inject constructor(
     private val logger: Logger,
 ) : ViewModel() {
     private val logTag = "BandListViewModel"
+
     private val _uiState = MutableStateFlow(BandListUiState())
     val uiState: StateFlow<BandListUiState> = _uiState.asStateFlow()
+
     private val searchQuery = MutableStateFlow("")
-    private var bandsJob: Job? = null
+    private var searchJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -40,7 +42,7 @@ class BandListViewModel @Inject constructor(
                     if (searchString.length >= 4) {
                         getBands(newQuery = true)
                     } else {
-                        bandsJob?.cancel()
+                        searchJob?.cancel()
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
@@ -54,27 +56,29 @@ class BandListViewModel @Inject constructor(
         }
     }
 
-    // TODO Move to using Intent objects instead of methods
-    fun nextPage() {
-        if (_uiState.value.searchString.length >= 4) {
-            getBands(newQuery = false)
+    fun handleIntent(intent: BandListIntent) {
+        when (intent) {
+            BandListIntent.LoadMore -> {
+                if (_uiState.value.searchString.length >= 4) {
+                    getBands(newQuery = false)
+                }
+            }
+
+            BandListIntent.ClearError -> {
+                _uiState.update { it.copy(errorMessage = null) }
+            }
+
+            is BandListIntent.Search -> {
+                logger.d(logTag, "search: ${intent.searchString}")
+                _uiState.update { it.copy(searchString = intent.searchString) }
+                searchQuery.value = intent.searchString
+            }
         }
     }
 
-    fun search(searchString: String) {
-        logger.d(logTag, "search: $searchString")
-        _uiState.update { it.copy(searchString = searchString) }
-        searchQuery.value = searchString
-    }
-
-    fun clearError() {
-        _uiState.update { it.copy(errorMessage = null) }
-    }
-
-
     private fun getBands(newQuery: Boolean = false) {
-        bandsJob?.cancel()
-        bandsJob = viewModelScope.launch {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
             val searchString = _uiState.value.searchString
             if (searchString.length < 4) {
                 return@launch

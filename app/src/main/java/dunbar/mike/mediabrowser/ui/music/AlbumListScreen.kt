@@ -51,8 +51,8 @@ fun AlbumListScreenRoot(
     AlbumListScreen(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
         onClickAlbum = onClickAlbum,
-        onLoadMore = viewModel::onLoadMore,
-        onErrorShown = viewModel::clearError,
+        onLoadMore = { viewModel.handleIntent(AlbumListIntent.LoadMore) },
+        onErrorShown = { viewModel.handleIntent(AlbumListIntent.ClearError) },
     )
 }
 

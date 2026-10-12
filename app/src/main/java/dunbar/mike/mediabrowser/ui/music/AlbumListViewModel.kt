@@ -26,24 +26,26 @@ class AlbumListViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(AlbumListUiState(isLoading = true))
     val uiState: StateFlow<AlbumListUiState> = _uiState.asStateFlow()
 
-    private var albumsJob: Job? = null
-
-    fun onLoadMore() {
-        getAlbums(isPaging = true)
-    }
-
-    fun clearError() {
-        _uiState.update { it.copy(errorMessage = null) }
-    }
+    private var getAlbumsJob: Job? = null
 
     init {
         getAlbums()
     }
 
+    fun handleIntent(intent: AlbumListIntent) {
+        when (intent) {
+            AlbumListIntent.ClearError -> {
+                _uiState.update { it.copy(errorMessage = null) }
+            }
+            AlbumListIntent.LoadMore -> {
+                getAlbums(isPaging = true)
+            }
+        }
+    }
 
     private fun getAlbums(isPaging: Boolean = false) {
-        albumsJob?.cancel()
-        albumsJob = viewModelScope.launch {
+        getAlbumsJob?.cancel()
+        getAlbumsJob = viewModelScope.launch {
             val startPage = _uiState.value.page + 1
             val albums = _uiState.value.albums
             logger.d(logTag, "getAlbums: page=$startPage, albumsSize=${albums.size}")

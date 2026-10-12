@@ -64,9 +64,9 @@ fun BandListScreenRoot(
     BandListScreen(
         uiState = uiState,
         onClickBand = onClickBand,
-        onLoadMore = viewModel::nextPage,
-        onSearchChanged = viewModel::search,
-        onErrorShown = viewModel::clearError
+        onLoadMore = { viewModel.handleIntent(BandListIntent.LoadMore) },
+        onSearchChanged = { str -> viewModel.handleIntent(BandListIntent.Search(str)) },
+        onErrorShown = { viewModel.handleIntent(BandListIntent.ClearError) }
     )
 }
 
