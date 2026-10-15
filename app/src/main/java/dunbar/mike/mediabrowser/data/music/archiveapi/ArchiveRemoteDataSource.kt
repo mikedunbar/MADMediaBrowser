@@ -3,6 +3,7 @@ package dunbar.mike.mediabrowser.data.music.archiveapi
 import dunbar.mike.mediabrowser.data.music.Album
 import dunbar.mike.mediabrowser.data.music.Band
 import dunbar.mike.mediabrowser.data.music.MusicRemoteDataSource
+import dunbar.mike.mediabrowser.data.music.Song
 import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -88,6 +89,23 @@ class ArchiveRemoteDataSource @Inject constructor(
         logger.e(TAG, "getAlbums: failed with exception: ${e.message}")
         Result.failure(e)
     }
+
+    override suspend fun getSongs(albumId: String): Result<List<Song>> {
+        logger.d(TAG, "getSongs: albumId = $albumId")
+        return try {
+            val metadata = archiveApi.getMetaData(albumId)
+            metadata.body()?.let { metadata ->
+                val flacFiles = metadata.files.filter {
+                    SupportedAudioFile.FLAC.ids.contains(it.format)
+                }
+                Result.success(metadata.copy(files = flacFiles).toSongList())
+            } ?: Result.failure(ArchiveApi.Exception("metadata response was null"))
+        } catch (e: Exception) {
+            logger.e(TAG, "getSongs: failed with exception: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
 
 
     companion object {

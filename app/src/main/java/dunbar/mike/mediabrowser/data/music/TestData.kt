@@ -10,6 +10,8 @@ class FakeMusicRemoteDataSource : MusicRemoteDataSource {
 
     override suspend fun getAlbums(bandId: String, startPage: Int) = Result.success(createTestAlbumList(bandId))
 
+    override suspend fun getSongs(albumId: String) = Result.success(listOf<Song>())
+
 }
 
 fun createTestBand(bandName: String): Band {

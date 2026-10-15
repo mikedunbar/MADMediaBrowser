@@ -129,7 +129,7 @@ fun AlbumCard(
             .fillMaxWidth()
             .selectable(
                 selected = true,
-                onClick = { onClickAlbum(album.name) }
+                onClick = { onClickAlbum(album.id) }
             )
     )
     {

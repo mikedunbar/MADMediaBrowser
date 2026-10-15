@@ -33,6 +33,8 @@ import dunbar.mike.mediabrowser.ui.music.AlbumListScreenRoot
 import dunbar.mike.mediabrowser.ui.music.AlbumListViewModel
 import dunbar.mike.mediabrowser.ui.music.BandListScreenRoot
 import dunbar.mike.mediabrowser.ui.music.MusicLibraryScreen
+import dunbar.mike.mediabrowser.ui.music.SongListScreenRoot
+import dunbar.mike.mediabrowser.ui.music.SongListViewModel
 import dunbar.mike.mediabrowser.ui.settings.SettingsScreenRoot
 import dunbar.mike.mediabrowser.ui.shared.PlaceholderScreen
 
@@ -124,11 +126,10 @@ fun MediaBrowserNavHost(
                 }
             )
         }
-        composable("{Screen.SongList.name}/{albumId}") {
-            val albumId = it.arguments?.getString("albumId") ?: ""
-            PlaceholderScreen(screenName = stringResource(id = R.string.songs_screen)) {
-                Text(text = "Song for album $albumId")
-            }
+        composable("${Screen.SongList.name}/{albumId}") {
+            SongListScreenRoot(
+                viewModel = hiltViewModel<SongListViewModel>()
+            )
         }
         composable(Screen.VideoLibrary.name) {
             PlaceholderScreen(screenName = stringResource(id = R.string.video_library))
