@@ -6,4 +6,6 @@ data class SongListUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val songs: List<Song> = emptyList(),
+    val isPlaying: Boolean = false,
+    val currentPlayingSong: Song? = null
 )

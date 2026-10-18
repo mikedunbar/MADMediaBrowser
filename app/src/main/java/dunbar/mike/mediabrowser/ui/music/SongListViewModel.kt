@@ -1,10 +1,16 @@
 package dunbar.mike.mediabrowser.ui.music
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dunbar.mike.mediabrowser.data.music.MusicRepository
+import dunbar.mike.mediabrowser.data.music.Song
 import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +24,7 @@ import javax.inject.Inject
 class SongListViewModel @Inject constructor(
     private val musicRepository: MusicRepository,
     private val logger: Logger,
+    @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val logTag = "SongListViewModel"
@@ -27,6 +34,13 @@ class SongListViewModel @Inject constructor(
     val uiState: StateFlow<SongListUiState> = _uiState.asStateFlow()
 
     private var fetchSongsJob: Job? = null
+    private val exoPlayer: ExoPlayer = ExoPlayer.Builder(context).build().apply {
+        addListener(object : Player.Listener {
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                _uiState.update { it.copy(isPlaying = isPlaying) }
+            }
+        })
+    }
 
     init {
         fetchSongs()
@@ -36,6 +50,34 @@ class SongListViewModel @Inject constructor(
         when(intent) {
             SongListIntent.ClearError -> {
                 _uiState.update { it.copy(errorMessage = null) }
+            }
+            is SongListIntent.PlaySong -> {
+                playSong(intent.song)
+            }
+            SongListIntent.TogglePlayPause -> {
+                togglePlayPause()
+            }
+        }
+    }
+
+    private fun playSong(song: Song) {
+        val url = "https://archive.org/download/$albumId/${song.name}"
+        logger.d(logTag, "Playing song: $url")
+        val mediaItem = MediaItem.fromUri(url)
+        exoPlayer.setMediaItem(mediaItem)
+        exoPlayer.prepare()
+        exoPlayer.play()
+        _uiState.update { it.copy(currentPlayingSong = song, isPlaying = true) }
+    }
+
+    private fun togglePlayPause() {
+        if (exoPlayer.isPlaying) {
+            exoPlayer.pause()
+        } else {
+            if (exoPlayer.playbackState == Player.STATE_IDLE) {
+                _uiState.value.currentPlayingSong?.let { playSong(it) }
+            } else {
+                exoPlayer.play()
             }
         }
     }
@@ -50,8 +92,11 @@ class SongListViewModel @Inject constructor(
                 }
                 .onFailure { error ->
                     _uiState.update { it.copy(isLoading = false, errorMessage = error.message ?: "Unknown error") }
-
                 }
         }
+    }
+
+    override fun onCleared() {
+        exoPlayer.release()
     }
 }
