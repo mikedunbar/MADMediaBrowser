@@ -13,13 +13,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Forward10
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Replay10
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dunbar.mike.mediabrowser.ui.shared.LoadingView
+import java.util.Locale
 
 @Composable
 fun SongListScreenRoot(viewModel: SongListViewModel) {
@@ -61,7 +65,7 @@ fun SongListScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(bottom = 80.dp)
+                    .padding(bottom = 130.dp)
             ) {
                 uiState.songs.forEach { song ->
                     val isCurrent = uiState.currentPlayingSong == song
@@ -104,28 +108,62 @@ fun SongListScreen(
                         .fillMaxWidth(),
                     tonalElevation = 8.dp
                 ) {
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(16.dp)
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Now Playing",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Text(
-                                text = playingSong.name,
-                                style = MaterialTheme.typography.bodyMedium,
-                                maxLines = 1
-                            )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Now Playing",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = playingSong.name,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 1
+                                )
+                            }
+                            IconButton(onClick = { onIntent(SongListIntent.SeekBackward) }) {
+                                Icon(Icons.Default.Replay10, contentDescription = "Rewind 10s")
+                            }
+                            IconButton(onClick = { onIntent(SongListIntent.TogglePlayPause) }) {
+                                Icon(
+                                    imageVector = if (uiState.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                    contentDescription = "Toggle Play/Pause"
+                                )
+                            }
+                            IconButton(onClick = { onIntent(SongListIntent.SeekForward) }) {
+                                Icon(Icons.Default.Forward10, contentDescription = "Forward 10s")
+                            }
                         }
-                        IconButton(onClick = { onIntent(SongListIntent.TogglePlayPause) }) {
-                            Icon(
-                                imageVector = if (uiState.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                                contentDescription = "Toggle Play/Pause"
+
+                        val duration = if (uiState.durationMs > 0) uiState.durationMs.toFloat() else 1f
+                        val position = uiState.currentPositionMs.toFloat().coerceIn(0f, duration)
+
+                        Slider(
+                            value = position,
+                            onValueChange = { onIntent(SongListIntent.SeekTo(it.toLong())) },
+                            valueRange = 0f..duration,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = formatMillis(uiState.currentPositionMs),
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(
+                                text = formatMillis(uiState.durationMs),
+                                style = MaterialTheme.typography.labelSmall
                             )
                         }
                     }
@@ -133,4 +171,11 @@ fun SongListScreen(
             }
         }
     }
+}
+
+private fun formatMillis(ms: Long): String {
+    val totalSeconds = ms / 1000
+    val minutes = totalSeconds / 60
+    val seconds = totalSeconds % 60
+    return String.format(Locale.getDefault(), "%d:%02d", minutes, seconds)
 }

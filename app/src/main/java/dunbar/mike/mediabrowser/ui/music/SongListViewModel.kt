@@ -13,6 +13,7 @@ import dunbar.mike.mediabrowser.data.music.MusicRepository
 import dunbar.mike.mediabrowser.data.music.Song
 import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,10 +35,20 @@ class SongListViewModel @Inject constructor(
     val uiState: StateFlow<SongListUiState> = _uiState.asStateFlow()
 
     private var fetchSongsJob: Job? = null
+    private var progressJob: Job? = null
+
     private val exoPlayer: ExoPlayer = ExoPlayer.Builder(context).build().apply {
         addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 _uiState.update { it.copy(isPlaying = isPlaying) }
+                if (isPlaying) {
+                    startProgressUpdates()
+                }
+            }
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_READY) {
+                    _uiState.update { it.copy(durationMs = duration.coerceAtLeast(0L)) }
+                }
             }
         })
     }
@@ -57,6 +68,35 @@ class SongListViewModel @Inject constructor(
             SongListIntent.TogglePlayPause -> {
                 togglePlayPause()
             }
+            is SongListIntent.SeekTo -> {
+                exoPlayer.seekTo(intent.positionMs)
+                _uiState.update { it.copy(currentPositionMs = intent.positionMs) }
+            }
+            SongListIntent.SeekForward -> {
+                val newPos = (exoPlayer.currentPosition + 10000).coerceAtMost(exoPlayer.duration)
+                exoPlayer.seekTo(newPos)
+                _uiState.update { it.copy(currentPositionMs = newPos) }
+            }
+            SongListIntent.SeekBackward -> {
+                val newPos = (exoPlayer.currentPosition - 10000).coerceAtLeast(0L)
+                exoPlayer.seekTo(newPos)
+                _uiState.update { it.copy(currentPositionMs = newPos) }
+            }
+        }
+    }
+
+    private fun startProgressUpdates() {
+        progressJob?.cancel()
+        progressJob = viewModelScope.launch {
+            while (exoPlayer.isPlaying) {
+                _uiState.update {
+                    it.copy(
+                        currentPositionMs = exoPlayer.currentPosition,
+                        durationMs = exoPlayer.duration.coerceAtLeast(0L)
+                    )
+                }
+                delay(500L)
+            }
         }
     }
 
@@ -67,7 +107,15 @@ class SongListViewModel @Inject constructor(
         exoPlayer.setMediaItem(mediaItem)
         exoPlayer.prepare()
         exoPlayer.play()
-        _uiState.update { it.copy(currentPlayingSong = song, isPlaying = true) }
+        _uiState.update { 
+            it.copy(
+                currentPlayingSong = song, 
+                isPlaying = true,
+                currentPositionMs = 0L,
+                durationMs = 0L
+            ) 
+        }
+        startProgressUpdates()
     }
 
     private fun togglePlayPause() {
@@ -97,6 +145,7 @@ class SongListViewModel @Inject constructor(
     }
 
     override fun onCleared() {
+        progressJob?.cancel()
         exoPlayer.release()
     }
 }

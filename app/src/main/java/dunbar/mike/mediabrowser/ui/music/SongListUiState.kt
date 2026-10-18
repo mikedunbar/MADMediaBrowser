@@ -7,5 +7,7 @@ data class SongListUiState(
     val errorMessage: String? = null,
     val songs: List<Song> = emptyList(),
     val isPlaying: Boolean = false,
-    val currentPlayingSong: Song? = null
+    val currentPlayingSong: Song? = null,
+    val currentPositionMs: Long = 0L,
+    val durationMs: Long = 0L
 )
