@@ -9,4 +9,6 @@ sealed interface SongListIntent {
     data class SeekTo(val positionMs: Long) : SongListIntent
     object SeekForward : SongListIntent
     object SeekBackward : SongListIntent
+    object PlayNext : SongListIntent
+    object PlayPrevious : SongListIntent
 }

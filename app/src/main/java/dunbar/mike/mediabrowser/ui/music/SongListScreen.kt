@@ -17,6 +17,8 @@ import androidx.compose.material.icons.filled.Forward10
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Replay10
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -129,6 +131,9 @@ fun SongListScreen(
                                     maxLines = 1
                                 )
                             }
+                            IconButton(onClick = { onIntent(SongListIntent.PlayPrevious) }) {
+                                Icon(Icons.Default.SkipPrevious, contentDescription = "Previous Song")
+                            }
                             IconButton(onClick = { onIntent(SongListIntent.SeekBackward) }) {
                                 Icon(Icons.Default.Replay10, contentDescription = "Rewind 10s")
                             }
@@ -140,6 +145,9 @@ fun SongListScreen(
                             }
                             IconButton(onClick = { onIntent(SongListIntent.SeekForward) }) {
                                 Icon(Icons.Default.Forward10, contentDescription = "Forward 10s")
+                            }
+                            IconButton(onClick = { onIntent(SongListIntent.PlayNext) }) {
+                                Icon(Icons.Default.SkipNext, contentDescription = "Next Song")
                             }
                         }
 

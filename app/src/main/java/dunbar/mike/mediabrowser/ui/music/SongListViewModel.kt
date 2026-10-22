@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class SongListViewModel @Inject constructor(
@@ -48,6 +49,8 @@ class SongListViewModel @Inject constructor(
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_READY) {
                     _uiState.update { it.copy(durationMs = duration.coerceAtLeast(0L)) }
+                } else if (playbackState == Player.STATE_ENDED) {
+                    playNext()
                 }
             }
         })
@@ -82,6 +85,32 @@ class SongListViewModel @Inject constructor(
                 exoPlayer.seekTo(newPos)
                 _uiState.update { it.copy(currentPositionMs = newPos) }
             }
+            SongListIntent.PlayNext -> {
+                playNext()
+            }
+            SongListIntent.PlayPrevious -> {
+                playPrevious()
+            }
+        }
+    }
+
+    private fun playNext() {
+        val songs = _uiState.value.songs
+        val current = _uiState.value.currentPlayingSong ?: return
+        val index = songs.indexOf(current)
+        if (index != -1 && index + 1 < songs.size) {
+            playSong(songs[index + 1])
+        } else {
+            _uiState.update { it.copy(isPlaying = false, currentPositionMs = 0L) }
+        }
+    }
+
+    private fun playPrevious() {
+        val songs = _uiState.value.songs
+        val current = _uiState.value.currentPlayingSong ?: return
+        val index = songs.indexOf(current)
+        if (index != -1 && index > 0) {
+            playSong(songs[index - 1])
         }
     }
 
@@ -95,7 +124,7 @@ class SongListViewModel @Inject constructor(
                         durationMs = exoPlayer.duration.coerceAtLeast(0L)
                     )
                 }
-                delay(500L)
+                delay(500L.milliseconds)
             }
         }
     }
@@ -146,6 +175,7 @@ class SongListViewModel @Inject constructor(
 
     override fun onCleared() {
         progressJob?.cancel()
+        fetchSongsJob?.cancel()
         exoPlayer.release()
     }
 }
