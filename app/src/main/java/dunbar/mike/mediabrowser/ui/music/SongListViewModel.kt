@@ -1,16 +1,20 @@
 package dunbar.mike.mediabrowser.ui.music
 
+import android.content.ComponentName
 import android.content.Context
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dunbar.mike.mediabrowser.data.music.MusicRepository
 import dunbar.mike.mediabrowser.data.music.Song
+import dunbar.mike.mediabrowser.playback.PlaybackService
 import dunbar.mike.mediabrowser.util.Logger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -38,26 +42,31 @@ class SongListViewModel @Inject constructor(
     private var fetchSongsJob: Job? = null
     private var progressJob: Job? = null
 
-    private val exoPlayer: ExoPlayer = ExoPlayer.Builder(context).build().apply {
-        addListener(object : Player.Listener {
-            override fun onIsPlayingChanged(isPlaying: Boolean) {
-                _uiState.update { it.copy(isPlaying = isPlaying) }
-                if (isPlaying) {
-                    startProgressUpdates()
-                }
-            }
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                if (playbackState == Player.STATE_READY) {
-                    _uiState.update { it.copy(durationMs = duration.coerceAtLeast(0L)) }
-                } else if (playbackState == Player.STATE_ENDED) {
-                    playNext()
-                }
-            }
-        })
-    }
+    private val sessionToken = SessionToken(context, ComponentName(context, PlaybackService::class.java))
+    private val controllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
+    private var mediaController: MediaController? = null
 
     init {
         fetchSongs()
+        controllerFuture.addListener({
+            mediaController = controllerFuture.get().apply {
+                addListener(object : Player.Listener {
+                    override fun onIsPlayingChanged(isPlaying: Boolean) {
+                        _uiState.update { it.copy(isPlaying = isPlaying) }
+                        if (isPlaying) {
+                            startProgressUpdates()
+                        }
+                    }
+                    override fun onPlaybackStateChanged(playbackState: Int) {
+                        if (playbackState == Player.STATE_READY) {
+                            _uiState.update { it.copy(durationMs = duration.coerceAtLeast(0L)) }
+                        } else if (playbackState == Player.STATE_ENDED) {
+                            playNext()
+                        }
+                    }
+                })
+            }
+        }, ContextCompat.getMainExecutor(context))
     }
 
     fun handleIntent(intent: SongListIntent) {
@@ -72,18 +81,22 @@ class SongListViewModel @Inject constructor(
                 togglePlayPause()
             }
             is SongListIntent.SeekTo -> {
-                exoPlayer.seekTo(intent.positionMs)
+                mediaController?.seekTo(intent.positionMs)
                 _uiState.update { it.copy(currentPositionMs = intent.positionMs) }
             }
             SongListIntent.SeekForward -> {
-                val newPos = (exoPlayer.currentPosition + 10000).coerceAtMost(exoPlayer.duration)
-                exoPlayer.seekTo(newPos)
-                _uiState.update { it.copy(currentPositionMs = newPos) }
+                mediaController?.let { controller ->
+                    val newPos = (controller.currentPosition + 10000).coerceAtMost(controller.duration)
+                    controller.seekTo(newPos)
+                    _uiState.update { it.copy(currentPositionMs = newPos) }
+                }
             }
             SongListIntent.SeekBackward -> {
-                val newPos = (exoPlayer.currentPosition - 10000).coerceAtLeast(0L)
-                exoPlayer.seekTo(newPos)
-                _uiState.update { it.copy(currentPositionMs = newPos) }
+                mediaController?.let { controller ->
+                    val newPos = (controller.currentPosition - 10000).coerceAtLeast(0L)
+                    controller.seekTo(newPos)
+                    _uiState.update { it.copy(currentPositionMs = newPos) }
+                }
             }
             SongListIntent.PlayNext -> {
                 playNext()
@@ -117,12 +130,14 @@ class SongListViewModel @Inject constructor(
     private fun startProgressUpdates() {
         progressJob?.cancel()
         progressJob = viewModelScope.launch {
-            while (exoPlayer.isPlaying) {
-                _uiState.update {
-                    it.copy(
-                        currentPositionMs = exoPlayer.currentPosition,
-                        durationMs = exoPlayer.duration.coerceAtLeast(0L)
-                    )
+            while (mediaController?.isPlaying == true) {
+                mediaController?.let { controller ->
+                    _uiState.update {
+                        it.copy(
+                            currentPositionMs = controller.currentPosition,
+                            durationMs = controller.duration.coerceAtLeast(0L)
+                        )
+                    }
                 }
                 delay(500L.milliseconds)
             }
@@ -130,31 +145,35 @@ class SongListViewModel @Inject constructor(
     }
 
     private fun playSong(song: Song) {
-        val url = "https://archive.org/download/$albumId/${song.name}"
-        logger.d(logTag, "Playing song: $url")
-        val mediaItem = MediaItem.fromUri(url)
-        exoPlayer.setMediaItem(mediaItem)
-        exoPlayer.prepare()
-        exoPlayer.play()
-        _uiState.update { 
-            it.copy(
-                currentPlayingSong = song, 
-                isPlaying = true,
-                currentPositionMs = 0L,
-                durationMs = 0L
-            ) 
+        mediaController?.let { controller ->
+            val url = "https://archive.org/download/$albumId/${song.name}"
+            logger.d(logTag, "Playing song: $url")
+            val mediaItem = MediaItem.fromUri(url)
+            controller.setMediaItem(mediaItem)
+            controller.prepare()
+            controller.play()
+            _uiState.update { 
+                it.copy(
+                    currentPlayingSong = song, 
+                    isPlaying = true,
+                    currentPositionMs = 0L,
+                    durationMs = 0L
+                ) 
+            }
+            startProgressUpdates()
         }
-        startProgressUpdates()
     }
 
     private fun togglePlayPause() {
-        if (exoPlayer.isPlaying) {
-            exoPlayer.pause()
-        } else {
-            if (exoPlayer.playbackState == Player.STATE_IDLE) {
-                _uiState.value.currentPlayingSong?.let { playSong(it) }
+        mediaController?.let { controller ->
+            if (controller.isPlaying) {
+                controller.pause()
             } else {
-                exoPlayer.play()
+                if (controller.playbackState == Player.STATE_IDLE) {
+                    _uiState.value.currentPlayingSong?.let { playSong(it) }
+                } else {
+                    controller.play()
+                }
             }
         }
     }
@@ -176,6 +195,7 @@ class SongListViewModel @Inject constructor(
     override fun onCleared() {
         progressJob?.cancel()
         fetchSongsJob?.cancel()
-        exoPlayer.release()
+        MediaController.releaseFuture(controllerFuture)
+        super.onCleared()
     }
 }
