@@ -21,6 +21,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -44,63 +46,71 @@ class SongListViewModel @Inject constructor(
 
     private val sessionToken = SessionToken(context, ComponentName(context, PlaybackService::class.java))
     private val controllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
-    private var mediaController: MediaController? = null
+    private val _mediaController = MutableStateFlow<MediaController?>(null)
 
     init {
         fetchSongs()
         controllerFuture.addListener({
-            mediaController = controllerFuture.get().apply {
-                addListener(object : Player.Listener {
-                    override fun onIsPlayingChanged(isPlaying: Boolean) {
-                        _uiState.update { it.copy(isPlaying = isPlaying) }
-                        if (isPlaying) {
-                            startProgressUpdates()
-                        }
+            val controller = controllerFuture.get()
+            _mediaController.value = controller
+            controller.addListener(object : Player.Listener {
+                override fun onIsPlayingChanged(isPlaying: Boolean) {
+                    _uiState.update { it.copy(isPlaying = isPlaying) }
+                    if (isPlaying) {
+                        startProgressUpdates()
                     }
-                    override fun onPlaybackStateChanged(playbackState: Int) {
-                        if (playbackState == Player.STATE_READY) {
-                            _uiState.update { it.copy(durationMs = duration.coerceAtLeast(0L)) }
-                        } else if (playbackState == Player.STATE_ENDED) {
-                            playNext()
-                        }
+                }
+
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    if (playbackState == Player.STATE_READY) {
+                        _uiState.update { it.copy(durationMs = controller.duration.coerceAtLeast(0L)) }
+                    } else if (playbackState == Player.STATE_ENDED) {
+                        playNext()
                     }
-                })
-            }
+                }
+            })
         }, ContextCompat.getMainExecutor(context))
     }
 
     fun handleIntent(intent: SongListIntent) {
-        when(intent) {
+        when (intent) {
             SongListIntent.ClearError -> {
                 _uiState.update { it.copy(errorMessage = null) }
             }
+
             is SongListIntent.PlaySong -> {
                 playSong(intent.song)
             }
+
             SongListIntent.TogglePlayPause -> {
                 togglePlayPause()
             }
+
             is SongListIntent.SeekTo -> {
-                mediaController?.seekTo(intent.positionMs)
+                _mediaController.value?.seekTo(intent.positionMs)
                 _uiState.update { it.copy(currentPositionMs = intent.positionMs) }
             }
+
             SongListIntent.SeekForward -> {
-                mediaController?.let { controller ->
+                _mediaController.value?.let { controller ->
                     val newPos = (controller.currentPosition + 10000).coerceAtMost(controller.duration)
                     controller.seekTo(newPos)
                     _uiState.update { it.copy(currentPositionMs = newPos) }
                 }
             }
+
             SongListIntent.SeekBackward -> {
-                mediaController?.let { controller ->
+                _mediaController.value?.let { controller ->
                     val newPos = (controller.currentPosition - 10000).coerceAtLeast(0L)
                     controller.seekTo(newPos)
                     _uiState.update { it.copy(currentPositionMs = newPos) }
                 }
             }
+
             SongListIntent.PlayNext -> {
                 playNext()
             }
+
             SongListIntent.PlayPrevious -> {
                 playPrevious()
             }
@@ -130,8 +140,8 @@ class SongListViewModel @Inject constructor(
     private fun startProgressUpdates() {
         progressJob?.cancel()
         progressJob = viewModelScope.launch {
-            while (mediaController?.isPlaying == true) {
-                mediaController?.let { controller ->
+            while (_mediaController.value?.isPlaying == true) {
+                _mediaController.value?.let { controller ->
                     _uiState.update {
                         it.copy(
                             currentPositionMs = controller.currentPosition,
@@ -145,27 +155,36 @@ class SongListViewModel @Inject constructor(
     }
 
     private fun playSong(song: Song) {
-        mediaController?.let { controller ->
+        viewModelScope.launch {
+            val controller = _mediaController.value ?: run {
+                _mediaController.filterNotNull().first()
+            }
             val url = "https://archive.org/download/$albumId/${song.name}"
             logger.d(logTag, "Playing song: $url")
-            val mediaItem = MediaItem.fromUri(url)
+            val mediaItem = MediaItem.Builder()
+                .setUri(url)
+                .setMediaId(albumId)
+                .build()
             controller.setMediaItem(mediaItem)
             controller.prepare()
             controller.play()
-            _uiState.update { 
+            _uiState.update {
                 it.copy(
-                    currentPlayingSong = song, 
+                    currentPlayingSong = song,
                     isPlaying = true,
                     currentPositionMs = 0L,
                     durationMs = 0L
-                ) 
+                )
             }
             startProgressUpdates()
         }
     }
 
     private fun togglePlayPause() {
-        mediaController?.let { controller ->
+        viewModelScope.launch {
+            val controller = _mediaController.value ?: run {
+                _mediaController.filterNotNull().first()
+            }
             if (controller.isPlaying) {
                 controller.pause()
             } else {
@@ -196,6 +215,5 @@ class SongListViewModel @Inject constructor(
         progressJob?.cancel()
         fetchSongsJob?.cancel()
         MediaController.releaseFuture(controllerFuture)
-        super.onCleared()
     }
 }

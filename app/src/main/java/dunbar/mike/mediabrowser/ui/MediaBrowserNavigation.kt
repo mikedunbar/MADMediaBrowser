@@ -28,6 +28,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import dunbar.mike.mediabrowser.R
 import dunbar.mike.mediabrowser.ui.music.AlbumListScreenRoot
 import dunbar.mike.mediabrowser.ui.music.AlbumListViewModel
@@ -126,7 +127,10 @@ fun MediaBrowserNavHost(
                 }
             )
         }
-        composable("${Screen.SongList.name}/{albumId}") {
+        composable(
+            route = "${Screen.SongList.name}/{albumId}",
+            deepLinks = listOf(navDeepLink { uriPattern = "mediabrowser://songList/{albumId}" })
+        ) {
             SongListScreenRoot(
                 viewModel = hiltViewModel<SongListViewModel>()
             )
